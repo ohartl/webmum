@@ -5,9 +5,9 @@
  */
 
 define("MYSQL_HOST", "localhost");
-define("MYSQL_USER", "");
-define("MYSQL_PASSWORD", "");
-define("MYSQL_DATABASE", "");
+define("MYSQL_USER", "vmail");
+define("MYSQL_PASSWORD", "vmail");
+define("MYSQL_DATABASE", "vmail");
 
 
 /*
@@ -48,7 +48,7 @@ define("SUBDIR", "/webmum/");
  * Admin e-mail address
  */
 
-define("ADMIN_EMAIL", "admin@server.tld");
+define("ADMIN_EMAIL", "admin@domain.tld");
 
 
 /*
