@@ -7,7 +7,7 @@ WebMUM is a web frontend based on PHP which helps you to manage mail accounts vi
 
 There is a demo site available at https://webmumdemo.trashserver.net/
 
-Username: admin@domain.tld
+Username: admin@domain.tld<br/>
 Password: webmumpassword
 
 Please note that there are some limitations: You cannot change the password for the admin user or delete his account / domain. Have fun!
