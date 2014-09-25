@@ -41,7 +41,7 @@ define("DBC_ALIASES_DESTINATION", "destination");
  */
 
 define("FRONTEND_BASE_PATH", "http://localhost/webmum/");
-define("SUBDIR", "/webmum/");
+define("SUBDIR", "webmum/");
 
 
 /*

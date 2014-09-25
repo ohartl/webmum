@@ -112,13 +112,13 @@ Define the URL of the web application, and it's subfolder:
 	 */
 	
 	define("FRONTEND_BASE_PATH", "http://localhost/webmum/");
-	define("SUBDIR", "/webmum/");
+	define("SUBDIR", "webmum/");
 
 In the example above, WebMUM is located in a subfolder named "webmum/". If you don't want to use a subfolder, but install WebMUM directly into the domain root,
 set the settings like this:
 
 	define("FRONTEND_BASE_PATH", "http://localhost/");
-	define("SUBDIR", "/");
+	define("SUBDIR", "");
 
 ### Admin e-mail address
 
