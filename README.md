@@ -12,7 +12,7 @@ Password: webmumpassword
 
 Please note that there are some limitations: You cannot change the password for the admin user or delete his account / domain. Have fun!
 
-## Installing
+## Installation
 
 [Download the ZIP archive](https://github.com/ThomasLeister/webmum/archive/master.zip) and extract it into your webserver's virtual host root directory:
 
@@ -66,7 +66,7 @@ Without "webmum/" subdirectory in URL:
         }
     }
 
-## Configuring
+## Configuration
 
 Configure WebMUM via the configuration file at "config/config.inc.php". 
 
