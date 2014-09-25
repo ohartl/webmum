@@ -34,7 +34,6 @@ For Nginx (webmum is located in subdirectory "webmum/"):
         location ~ \.php$ {
             fastcgi_pass   127.0.0.1:9000;
             fastcgi_index  index.php;
-            include        fastcgi.conf;
             fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
             include        fastcgi_params;
         }
@@ -56,7 +55,6 @@ Without "webmum/" subdirectory in URL:
         location ~ \.php$ {
             fastcgi_pass   127.0.0.1:9000;
             fastcgi_index  index.php;
-            include        fastcgi.conf;
             fastcgi_param  SCRIPT_FILENAME  $document_root$fastcgi_script_name;
             include        fastcgi_params;
         }
