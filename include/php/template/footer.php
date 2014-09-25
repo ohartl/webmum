@@ -1,7 +1,7 @@
 		</div> <!-- Closing content -->
 		
 		<div id="footer">
-			WebMUM is free software created by Thomas Leister.
+			Copyright (C) 2014 Thomas Leister <br/> WebMUM on GitHub: <a href="https://github.com/ThomasLeister/webmum/">https://github.com/ThomasLeister/webmum/</a>
 		</div>
 	</body>
 </html>

@@ -196,7 +196,9 @@ body{
 	}
 	
 	
-	
+/*
+ * Footer
+ */	
 
 #footer{
 	position:relative;
@@ -206,7 +208,15 @@ body{
 	background-color:white;
 	padding:20px;
 	box-sizing:border-box;
+	color:grey;
 }
+
+#footer a{
+	text-decoration:none;
+	color:grey;
+}
+
+
 
 
 /*

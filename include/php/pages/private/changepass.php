@@ -26,7 +26,7 @@ if(isset($_POST['sent'])){
 
 
 <p>
-	Your new password must have <?php echo MIN_PASS_LENGTH; ?> characters or more.
+	Your new password must contain <?php echo MIN_PASS_LENGTH; ?> characters or more.
 </p>
 
 <form action="" method="post">
