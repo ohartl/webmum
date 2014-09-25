@@ -3,6 +3,14 @@ WebMUM - Web Mailserver User Manager
 
 WebMUM is a web frontend based on PHP which helps you to manage mail accounts via MySQL. The software is licensed under a GNU-GPL 3.0 license.
 
+## Demo
+
+There is a demo site available at https://webmumdemo.trashserver.net/
+Username: admin@domain.tld
+Password: webmumpassword
+
+Please note that there are some limitations: You cannot change the password for the admin user or delete his account / domain. Have fun!
+
 ## Installing
 
 [Download the ZIP archive](https://github.com/ThomasLeister/webmum/archive/master.zip) and extract it into your webserver's virtual host root directory:
