@@ -75,8 +75,8 @@ Please note: mod_rewrite must be enabled for URL rewriting:
 With subdirectory "webmum/":
 
 	<VirtualHost *:80>
-	    ServerName beispiel.de
-	    DocumentRoot /var/www/beispiel.de
+	    ServerName domain.tld
+	    DocumentRoot /var/www/domain.tld
 	
 		RewriteEngine on
 		RewriteCond %{REQUEST_FILENAME} !-d
@@ -87,8 +87,8 @@ With subdirectory "webmum/":
 Without subdirectory "webmum/" (direct access on VirtualHost address):
 
 	<VirtualHost *:80>
-	    ServerName beispiel.de
-	    DocumentRoot /var/www/beispiel.de
+	    ServerName webmum.domain.tld
+	    DocumentRoot /var/www/domain.tld/webmum
 	
 		RewriteEngine on
 		RewriteCond %{REQUEST_FILENAME} !-d
