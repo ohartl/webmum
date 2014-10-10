@@ -20,9 +20,11 @@ Please note that there are some limitations: You cannot change the password for 
 	unzip master.zip
 	mv master/ webmum/
 	
-Configure your webserver. URL rewriting is required.
+Configure your webserver. URL rewriting to index.php is required.
 
-For Nginx (webmum is located in subdirectory "webmum/"):
+### Nginx
+
+Example configuration for Nginx (webmum is located in subdirectory "webmum/"):
 
 	server {
         listen       80;
@@ -64,7 +66,38 @@ Without "webmum/" subdirectory in URL:
         }
     }
 
-## Configuration
+### Apache 
+
+Please note: mod_rewrite must be enabled for URL rewriting:
+
+	sudo a2enmod rewrite	
+
+With subdirectory "webmum/":
+
+	<VirtualHost *:80>
+	    ServerName beispiel.de
+	    DocumentRoot /var/www/beispiel.de
+	
+		RewriteEngine on
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^\/webmum/(.*)$ /webmum/index.php [L,QSA]
+	</VirtualHost>
+	
+Without subdirectory "webmum/" (direct access on VirtualHost address):
+
+	<VirtualHost *:80>
+	    ServerName beispiel.de
+	    DocumentRoot /var/www/beispiel.de
+	
+		RewriteEngine on
+		RewriteCond %{REQUEST_FILENAME} !-d
+		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^(.*)$ index.php [L,QSA]
+	</VirtualHost>
+
+
+## WebMUM Configuration
 
 Configure WebMUM via the configuration file at "config/config.inc.php". 
 
