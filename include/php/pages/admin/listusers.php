@@ -9,6 +9,9 @@ else if($_GET['created'] == "1"){
 else if($_GET['edited'] == "1"){
 	add_message("success", "User edited successfully.");
 }
+else if($_GET['adm_del'] == "1"){
+	add_message("fail", "Admin user cannot be deleted.");
+}
 	
 ?>
 

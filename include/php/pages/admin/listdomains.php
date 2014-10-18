@@ -4,7 +4,10 @@
 	}
 	else if($_GET['created'] == "1"){
 		add_message("success", "Domain created successfully.");
-	}		
+	}	
+	else if($_GET['adm_del'] == "1"){
+		add_message("fail", "Domain could not be deleted because admin account would be affected.");
+	}	
 ?>
 
 
