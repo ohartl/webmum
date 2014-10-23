@@ -10,7 +10,8 @@ There is a demo site available at https://webmumdemo.trashserver.net/
 Username: admin@domain.tld<br/>
 Password: webmumpassword
 
-Please note that there are some limitations: You cannot change the password for the admin user or delete his account / domain. Have fun!
+Please note that there are some limitations concerning the admin account: You can't delete the account / domain and the original password 
+will be restored every minute. Have fun!
 
 ## Installation
 
