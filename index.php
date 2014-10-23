@@ -1,6 +1,6 @@
 <?php
 /*
- * #################### This is WebMUM Version 0.1.1 ######################
+ * #################### This is WebMUM Version 0.1.2 ######################
  * 
  * Project on GitHub: https://github.com/ThomasLeister/webmum
  * Author's Blog: https://thomas-leister.de
@@ -22,7 +22,7 @@
  */
 
 
-define("BACKEND_BASE_PATH", preg_replace("index.php", "", $_SERVER['SCRIPT_FILENAME']));
+define("BACKEND_BASE_PATH", preg_replace("#index.php#", "", $_SERVER['SCRIPT_FILENAME']));
 require_once 'include/php/default.inc.php';
 
 require_once 'include/php/template/header.php';

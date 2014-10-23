@@ -1,15 +1,15 @@
 <?php 
 
-if($_GET['deleted'] == "1"){
+if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
 	add_message("success", "User deleted successfully."); 
 }
-else if($_GET['created'] == "1"){
+else if(isset($_GET['created']) && $_GET['created'] == "1"){
 	add_message("success", "User created successfully.");
 }
-else if($_GET['edited'] == "1"){
+else if(isset($_GET['edited']) && $_GET['edited'] == "1"){
 	add_message("success", "User edited successfully.");
 }
-else if($_GET['adm_del'] == "1"){
+else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
 	add_message("fail", "Admin user cannot be deleted.");
 }
 	

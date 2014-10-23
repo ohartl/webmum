@@ -82,7 +82,7 @@
 		$id = $db->escape_string($_GET['id']);
 	}
 	
-	if($mode === edit){
+	if($mode === "edit"){
 		//Load user data from DB
 		$sql = "SELECT * from `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
 		
@@ -124,7 +124,7 @@
 	
 	<tr>
 		<td>
-			<input name="username" class="textinput" type="text" value="<?php echo $username; ?>" placeholder="Username"/>
+			<input name="username" class="textinput" type="text" value="<?php if(isset($username)){echo $username;} ?>" placeholder="Username"/>
 		</td>
 		
 		<td>
@@ -140,7 +140,7 @@
 				
 				while($row = $result->fetch_assoc()){
 					$selected = "";
-					if($row[DBC_DOMAINS_DOMAIN] === $domain){$selected = "selected=\"selected\"";}
+					if(isset($domain) && $row[DBC_DOMAINS_DOMAIN] === $domain){$selected = "selected=\"selected\"";}
 					echo "<option value=\"".$row[DBC_DOMAINS_DOMAIN]."\" ".$selected." >".$row[DBC_DOMAINS_DOMAIN]."</option>";
 				}
 				?>
@@ -153,14 +153,14 @@
 		</td>
 		
 		<td>
-			<input name="mailbox_limit" class="textinput" type="number" value="<?php echo $mailbox_limit; ?>" placeholder="Mailbox size (MB)"/> 
+			<input name="mailbox_limit" class="textinput" type="number" value="<?php if(isset($mailbox_limit)){echo $mailbox_limit;} ?>" placeholder="Mailbox size (MB)"/> 
 		</td>
 	</tr>
 	
 	</table>
 	
-	<input name="savemode" type="hidden" value="<?php echo $mode; ?>"/>
-	<input name="id" class="sendbutton" type="hidden" value="<?php echo $id; ?>"/>
+	<input name="savemode" type="hidden" value="<?php if(isset($mode)){echo $mode;} ?>"/>
+	<input name="id" class="sendbutton" type="hidden" value="<?php if(isset($id)){echo $id;} ?>"/>
 	
 	<p>
 		<input type="submit" class="button button-small" value="Save settings">

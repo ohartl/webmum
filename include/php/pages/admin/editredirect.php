@@ -55,7 +55,7 @@
 		$id = $db->escape_string($_GET['id']);
 	}
 	
-	if($mode === edit){
+	if($mode === "edit"){
 		//Load user data from DB
 		$sql = "SELECT `".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` from `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = $id LIMIT 1;";
 		
@@ -88,18 +88,18 @@ Here you can edit a redirect.
 	
 	<tr>
 		<td>
-			<textarea name="source" class="textinput" placeholder="Source"><?php echo $source; ?></textarea>
+			<textarea name="source" class="textinput" placeholder="Source"><?php if(isset($source)){echo $source;}?></textarea>
 		</td>
 		
 		<td>
-			<textarea name="destination" class="textinput" placeholder="Destination"><?php echo $destination; ?></textarea>
+			<textarea name="destination" class="textinput" placeholder="Destination"><?php if(isset($destination)){echo $destination;} ?></textarea>
 		</td>
 	</tr>
 	
 	</table>
 	
-	<input name="savemode" type="hidden" value="<?php echo $mode; ?>"/>
-	<input name="id" type="hidden" value="<?php echo $id; ?>"/>
+	<input name="savemode" type="hidden" value="<?php if(isset($mode)){echo $mode;} ?>"/>
+	<input name="id" type="hidden" value="<?php if(isset($id)){echo $id;} ?>"/>
 	
 	<p>
 		<input type="submit" class="button button-small" value="Save settings">

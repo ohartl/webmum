@@ -1,12 +1,12 @@
 <?php
 
-if($_GET['deleted'] == "1"){
+if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
 	add_message("success", "Redirect deleted successfully.");
 }
-else if($_GET['created'] == "1"){
+else if(isset($_GET['created']) && $_GET['created'] == "1"){
 	add_message("success", "Redirect created successfully.");
 }
-else if($_GET['edited'] == "1"){
+else if(isset($_GET['edited']) && $_GET['edited'] == "1"){
 	add_message("success", "Redirect edited successfully.");
 }
 

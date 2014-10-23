@@ -1,11 +1,11 @@
 <?php 
-	if($_GET['deleted'] == "1"){
+	if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
 		add_message("success", "Domain deleted successfully.");
 	}
-	else if($_GET['created'] == "1"){
+	else if(isset($_GET['created']) && $_GET['created'] == "1"){
 		add_message("success", "Domain created successfully.");
 	}	
-	else if($_GET['adm_del'] == "1"){
+	else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
 		add_message("fail", "Domain could not be deleted because admin account would be affected.");
 	}	
 ?>
