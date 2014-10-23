@@ -24,7 +24,7 @@ Configure your webserver. URL rewriting to index.php is required.
 
 ### Nginx
 
-Example configuration for Nginx (webmum is located in subdirectory "webmum/"):
+Example configuration for Nginx with subdirectory in URL (e.g. http://mydomain.tld/webmum/):
 
 	server {
         listen       80;
@@ -45,7 +45,7 @@ Example configuration for Nginx (webmum is located in subdirectory "webmum/"):
         }
     }
 
-Without "webmum/" subdirectory in URL:
+Without "webmum/" subdirectory in URL (e.g. http://webmum.mydomain.tld/):
 
 	server {
         listen       80;
@@ -72,7 +72,7 @@ Please note: mod_rewrite must be enabled for URL rewriting:
 
 	sudo a2enmod rewrite	
 
-With subdirectory "webmum/":
+With subdirectory "webmum/" (e.g. http://mydomain.tld/webmum/):
 
 	<VirtualHost *:80>
 	    ServerName domain.tld
@@ -84,7 +84,7 @@ With subdirectory "webmum/":
 		RewriteRule ^\/webmum/(.*)$ /webmum/index.php [L,QSA]
 	</VirtualHost>
 	
-Without subdirectory "webmum/" (direct access on VirtualHost address):
+Without subdirectory "webmum/" (e.g. http://webmum.mydomain.tld/):
 
 	<VirtualHost *:80>
 	    ServerName webmum.domain.tld
