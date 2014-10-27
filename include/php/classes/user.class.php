@@ -21,7 +21,7 @@ class USER {
 		session_start();
 		session_regenerate_id();
 		
-		if($_SESSION['email'] === ADMIN_EMAIL){
+		if(isset($_SESSION['email']) && $_SESSION['email'] === ADMIN_EMAIL){
 			$this->role = "admin";
 		}
 		else{
