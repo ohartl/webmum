@@ -61,7 +61,7 @@ body{
 
 #content{
 	height:auto;
-	min-height:400px;
+	min-height:calc(100vh - 150px);
 	padding:20px;
 	background-color:white;
 }
@@ -202,9 +202,8 @@ body{
 
 #footer{
 	position:relative;
-	height:50px;	
+	height:20px;	
 	width:100%;
-	background-color:rgba(15, 15, 15, 1);
 	background-color:white;
 	padding:20px;
 	box-sizing:border-box;
