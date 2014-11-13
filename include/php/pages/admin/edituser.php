@@ -4,7 +4,10 @@
 		
 		if($savemode === "edit"){
 			// Edit mode entered
-			$id = $db->escape_string($_POST['id']);		
+			$id = $db->escape_string($_POST['id']);	
+			if($mailbox_limit == ""){
+				$mailbox_limit = 0;
+			}	
 			$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
 			
 			$sql = "UPDATE `".DBT_USERS."` SET `".DBC_USERS_MAILBOXLIMIT."` = '$mailbox_limit' WHERE `".DBC_USERS_ID."` = '$id';";
