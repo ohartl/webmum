@@ -31,7 +31,7 @@ if(isset($_POST['sent'])){
 
 <form action="" method="post">
 	<p>
-		<input name="password" class="textinput" type="password" placeholder="New password"/><br/>
+		<input name="password" class="textinput" type="password" placeholder="New password" autofocus/><br/>
 		<input name="password_repeat" class="textinput" type="password" placeholder="New password (repeat)"/>
 		<input name="sent" type="hidden" value="1"/>
 	</p>

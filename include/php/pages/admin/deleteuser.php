@@ -53,7 +53,7 @@ if(isset($_POST['confirm'])){
 </p>
 
 <form action="" method="post">
-	<select name="confirm">
+	<select name="confirm" autofocus>
 		<option value="no">No!</option>
 		<option value="yes">Yes!</option>
 	</select>

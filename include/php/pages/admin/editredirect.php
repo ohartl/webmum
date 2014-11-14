@@ -88,11 +88,11 @@ Here you can edit a redirect.
 	
 	<tr>
 		<td>
-			<textarea name="source" class="textinput" placeholder="Source"><?php if(isset($source)){echo $source;}?></textarea>
+			<textarea name="source" class="textinput" placeholder="Source" required="required" autofocus><?php if(isset($source)){echo $source;}?></textarea>
 		</td>
 		
 		<td>
-			<textarea name="destination" class="textinput" placeholder="Destination"><?php if(isset($destination)){echo $destination;} ?></textarea>
+			<textarea name="destination" class="textinput" placeholder="Destination" required="required"><?php if(isset($destination)){echo $destination;} ?></textarea>
 		</td>
 	</tr>
 	

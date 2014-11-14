@@ -24,7 +24,7 @@ if($user->isLoggedIn()){
 <?php output_messages(); ?>
 
 <form action="" method="post">
-	<input name="email" class="textinput" type="text" placeholder="E-Mail Address"/><br>
+	<input name="email" class="textinput" type="text" placeholder="E-Mail Address" autofocus/><br>
 	<input name="password" class="textinput" type="password" placeholder="Password"/>
 	
 	<p>

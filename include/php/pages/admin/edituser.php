@@ -1,4 +1,18 @@
 <?php 
+	// Get mailbox_limit default value from DB
+	$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") AS `".DBC_USERS_MAILBOXLIMIT."` FROM `".DBT_USERS."` LIMIT 1;";
+	
+	if(!$result = $db->query($sql)){
+		die('There was an error running the query [' . $db->error . ']');
+	}
+	
+	else{
+		while($row = $result->fetch_assoc()){
+			$mailbox_limit_default = $row[DBC_USERS_MAILBOXLIMIT];
+		}
+	}
+	
+	
 	if(isset($_POST['savemode'])){
 		$savemode = $_POST['savemode'];
 		
@@ -6,7 +20,7 @@
 			// Edit mode entered
 			$id = $db->escape_string($_POST['id']);	
 			if($mailbox_limit == ""){
-				$mailbox_limit = 0;
+				$mailbox_limit = $mailbox_limit_default;
 			}	
 			$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
 			
@@ -48,7 +62,7 @@
 			$pass = $_POST['password'];
 			$pass_rep = $_POST['password_rep'];
 			
-			if($username !== "" && $domain !== "" && $quota !== ""){
+			if($username !== "" && $domain !== "" && $quota !== "" && $mailbox_limit !== ""){
 				// All fields filled with content
 				// Check passwords
 				$pass_ok = check_new_pass($pass, $pass_rep);
@@ -127,7 +141,7 @@
 	
 	<tr>
 		<td>
-			<input name="username" class="textinput" type="text" value="<?php if(isset($username)){echo $username;} ?>" placeholder="Username"/>
+			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo $username;} ?>" placeholder="Username" required="required"/>
 		</td>
 		
 		<td>
@@ -156,7 +170,7 @@
 		</td>
 		
 		<td>
-			<input name="mailbox_limit" class="textinput" type="number" value="<?php if(isset($mailbox_limit)){echo $mailbox_limit;} ?>" placeholder="Mailbox size (MB)"/> 
+			<input name="mailbox_limit" class="textinput" type="number" value="<?php if(isset($mailbox_limit)){echo $mailbox_limit;} else{echo $mailbox_limit_default;} ?>" placeholder="Mailbox size (MB)" required="required"/> 
 		</td>
 	</tr>
 	

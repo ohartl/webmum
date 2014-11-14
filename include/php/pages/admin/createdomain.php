@@ -29,6 +29,6 @@ if(isset($_POST['domain'])){
 </p>
 
 <form action="" method="post">
-	<p><input name="domain" class="textinput" type="text" placeholder="domain.tld"/></p>
+	<p><input name="domain" class="textinput" type="text" placeholder="domain.tld" autofocus/></p>
 	<p><input type="submit" class="button button-small" value="Create domain"/>
 </form>
