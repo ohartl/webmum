@@ -82,6 +82,7 @@ With subdirectory "webmum/" (e.g. http://mydomain.tld/webmum/):
 		RewriteEngine on
 		RewriteCond %{REQUEST_FILENAME} !-d
 		RewriteCond %{REQUEST_FILENAME} !-f
+		RewriteRule ^\/webmum/(.*)\.css$ /webmum/$1.css [L]
 		RewriteRule ^\/webmum/(.*)$ /webmum/index.php [L,QSA]
 	</VirtualHost>
 	
@@ -94,7 +95,8 @@ Without subdirectory "webmum/" (e.g. http://webmum.mydomain.tld/):
 		RewriteEngine on
 		RewriteCond %{REQUEST_FILENAME} !-d
 		RewriteCond %{REQUEST_FILENAME} !-f
-		RewriteRule ^(.*)$ index.php [L,QSA]
+		RewriteRule (.*)\.css$ $1.css [L]
+		RewriteRule ^(.*)$ /index.php [L,QSA]
 	</VirtualHost>
 
 
