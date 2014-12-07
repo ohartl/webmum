@@ -184,7 +184,14 @@ You can then login into the admin dashboard with that e-mail address and the cor
 	
 	define("MIN_PASS_LENGTH", 8);
 
-## Which password scheme does WebMUM use?
+## FAQ
+
+### Which password scheme does WebMUM use?
 
 WebMUM uses the SHA512-CRYPT password scheme, which is known as a very secure scheme these days. Support for more password schemes will be added soon.
 
+
+### "login/ cannot be found"
+
+Webserver rewrites have to be enabled on your server, because WebMUM does not use real URLs for the frontend, but virtual URLs based on URL rewriting.
+When rewriting fails, you receive a 404 error message.
