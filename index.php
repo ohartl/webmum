@@ -109,7 +109,7 @@ function load_page($p){
 $path = $_SERVER["REQUEST_URI"];
 // Remove GET Parameters
 $path = preg_replace('/\?.*/', '', $path);
-// Remove prescending directory part e.g. /webmum/ defined in SUBDIR
+// Remove prescending directory part e.g. webmum/ defined in SUBDIR
 $path = preg_replace("#".SUBDIR."#", '', $path);
 
 // Webserver should add trailing slash, but if there is no trailing slash for any reason, add one ;)

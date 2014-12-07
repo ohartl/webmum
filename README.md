@@ -172,6 +172,9 @@ Only the user with this specific e-mail address will have access to the administ
 	 */
 	
 	define("ADMIN_EMAIL", "admin@domain.tld");
+	
+The admin's e-mail account must be existent in the virtual user database on your own server. (=> an e-mail account on a foreign server won't give you access!).
+You can then login into the admin dashboard with that e-mail address and the corresponding password.
 
 ### Minimal required password length
 
