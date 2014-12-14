@@ -24,7 +24,6 @@ define("DBC_USERS_ID", "id");
 define("DBC_USERS_USERNAME", "username");
 define("DBC_USERS_DOMAIN", "domain");
 define("DBC_USERS_PASSWORD", "password");
-define("DBC_USERS_MAILBOXLIMIT", "mailbox_limit");
 
 // Domains table columns
 define("DBC_DOMAINS_ID", "id");
