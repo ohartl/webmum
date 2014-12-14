@@ -5,6 +5,9 @@
 		if($savemode === "edit"){
 			$id = $db->escape_string($_POST['id']);
 			
+			$source = str_replace(array("\r", "\n"), "", $source);
+			$destination = str_replace(array("\r", "\n"), "", $destination);
+			
 			$source = $db->escape_string($_POST['source']);
 			$destination = $db->escape_string($_POST['destination']);
 			
@@ -88,11 +91,11 @@ Here you can edit a redirect.
 	
 	<tr>
 		<td>
-			<textarea name="source" class="textinput" placeholder="Source" required="required" autofocus><?php if(isset($source)){echo $source;}?></textarea>
+			<input type="text" name="source" class="textinput" placeholder="Source (single address)" required="required" value="<?php if(isset($source)){echo $source;}?>" autofocus/>
 		</td>
 		
 		<td>
-			<textarea name="destination" class="textinput" placeholder="Destination" required="required"><?php if(isset($destination)){echo $destination;} ?></textarea>
+			<textarea name="destination" class="textinput" placeholder="Destination (multiple addresses separated by comma possible)" required="required"><?php if(isset($destination)){echo $destination;} ?></textarea>
 		</td>
 	</tr>
 	
