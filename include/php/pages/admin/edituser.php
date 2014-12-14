@@ -1,68 +1,42 @@
-<?php 
-	// Get mailbox_limit default value from DB
-	$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") AS `".DBC_USERS_MAILBOXLIMIT."` FROM `".DBT_USERS."` LIMIT 1;";
-	
-	if(!$result = $db->query($sql)){
-		die('There was an error running the query [' . $db->error . ']');
-	}
-	
-	else{
-		while($row = $result->fetch_assoc()){
-			$mailbox_limit_default = $row[DBC_USERS_MAILBOXLIMIT];
-		}
-	}
-	
-	
+<?php
 	if(isset($_POST['savemode'])){
 		$savemode = $_POST['savemode'];
 		
 		if($savemode === "edit"){
 			// Edit mode entered
-			$id = $db->escape_string($_POST['id']);	
-			if($mailbox_limit == ""){
-				$mailbox_limit = $mailbox_limit_default;
-			}	
-			$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
-			
-			$sql = "UPDATE `".DBT_USERS."` SET `".DBC_USERS_MAILBOXLIMIT."` = '$mailbox_limit' WHERE `".DBC_USERS_ID."` = '$id';";
-			if(!$result = $db->query($sql)){
-				die('There was an error running the query [' . $db->error . ']');
-			}
-			else{
+			$id = $db->escape_string($_POST['id']);
 				// SQL was successful
 				// Is there a changed password?
-				if($_POST['password'] !== ""){
-					$pass_ok = check_new_pass($_POST['password'], $_POST['password_rep']);
-					if($pass_ok === true){
-						// Password is okay and can be set
-						$pass_hash = gen_pass_hash($_POST['password']);
-						write_pass_hash_to_db($pass_hash, $id);
-						// $editsuccessful = true;
-						add_message("success", "User edited successfully.");
+			if($_POST['password'] !== ""){
+				$pass_ok = check_new_pass($_POST['password'], $_POST['password_rep']);
+				if($pass_ok === true){
+					// Password is okay and can be set
+					$pass_hash = gen_pass_hash($_POST['password']);
+					write_pass_hash_to_db($pass_hash, $id);
+					// $editsuccessful = true;
+					add_message("success", "User edited successfully.");
 						
-					}
-					else{
-						// Password is not okay
-						// $editsuccessful = 2;
-						add_message("fail", $PASS_ERR_MSG);
-					}
 				}
 				else{
-					// Redirect user to user list
-					header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?edited=1");
+					// Password is not okay
+					// $editsuccessful = 2;
+					add_message("fail", $PASS_ERR_MSG);
 				}
+			}
+			else{
+					// Redirect user to user list
+				header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?edited=1");
 			}				
 		}
 		
 		else if($savemode === "create"){
 			// Create mode entered
 			$username = $db->escape_string($_POST['username']);
-			$domain = $db->escape_string($_POST['domain']);
-			$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);			
+			$domain = $db->escape_string($_POST['domain']);			
 			$pass = $_POST['password'];
 			$pass_rep = $_POST['password_rep'];
 			
-			if($username !== "" && $domain !== "" && $quota !== "" && $mailbox_limit !== ""){
+			if($username !== "" && $domain !== "" && $quota !== ""){
 				// All fields filled with content
 				// Check passwords
 				$pass_ok = check_new_pass($pass, $pass_rep);
@@ -70,7 +44,7 @@
 					// Password is okay ... continue
 					$pass_hash = gen_pass_hash($pass);
 					
-					$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`, `".DBC_USERS_MAILBOXLIMIT."`) VALUES ('$username', '$domain', '$pass_hash', '$mailbox_limit')";
+					$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`) VALUES ('$username', '$domain', '$pass_hash')";
 					
 					if(!$result = $db->query($sql)){
 						die('There was an error running the query [' . $db->error . ']');
@@ -110,7 +84,6 @@
 		while($row = $result->fetch_assoc()){
 			$username = $row[DBC_USERS_USERNAME];
 			$domain = $row[DBC_USERS_DOMAIN];
-			$mailbox_limit = $row[DBC_USERS_MAILBOXLIMIT];
 		}
 	}
 ?>
@@ -137,7 +110,7 @@
 
 <form action="" method="post">	
 	<table>
-	<tr> <th>Username</th> <th>Domain</th> <th>Password</th> <th>Mailbox limit (in MB)</th> </tr>
+	<tr> <th>Username</th> <th>Domain</th> <th>Password</th> </tr>
 	
 	<tr>
 		<td>
@@ -167,10 +140,6 @@
 		<td>
 			<input name="password" class="textinput" type="password" placeholder="New password"/></br>
 			<input name="password_rep"  class="textinput" type="password" placeholder="New password (repeat)"/>
-		</td>
-		
-		<td>
-			<input name="mailbox_limit" class="textinput" type="number" value="<?php if(isset($mailbox_limit)){echo $mailbox_limit;} else{echo $mailbox_limit_default;} ?>" placeholder="Mailbox size (MB)" required="required"/> 
 		</td>
 	</tr>
 	
