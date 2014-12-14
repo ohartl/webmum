@@ -146,6 +146,12 @@ At first the database access has to be configured.
 	define("DBC_ALIASES_SOURCE", "source");
 	define("DBC_ALIASES_DESTINATION", "destination");
 
+If you have a "mailbox_limit" column to limit the size of your users' mailboxes, just comment in the line
+
+	define("DBC_USERS_MAILBOXLIMIT", "mailbox_limit");
+	
+in your configuration. WebMUM will then show a new field "Mailbox limit" in the frontend.
+
 ### Paths
 
 Define the URL of the web application, and it's subfolder:

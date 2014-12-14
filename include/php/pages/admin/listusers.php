@@ -38,11 +38,18 @@ if(!$result = $db->query($sql)){
 </p>
 
 <table class="list">
-<tr class="head"><th>Username</th> <th>Domain</th> <th>Mailbox Limit (MB)</th> <th></th> <th></th><tr>
+<tr class="head"><th>Username</th> <th>Domain</th> <?php if(defined('DBC_USERS_MAILBOXLIMIT')){ ?><th>Mailbox Limit (MB)</th> <?php } ?><th></th> <th></th><tr>
 
-<?php 
+<?php 	
 	while($row = $result->fetch_assoc()){
-		echo "<tr><td>".$row[DBC_USERS_USERNAME]."</td><td>".$row[DBC_USERS_DOMAIN]."</td><td>".$row[DBC_USERS_MAILBOXLIMIT]."<td><a href=\"".FRONTEND_BASE_PATH."admin/edituser/?id=".$row[DBC_USERS_ID]."\">[Edit]</a></td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deleteuser/?id=".$row[DBC_USERS_ID]."\">[Delete]</a></td> </tr>";
+		if(defined('DBC_USERS_MAILBOXLIMIT')){
+			$mailbox_limit_column = '<td>'.$row[DBC_USERS_MAILBOXLIMIT].'</td>';
+		}
+		else{
+			$mailbox_limit_column = '';
+		}
+
+		echo "<tr> <td>".$row[DBC_USERS_USERNAME]."</td><td>".$row[DBC_USERS_DOMAIN]."</td>".$mailbox_limit_column."<td><a href=\"".FRONTEND_BASE_PATH."admin/edituser/?id=".$row[DBC_USERS_ID]."\">[Edit]</a></td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deleteuser/?id=".$row[DBC_USERS_ID]."\">[Delete]</a></td> </tr>";
 	}
 ?>
 </table>
