@@ -5,9 +5,6 @@
 		if($savemode === "edit"){
 			$id = $db->escape_string($_POST['id']);
 			
-			$source = str_replace(array("\r", "\n"), "", $source);
-			$destination = str_replace(array("\r", "\n"), "", $destination);
-			
 			$source = $db->escape_string($_POST['source']);
 			$destination = $db->escape_string($_POST['destination']);
 			
