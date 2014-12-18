@@ -190,6 +190,21 @@ You can then login into the admin dashboard with that e-mail address and the cor
 	
 	define("MIN_PASS_LENGTH", 8);
 
+## Update / Upgrade WebMUM
+
+If you cloned WebMUM into your filesystem via `git clone https://github.com/ThomasLeister/webmum`:
+
+	git stash
+	git pull origin master
+	git stash pop
+	
+... and you are ready to go. Git might complain about conflicting files - you will have to resolve the merge conflict manually then.
+
+If you downloaded WebMUM as a ZIP package, you have to update WebMUM manually.
+
+**After every update:** 
+Please check if your config.inc.php fits the current requirements by comparing your version of the file with the config.inc.php in the repository.
+
 ## FAQ
 
 ### Which password scheme does WebMUM use?
