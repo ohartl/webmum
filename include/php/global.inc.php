@@ -96,7 +96,7 @@ function write_pass_hash_to_db($pass_hash, $uid){
 function writeLog($text){
 	if(defined('WRITE_LOG')){
 		$logfile = fopen("log/log.txt", "a") or die("Unable to create / open logfile \"log/log.txt\" in root directory!");
-		fwrite($logfile, $text."\n");
+		fwrite($logfile, date('M d H:i:s').": ".$text."\n");
 		fclose($logfile);
 	}
 }
