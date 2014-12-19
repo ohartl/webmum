@@ -64,6 +64,7 @@ define("MIN_PASS_LENGTH", 8);
  * Default: Do not write logfile
  */
 
-// define("WRITE_LOG", true);
+# define("WRITE_LOG", true);
+# define("WRITE_LOG_PATH","/var/log/webmum/");
 
 ?>

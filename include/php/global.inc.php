@@ -94,10 +94,18 @@ function write_pass_hash_to_db($pass_hash, $uid){
  * Add message to logfile
  */
 function writeLog($text){
-	if(defined('WRITE_LOG')){
-		$logfile = fopen("log/log.txt", "a") or die("Unable to create / open logfile \"log/log.txt\" in root directory!");
-		fwrite($logfile, $text."\n");
-		fclose($logfile);
+	if(defined('WRITE_LOG') && defined('WRITE_LOG_PATH')){
+		echo WRITE_LOG_PATH;
+		$logdestination = realpath(WRITE_LOG_PATH).DIRECTORY_SEPARATOR."log";
+		echo $logdestination;
+		if(is_writable(WRITE_LOG_PATH)){
+			$logfile = fopen($logdestination, "a") or die("Unable to create or open logfile \"$logdestination\" in root directory!");
+			fwrite($logfile, $text."\n");
+			fclose($logfile);
+		}
+		else{
+			die("Directory \"WRITE_LOG_PATH\" is not writable");
+		}
 	}
 }
 
