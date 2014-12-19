@@ -73,31 +73,38 @@
 			$pass_rep = $_POST['password_rep'];
 			
 			if($username !== "" && $domain !== "" && $quota !== "" && $mailbox_limit !== ""){
-				// All fields filled with content
-				// Check passwords
-				$pass_ok = check_new_pass($pass, $pass_rep);
-				if($pass_ok === true){
-					// Password is okay ... continue
-					$pass_hash = gen_pass_hash($pass);
-					
-					// Differ between version with mailbox_limit and version without
-					if(defined('DBC_USERS_MAILBOXLIMIT')){
-						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`, `".DBC_USERS_MAILBOXLIMIT."`) VALUES ('$username', '$domain', '$pass_hash', '$mailbox_limit')";
-					}
-						else{
-							$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`) VALUES ('$username', '$domain', '$pass_hash')";
+				// Check if user already exists
+				$user_exists = $db->query("SELECT `".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_USERNAME."` = '$username' AND `".DBC_USERS_DOMAIN."` = '$domain';");
+				if($user_exists->num_rows == 0){	
+					// All fields filled with content
+					// Check passwords
+					$pass_ok = check_new_pass($pass, $pass_rep);
+					if($pass_ok === true){
+						// Password is okay ... continue
+						$pass_hash = gen_pass_hash($pass);
+						
+						// Differ between version with mailbox_limit and version without
+						if(defined('DBC_USERS_MAILBOXLIMIT')){
+							$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`, `".DBC_USERS_MAILBOXLIMIT."`) VALUES ('$username', '$domain', '$pass_hash', '$mailbox_limit')";
 						}
-					
-					if(!$result = $db->query($sql)){
-						die('There was an error running the query [' . $db->error . ']');
+							else{
+								$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`) VALUES ('$username', '$domain', '$pass_hash')";
+							}
+						
+						if(!$result = $db->query($sql)){
+							die('There was an error running the query [' . $db->error . ']');
+						}
+						
+						// Redirect user to user list
+						header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?created=1");
 					}
-					
-					// Redirect user to user list
-					header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?created=1");
+					else{
+						// Password not okay
+						add_message("fail", $PASS_ERR_MSG);
+					}
 				}
 				else{
-					// Password not okay
-					add_message("fail", $PASS_ERR_MSG);
+					add_message("fail", "User already exists in database.");
 				}
 			}
 		 	else{

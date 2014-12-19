@@ -190,6 +190,17 @@ You can then login into the admin dashboard with that e-mail address and the cor
 	
 	define("MIN_PASS_LENGTH", 8);
 
+### Logfile
+
+You can enable logging. WebMUM will then write messages into the file log/log.txt when a login attempt fails.
+After several attempts you can block the attacker's IP-address with Fail2Ban. For Fail2Ban configuration please visit this page: http://www.fail2ban.org/wiki/index.php/HOWTOs
+
+To enable logging, comment in the line
+	
+	// define("WRITE_LOG", true);
+	
+... and make sure that PHP has permissions to write the log file to log/log.txt.
+
 ## Update / Upgrade WebMUM
 
 If you cloned WebMUM into your filesystem via `git clone https://github.com/ThomasLeister/webmum`:

@@ -6,8 +6,11 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 	if($login_success){
 		header("Location: ".FRONTEND_BASE_PATH."private/");
 	}
+	// If login is not successful
 	else{
-		add_message("fail", "Sorry, I couldn't log you in :(");
+		//Log error message
+		writeLog("WebMUM login failed for IP ".$_SERVER['REMOTE_ADDR']);
+		add_message("fail", "Sorry, couldn't log you in :(");
 	}
 }
 

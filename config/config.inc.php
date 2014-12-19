@@ -57,4 +57,13 @@ define("ADMIN_EMAIL", "admin@domain.tld");
 
 define("MIN_PASS_LENGTH", 8);
 
+/*
+ * Write log file to log/log.txt ? Failed login attempts will be written to the logfile.
+ * You can mointor the logfile with fail2ban and ban attackers' IP-addresses.
+ * Make sure that PHP has permission to create the log directory and log.txt (write permissions for php user)
+ * Default: Do not write logfile
+ */
+
+// define("WRITE_LOG", true);
+
 ?>

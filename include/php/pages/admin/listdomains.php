@@ -16,7 +16,7 @@
 <?php output_messages(); ?>
 
 <p>
-Manage the domains which you want to use
+Add or delete domains.
 </p>
 
 
