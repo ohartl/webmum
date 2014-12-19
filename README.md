@@ -10,18 +10,16 @@ There is a demo site available at https://webmumdemo.trashserver.net/
 Username: admin@domain.tld<br/>
 Password: webmumpassword
 
-Please note that there are some limitations concerning the admin account: You can't delete the account / domain and the original password 
+Please note that there are some limitations on the admin account: You can't delete the account / domain of the admin user and the original password 
 will be restored every minute. Have fun!
 
 ## Installation
 
-[Download the ZIP archive](https://github.com/ThomasLeister/webmum/archive/master.zip) and extract it into your webserver's virtual host root directory:
+Clone the WebMUM Repository to your webserver's virtual host root directory:
 
-	wget https://github.com/ThomasLeister/webmum/archive/master.zip<br/>
-	unzip master.zip
-	mv master/ webmum/
+	git clone https://github.com/ThomasLeister/webmum
 	
-Configure your webserver. URL rewriting to index.php is required.
+Now configure your webserver. URL rewriting to index.php is required.
 
 ### Nginx
 
