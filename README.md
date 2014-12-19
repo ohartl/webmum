@@ -190,13 +190,14 @@ You can then login into the admin dashboard with that e-mail address and the cor
 
 ### Logfile
 
-When logging is enabled, WebMUM will write messages into the file log/log.txt (e.g. when a login attempt fails).
+When logging is enabled, WebMUM will write messages into a file "webmum.log" in a specified directory (e.g. when a login attempt fails).
 
-To enable logging, comment in the line
+To enable logging, comment in the lines
 	
-	// define("WRITE_LOG", true);
+	# define("WRITE_LOG", true);
+	# define("WRITE_LOG_PATH","/var/www/webmum/log/");
 	
-... and make sure that PHP has permissions to write the log file to log/log.txt.
+... and make sure that PHP has permissions to write the log file to the directory defined in WRITE_LOG_PATH.
 
 "Login-failed-messages" have the following scheme:
 
