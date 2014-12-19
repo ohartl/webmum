@@ -1,6 +1,6 @@
 <?php
 /*
- * #################### This is WebMUM Version 0.1.6 ######################
+ * #################### This is WebMUM Version 0.1.7 ######################
  * 
  * Project on GitHub: https://github.com/ThomasLeister/webmum
  * Author's Blog: https://thomas-leister.de
