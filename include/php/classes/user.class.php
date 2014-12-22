@@ -65,6 +65,7 @@ class USER {
 		global $db;
 		// Prepare e-mail address
 		$email = $db->escape_string($email);
+		$email = strtolower($email);
 		$password = $db->escape_string($password);
 		$email_part = explode("@", $email);
 		$username = $email_part[0];

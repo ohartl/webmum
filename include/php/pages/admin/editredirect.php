@@ -6,7 +6,9 @@
 			$id = $db->escape_string($_POST['id']);
 			
 			$source = $db->escape_string($_POST['source']);
+			$source = strtolower($source);
 			$destination = $db->escape_string($_POST['destination']);
+			$destination = strtolower($destination);
 			
 			if($source !== "" && $destination !== ""){
 			
@@ -27,7 +29,9 @@
 		
 		else if($savemode === "create"){
 			$source = $db->escape_string($_POST['source']);
+			$source = strtolower($source);
 			$destination = $db->escape_string($_POST['destination']);
+			$destination = strtolower($destination);
 			
 			if($source !== "" && $destination !== ""){
 				$sql = "INSERT INTO `".DBT_ALIASES."` (`".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."`) VALUES ('$source', '$destination')";

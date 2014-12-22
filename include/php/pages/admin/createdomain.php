@@ -2,6 +2,7 @@
 
 if(isset($_POST['domain'])){
 	$domain = $db->escape_string($_POST['domain']);
+	$domain = strtolower($domain);
 	
 	if($domain !== ""){
 		// Check if domain exists in database
