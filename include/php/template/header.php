@@ -3,6 +3,17 @@
 	<head>
 		<title>WebMUM</title>
 		<link rel=stylesheet href="<?php echo FRONTEND_BASE_PATH; ?>include/css/style.css" type="text/css" media=screen>
+		<script type="text/javascript">
+		function generatePassword() {
+		    var length = 9,
+			charset = "abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#",
+			retVal = "";
+		    for (var i = 0, n = charset.length; i < length; ++i) {
+			retVal += charset.charAt(Math.floor(Math.random() * n));
+		    }
+		    return retVal;
+		}
+		</script>
 	</head>
 	
 	<body>
