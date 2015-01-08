@@ -208,6 +208,10 @@
 	<input name="id" class="sendbutton" type="hidden" value="<?php if(isset($id)){echo $id;} ?>"/>
 	
 	<p>
+		<input type="button" class="button button-small" name="Text 1" value="Generate password"
+		      onclick="pass=generatePassword();this.form.password.value=pass;this.form.password_rep.value=pass;this.form.password.type='text';this.form.password_rep.type='text'">
+	</p>
+	<p>
 		<input type="submit" class="button button-small" value="Save settings">
 	</p>
 </form>
