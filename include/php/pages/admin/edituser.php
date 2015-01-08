@@ -193,6 +193,11 @@
 		<td>
 			<input name="password" class="textinput" type="password" placeholder="New password"/></br>
 			<input name="password_rep"  class="textinput" type="password" placeholder="New password (repeat)"/>
+			
+			<p>
+				<input type="button" class="button button-small" name="Text 1" value="Generate password"
+				      onclick="pass=generatePassword();this.form.password.value=pass;this.form.password_rep.value=pass;this.form.password.type='text';this.form.password_rep.type='text'">
+			</p>
 		</td>
 		
 		<?php if(defined('DBC_USERS_MAILBOXLIMIT')){ ?>
@@ -207,10 +212,6 @@
 	<input name="savemode" type="hidden" value="<?php if(isset($mode)){echo $mode;} ?>"/>
 	<input name="id" class="sendbutton" type="hidden" value="<?php if(isset($id)){echo $id;} ?>"/>
 	
-	<p>
-		<input type="button" class="button button-small" name="Text 1" value="Generate password"
-		      onclick="pass=generatePassword();this.form.password.value=pass;this.form.password_rep.value=pass;this.form.password.type='text';this.form.password_rep.type='text'">
-	</p>
 	<p>
 		<input type="submit" class="button button-small" value="Save settings">
 	</p>
