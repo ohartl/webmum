@@ -61,7 +61,6 @@
 		else if($savemode === "create"){
 			// Create mode entered
 			$username = $db->escape_string($_POST['username']);
-			$username = strtolower($username);
 			$domain = $db->escape_string($_POST['domain']);
 			if(defined('DBC_USERS_MAILBOXLIMIT')){
 				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);	

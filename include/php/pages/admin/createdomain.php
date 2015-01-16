@@ -2,7 +2,6 @@
 
 if(isset($_POST['domain'])){
 	$domain = $db->escape_string($_POST['domain']);
-	$domain = strip_tags($domain);
 	$domain = strtolower($domain);
 	
 	if($domain !== ""){
