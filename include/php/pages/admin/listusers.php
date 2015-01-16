@@ -43,13 +43,13 @@ if(!$result = $db->query($sql)){
 <?php 	
 	while($row = $result->fetch_assoc()){
 		if(defined('DBC_USERS_MAILBOXLIMIT')){
-			$mailbox_limit_column = '<td>'.$row[DBC_USERS_MAILBOXLIMIT].'</td>';
+			$mailbox_limit_column = '<td>'.strip_tags($row[DBC_USERS_MAILBOXLIMIT]).'</td>';
 		}
 		else{
 			$mailbox_limit_column = '';
 		}
 
-		echo "<tr> <td>".$row[DBC_USERS_USERNAME]."</td><td>".$row[DBC_USERS_DOMAIN]."</td>".$mailbox_limit_column."<td><a href=\"".FRONTEND_BASE_PATH."admin/edituser/?id=".$row[DBC_USERS_ID]."\">[Edit]</a></td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deleteuser/?id=".$row[DBC_USERS_ID]."\">[Delete]</a></td> </tr>";
+		echo "<tr> <td>".strip_tags($row[DBC_USERS_USERNAME])."</td><td>".strip_tags($row[DBC_USERS_DOMAIN])."</td>".$mailbox_limit_column."<td><a href=\"".FRONTEND_BASE_PATH."admin/edituser/?id=".$row[DBC_USERS_ID]."\">[Edit]</a></td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deleteuser/?id=".$row[DBC_USERS_ID]."\">[Delete]</a></td> </tr>";
 	}
 ?>
 </table>

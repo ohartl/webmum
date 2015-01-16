@@ -32,7 +32,7 @@ if(!$result = $db->query($sql)){
 
 <?php 
 	while($row = $result->fetch_assoc()){
-		echo "<tr><td>".$row[DBC_ALIASES_SOURCE]."</td> <td>".$row[DBC_ALIASES_DESTINATION]."</td> <td><a href=\"".FRONTEND_BASE_PATH."admin/editredirect/?id=".$row[DBC_ALIASES_ID]."\">[Edit]</a></td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deleteredirect/?id=".$row[DBC_ALIASES_ID]."\">[Delete]</a></td></tr>";
+		echo "<tr><td>".strip_tags($row[DBC_ALIASES_SOURCE])."</td> <td>".strip_tags($row[DBC_ALIASES_DESTINATION])."</td> <td><a href=\"".FRONTEND_BASE_PATH."admin/editredirect/?id=".$row[DBC_ALIASES_ID]."\">[Edit]</a></td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deleteredirect/?id=".$row[DBC_ALIASES_ID]."\">[Delete]</a></td></tr>";
 	}
 ?>
 </table>

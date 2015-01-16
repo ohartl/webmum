@@ -167,7 +167,7 @@
 	
 	<tr>
 		<td>
-			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo $username;} ?>" placeholder="Username" required="required"/>
+			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo strip_tags($username);} ?>" placeholder="Username" required="required"/>
 		</td>
 		
 		<td>
@@ -184,7 +184,7 @@
 				while($row = $result->fetch_assoc()){
 					$selected = "";
 					if(isset($domain) && $row[DBC_DOMAINS_DOMAIN] === $domain){$selected = "selected=\"selected\"";}
-					echo "<option value=\"".$row[DBC_DOMAINS_DOMAIN]."\" ".$selected." >".$row[DBC_DOMAINS_DOMAIN]."</option>";
+					echo "<option value=\"".strip_tags($row[DBC_DOMAINS_DOMAIN])."\" ".$selected." >".strip_tags($row[DBC_DOMAINS_DOMAIN])."</option>";
 				}
 				?>
 			</select>
@@ -202,7 +202,7 @@
 		
 		<?php if(defined('DBC_USERS_MAILBOXLIMIT')){ ?>
 		<td>
-			<input name="mailbox_limit" class="textinput" type="number" value="<?php if(isset($mailbox_limit)){echo $mailbox_limit;} else{echo $mailbox_limit_default;} ?>" placeholder="Mailbox size (MB)" required="required"/> 
+			<input name="mailbox_limit" class="textinput" type="number" value="<?php if(isset($mailbox_limit)){echo strip_tags($mailbox_limit);} else{echo strip_tags($mailbox_limit_default);} ?>" placeholder="Mailbox size (MB)" required="required"/> 
 		</td>
 		<?php } ?>
 	</tr>

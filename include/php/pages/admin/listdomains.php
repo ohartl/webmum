@@ -38,7 +38,7 @@ Add or delete domains.
 
 <?php 
 	while($row = $result->fetch_assoc()){
-		echo "<tr><td>".$row[DBC_DOMAINS_DOMAIN]."</td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deletedomain/?id=".$row[DBC_DOMAINS_ID]."\">[Delete]</a></td> </tr>";
+		echo "<tr><td>".strip_tags($row[DBC_DOMAINS_DOMAIN])."</td> <td><a href=\"".FRONTEND_BASE_PATH."admin/deletedomain/?id=".$row[DBC_DOMAINS_ID]."\">[Delete]</a></td> </tr>";
 	}
 ?>
 </table>
