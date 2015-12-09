@@ -1,9 +1,15 @@
 <?php
 
 // Include config
-require_once 'config/config.inc.php';
+if(file_exists('config/config_override.inc.php')){
+	require_once 'config/config_override.inc.php';
+}
+else{
+	require_once 'config/config.inc.php';
+}
 
-// Establish database connection 
+
+// Establish database connection
 
 $db = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
 
