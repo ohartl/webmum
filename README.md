@@ -218,8 +218,13 @@ Please check if your config.inc.php fits the current requirements by comparing y
 
 ### Which password scheme does WebMUM use?
 
-WebMUM uses the SHA512-CRYPT password scheme, which is known as a very secure scheme these days. Support for more password schemes will be added soon.
+By default WebMUM uses SHA512-CRYPT password scheme. It cloud be change in the config file to SHA256-CRYPT or BLOWFISH-CRYPT.
 
+	 /*
+	 * Select on of the following schemas (only these are supported)
+	 * SHA-512, SHA-256, BLOWFISH
+	 */
+	define("PASS_HASH_SCHEMA", "SHA-512");
 
 ### "login/ cannot be found"
 

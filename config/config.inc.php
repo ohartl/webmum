@@ -55,9 +55,15 @@ $admins = array("admin@domain.tld");
 
 
 /*
- * Minimal password length
+ * Password
  */
-
+ /*
+ * Select on of the following schemas (only these are supported)
+ * SHA-512, SHA-256, BLOWFISH
+ */
+define("PASS_HASH_SCHEMA", "SHA-512");
+ 
+//minimum password length
 define("MIN_PASS_LENGTH", 8);
 
 /*
