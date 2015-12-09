@@ -74,13 +74,32 @@ function check_new_pass($pass1, $pass2){
 	}
 }
 
+function get_hash()
+{
+	switch(PASS_HASH_SCHEMA)
+	{
+		case "SHA-512":
+			return '$6$rounds=5000$';
+		break;
+		
+		case "SHA-256":
+			return '$5$rounds=5000$';
+		break;
+		
+		case "BLOWFISH":
+			return '$2a$09$';
+		break;
+	}
+}
 
 function gen_pass_hash($pass){
 	$salt = base64_encode(rand(1,1000000) + microtime());
-	$pass_hash = crypt($pass, '$6$rounds=5000$'.$salt.'$');
+	$hash_schema = get_hash();
+	$pass_hash = crypt($pass, $hash_schema.$salt.'$');
 	return $pass_hash;
 }
 
+PASS_HASH_SCHEMA
 
 function write_pass_hash_to_db($pass_hash, $uid){
 	global $db;
