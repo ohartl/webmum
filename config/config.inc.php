@@ -58,8 +58,8 @@ $admins = array("admin@domain.tld");
  * Password
  */
  /*
- * Select on of the following schemas
- * SHA-512, SHA-256, BLOWFISH, EXT_DES
+ * Select on of the following schemas (only these are supported)
+ * SHA-512, SHA-256, BLOWFISH
  * For secruity reasons, choose one of the first 3 schemas
  */
 define("PASS_HASH_SCHEMA", "SHA-512");
