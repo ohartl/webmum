@@ -48,7 +48,10 @@ define("SUBDIR", "webmum/");
  * Admin e-mail address
  */
 
-define("ADMIN_EMAIL", "admin@domain.tld");
+// outdated: define("ADMIN_EMAIL", "admin@domain.tld");
+// new: $admins = array("admin1@server.tld", "admin2@server.tld");
+$admins = array("admin@domain.tld");
+
 
 
 /*
@@ -61,7 +64,7 @@ define("MIN_PASS_LENGTH", 8);
  * Write log file? Failed login attempts will be written to the logfile.
  * You can mointor the logfile with fail2ban and ban attackers' IP-addresses.
  * Make sure that PHP has permission to create the log directory and webmum.log (write permissions for php user)
- * 
+ *
  * Default: Do not write logfile
  */
 
