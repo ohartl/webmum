@@ -160,16 +160,15 @@ set the settings like this:
 
 ### Admin e-mail address
 
-Only the user with this specific e-mail address will have access to the administrator's dashboard and will be able to create, edit and delete users, domains and redirects.
+Only users with one of the specified email addresses will have access to the administrator's dashboard and will be able to create, edit and delete users, domains and redirects.
 
 	/*
 	 * Admin e-mail address
 	 */
 	
-	define("ADMIN_EMAIL", "admin@domain.tld");
+	$admins = array("admin@domain.tld");
 	
-The admin's e-mail account must be existent in the virtual user database on your own server. (=> an e-mail account on a foreign server won't give you access!).
-You can then login into the admin dashboard with that e-mail address and the corresponding password.
+Admin email accounts must exist in the virtual user database on your own server. (=> an e-mail account on a foreign server won't give you access!). You can then login into the admin dashboard with that e-mail address and the corresponding password.
 
 ### Minimal required password length
 
