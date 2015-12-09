@@ -99,8 +99,6 @@ function gen_pass_hash($pass){
 	return $pass_hash;
 }
 
-PASS_HASH_SCHEMA
-
 function write_pass_hash_to_db($pass_hash, $uid){
 	global $db;
 	$uid = $db->escape_string($uid);
