@@ -60,7 +60,6 @@ $admins = array("admin@domain.tld");
  /*
  * Select on of the following schemas (only these are supported)
  * SHA-512, SHA-256, BLOWFISH
- * For secruity reasons, choose one of the first 3 schemas
  */
 define("PASS_HASH_SCHEMA", "SHA-512");
  
