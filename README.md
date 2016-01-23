@@ -221,7 +221,7 @@ Please check if your config.inc.php fits the current requirements by comparing y
 By default WebMUM uses SHA512-CRYPT password scheme. It cloud be change in the config file to SHA256-CRYPT or BLOWFISH-CRYPT.
 
 	 /*
-	 * Select on of the following schemas (only these are supported)
+	 * Select one of the following algorithms
 	 * SHA-512, SHA-256, BLOWFISH
 	 */
 	define("PASS_HASH_SCHEMA", "SHA-512");
