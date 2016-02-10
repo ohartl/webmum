@@ -72,7 +72,7 @@
 			$pass = $_POST['password'];
 			$pass_rep = $_POST['password_rep'];
 			
-			if($username !== "" && $domain !== "" && $quota !== "" && $mailbox_limit !== ""){
+			if($username !== "" && $domain !== ""  && $mailbox_limit !== ""){
 				// Check if user already exists
 				$user_exists = $db->query("SELECT `".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_USERNAME."` = '$username' AND `".DBC_USERS_DOMAIN."` = '$domain';");
 				if($user_exists->num_rows == 0){	
