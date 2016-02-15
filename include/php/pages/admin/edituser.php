@@ -61,7 +61,10 @@
 		else if($savemode === "create"){
 			// Create mode entered
 			$username = $db->escape_string($_POST['username']);
+			$username = strtolower($username);
 			$domain = $db->escape_string($_POST['domain']);
+			$domain = strtolower($domain);
+
 			if(defined('DBC_USERS_MAILBOXLIMIT')){
 				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);	
 			}
@@ -166,7 +169,7 @@
 	
 	<tr>
 		<td>
-			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo strip_tags($username);} ?>" placeholder="Username" required="required"/>
+			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo strtolower(strip_tags($username));} ?>" placeholder="Username" required="required"/>
 		</td>
 		
 		<td>
