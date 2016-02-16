@@ -18,9 +18,15 @@ if(isset($_POST['confirm'])){
 	$confirm = $_POST['confirm'];
 	
 	if($confirm === "yes"){
+
+		$admin_domains = array();
+		foreach($admins as $admin) {
+			$parts = explode("@", $admin);
+			$admin_domains[] = $parts[1];
+		}
+
 		// Check if admin domain is affected
-		$admin_domain = explode("@", ADMIN_EMAIL)[1];
-		if($admin_domain !== $domain){				
+		if(!in_array($domain, $admin_domains)){
 			$sql = "DELETE FROM `".DBT_DOMAINS."` WHERE `".DBC_DOMAINS_ID."` = '$id'";
 				
 			if(!$result = $db->query($sql)){
