@@ -1,5 +1,6 @@
 <?php 
 	// If mailbox_limit is supported in the MySQL database
+	$mailbox_limit_default = 0;
 	if(defined('DBC_USERS_MAILBOXLIMIT')){
 		// Get mailbox_limit default value from DB
 		$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") AS `".DBC_USERS_MAILBOXLIMIT."` FROM `".DBT_USERS."` LIMIT 1;";
@@ -7,7 +8,6 @@
 		if(!$result = $db->query($sql)){
 			die('There was an error running the query [' . $db->error . ']');
 		}
-		
 		else{
 			while($row = $result->fetch_assoc()){
 				$mailbox_limit_default = $row[DBC_USERS_MAILBOXLIMIT];
