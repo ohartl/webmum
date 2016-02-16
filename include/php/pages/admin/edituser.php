@@ -28,12 +28,22 @@
 			}
 
 			$id = $db->escape_string($_POST['id']);
-			
+
+			$sql = "SELECT `".DBC_USERS_ID."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
+			if(!$resultExists = $db->query($sql)){
+				dbError($db->error);
+			}
+
+			if($resultExists->num_rows !== 1){
+				// User does not exist, redirect to overview
+				redirect("admin/listusers/");
+			}
+
 			if(defined('DBC_USERS_MAILBOXLIMIT')){
+				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
 				if($mailbox_limit == ""){
 					$mailbox_limit = $mailbox_limit_default;
 				}
-				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
 
 				$sql = "UPDATE `".DBT_USERS."` SET `".DBC_USERS_MAILBOXLIMIT."` = '$mailbox_limit' WHERE `".DBC_USERS_ID."` = '$id';";
 				if(!$result = $db->query($sql)){
