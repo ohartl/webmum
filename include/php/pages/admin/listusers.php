@@ -28,7 +28,7 @@ else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
 $sql = "SELECT * FROM `".DBT_USERS."` ORDER BY `".DBC_USERS_DOMAIN."`, `".DBC_USERS_USERNAME."` ASC;";
 
 if(!$result = $db->query($sql)){
-	die('There was an error running the query [' . $db->error . ']');
+	dbError($db->error);
 }
 
 ?>

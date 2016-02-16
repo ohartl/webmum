@@ -4,7 +4,7 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 	// Start login
 	$login_success = $user->login($_POST['email'], $_POST['password']);
 	if($login_success){
-		header("Location: ".FRONTEND_BASE_PATH."private/");
+		redirect("private/");
 	}
 	// If login is not successful
 	else{
@@ -16,7 +16,7 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 
 // If user is already logged in, redirect to start.
 if($user->isLoggedIn()){
-	header("Location: ".FRONTEND_BASE_PATH."private/");
+	redirect("private/");
 }
 
 ?>

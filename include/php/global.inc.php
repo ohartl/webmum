@@ -125,6 +125,13 @@ function writeLog($text){
 }
 
 
+/**
+ * @param string $url
+ */
+function redirect($url){
+	header("Location: ".FRONTEND_BASE_PATH.$url);
+	exit;
+}
 
 
 ?>

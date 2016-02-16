@@ -78,7 +78,7 @@ class USER {
 		$sql = "SELECT `".DBC_USERS_ID."`, `".DBC_USERS_PASSWORD."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_USERNAME."` = '$username' AND `".DBC_USERS_DOMAIN."` = '$domain' LIMIT 1;";
 
 		if(!$result = $db->query($sql)){
-			die('There was an error running the query [' . $db->error . ']');
+			dbError($db->error);
 		}
 
 		if($result->num_rows === 1){
