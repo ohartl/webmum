@@ -22,7 +22,8 @@ if(isset($_POST['confirm'])){
 	$confirm = $_POST['confirm'];
 	
 	if($confirm === "yes"){
-		if($mailaddress !== ADMIN_EMAIL){
+		// Check if admin is affected
+		if (!in_array($mailaddress, $admins)) {
 			$sql = "DELETE FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id'";
 				
 			if(!$result = $db->query($sql)){
