@@ -9,6 +9,13 @@ else{
 }
 
 
+/**
+ * @param string $errorMessage
+ */
+function dbError($errorMessage){
+	die('There was an error running the query ['.$errorMessage.']');
+}
+
 // Establish database connection
 
 $db = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);

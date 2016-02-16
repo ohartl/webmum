@@ -1,4 +1,9 @@
-<?php 
+<?php
+
+if(!isset($_GET['id'])){
+	// Redirect id not set, redirect to overview
+	redirect("admin/listredirects/");
+}
 
 $id = $db->escape_string($_GET['id']);
 
@@ -9,15 +14,16 @@ if(isset($_POST['confirm'])){
 		$sql = "DELETE FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = '$id'";
 			
 		if(!$result = $db->query($sql)){
-			die('There was an error running the query [' . $db->error . ']');
+			dbError($db->error);
 		}
 		else{
-			header("Location: ".FRONTEND_BASE_PATH."admin/listredirects/?deleted=1");
+			// Delete redirect successfull, redirect to overview
+			redirect("admin/listredirects/?deleted=1");
 		}
 	}
-	
 	else{
-		header("Location: ".FRONTEND_BASE_PATH."admin/listredirects/");
+		// Choose to not delete redirect, redirect to overview
+		redirect("admin/listredirects/");
 	}
 }
 
@@ -26,14 +32,18 @@ else{
 	$sql = "SELECT `".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = '$id' LIMIT 1;";
 	
 	if(!$result = $db->query($sql)){
-		die('There was an error running the query [' . $db->error . ']');
+		dbError($db->error);
 	}
-	
-	while($row = $result->fetch_assoc()){
-		$source = $row[DBC_ALIASES_SOURCE];
-		$destination = $row[DBC_ALIASES_DESTINATION];
+
+	if($result->num_rows !== 1){
+		// Redirect does not exist, redirect to overview
+		redirect("admin/listredirects/");
 	}
-	
+
+	$row = $result->fetch_assoc();
+
+	$source = $row[DBC_ALIASES_SOURCE];
+	$destination = $row[DBC_ALIASES_DESTINATION];
 }
 ?>
 

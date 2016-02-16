@@ -1,6 +1,6 @@
 <?php
 if($user->isLoggedIn() === true){
-	header("Location: ".FRONTEND_BASE_PATH."private/");
+	redirect("private/");
 }
 ?>
 

@@ -11,10 +11,11 @@ if(isset($_POST['domain'])){
 			$sql = "INSERT INTO `".DBT_DOMAINS."` (`".DBC_DOMAINS_DOMAIN."`) VALUES ('$domain');";
 				
 			if(!$result = $db->query($sql)){
-				die('There was an error running the query [' . $db->error . ']');
+				dbError($db->error);
 			}
 			else{
-				header("Location: ".FRONTEND_BASE_PATH."admin/listdomains/?created=1");
+				// Created domain successfull, redirect to overview
+				redirect("admin/listdomains/?created=1");
 			}
 		}
 		else{

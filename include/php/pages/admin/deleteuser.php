@@ -6,7 +6,7 @@ $id = $db->escape_string($_GET['id']);
 $sql = "SELECT `".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
 
 if(!$result = $db->query($sql)){
-	die('There was an error running the query [' . $db->error . ']');
+	dbError($db->error);
 }
 
 while($row = $result->fetch_assoc()){
@@ -27,20 +27,21 @@ if(isset($_POST['confirm'])){
 			$sql = "DELETE FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id'";
 				
 			if(!$result = $db->query($sql)){
-				die('There was an error running the query [' . $db->error . ']');
+				dbError($db->error);
 			}
 			else{
-				header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?deleted=1");
+				// Delete user successfull, redirect to overview
+				redirect("admin/listusers/?deleted=1");
 			}
 		}
 		else{
-			// Admin tries to delete himself. WTH.
-			header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?adm_del=1");
+			// Admin tried to delete himself, redirect to overview
+			redirect("admin/listusers/?adm_del=1");
 		}
 	}
-	
 	else{
-		header("Location: ".FRONTEND_BASE_PATH."admin/listusers/");
+		// Choose to not delete user, redirect to overview
+		redirect("admin/listusers/");
 	}
 }
 

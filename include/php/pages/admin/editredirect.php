@@ -3,6 +3,12 @@
 		$savemode = $_POST['savemode'];
 		
 		if($savemode === "edit"){
+
+			if(!isset($_POST['id'])){
+				// Redirect id not set, redirect to overview
+				redirect("admin/listredirects/");
+			}
+
 			$id = $db->escape_string($_POST['id']);
 			
 			$source = $db->escape_string($_POST['source']);
@@ -11,15 +17,25 @@
 			$destination = strtolower($destination);
 			
 			if($source !== "" && $destination !== ""){
-			
+
+				$sql = "SELECT `".DBC_ALIASES_ID."` FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = '$id' LIMIT 1;";
+				if(!$resultExists = $db->query($sql)){
+					dbError($db->error);
+				}
+
+				if($resultExists->num_rows !== 1){
+					// Redirect does not exist, redirect to overview
+					redirect("admin/listredirects/");
+				}
+
 				$sql = "UPDATE `".DBT_ALIASES."` SET `".DBC_ALIASES_SOURCE."` = '$source', `".DBC_ALIASES_DESTINATION."` = '$destination' WHERE `".DBC_ALIASES_ID."` = '$id'";
 				
 				if(!$result = $db->query($sql)){
-					die('There was an error running the query [' . $db->error . ']');
+					dbError($db->error);
 				}
 				else{
 					// Edit successfull, redirect to overview
-					header("Location: ".FRONTEND_BASE_PATH."admin/listredirects/?edited=1");
+					redirect("admin/listredirects/?edited=1");
 				}
 			}
 			else{
@@ -35,14 +51,13 @@
 			
 			if($source !== "" && $destination !== ""){
 				$sql = "INSERT INTO `".DBT_ALIASES."` (`".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."`) VALUES ('$source', '$destination')";
-					
+
 				if(!$result = $db->query($sql)){
-					die('There was an error running the query [' . $db->error . ']');
+					dbError($db->error);
 				}
-				
 				else{
-					// Redirect to user edit page when user is created
-					header("Location: ".FRONTEND_BASE_PATH."admin/listredirects/?created=1");
+					// Redirect created, redirect to overview
+					redirect("admin/listredirects/?created=1");
 				}
 			}
 			else{
@@ -61,16 +76,21 @@
 	
 	if($mode === "edit"){
 		//Load user data from DB
-		$sql = "SELECT `".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` from `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = $id LIMIT 1;";
+		$sql = "SELECT `".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = '$id' LIMIT 1;";
 		
 		if(!$result = $db->query($sql)){
-			die('There was an error running the query [' . $db->error . ']');
+			dbError($db->error);
 		}
-		
-		while($row = $result->fetch_assoc()){
-			$source = $row[DBC_ALIASES_SOURCE];
-			$destination = $row[DBC_ALIASES_DESTINATION];
+
+		if($result->num_rows !== 1){
+			// Redirect does not exist, redirect to overview
+			redirect("admin/listredirects/");
 		}
+
+		$row = $result->fetch_assoc();
+
+		$source = $row[DBC_ALIASES_SOURCE];
+		$destination = $row[DBC_ALIASES_DESTINATION];
 	}
 ?>
 
@@ -86,7 +106,7 @@ Here you can edit a redirect.
 	<a class="button button-small" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listredirects/">&#10092; Back to redirects list</a>
 </p>
 
-<form action="" method="post">	
+<form action="" method="post">
 	<table>
 	<tr> <th>Source</th> <th>Destination</th> </tr>
 	
