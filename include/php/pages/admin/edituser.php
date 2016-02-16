@@ -169,12 +169,12 @@
 	
 	<tr>
 		<td>
-			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo strtolower(strip_tags($username));} ?>" placeholder="Username" required="required"/>
+			<input name="username" class="textinput" type="text" autofocus <?php echo ($mode === "edit") ? ' disabled' : '';?> value="<?php if(isset($username)){echo strtolower(strip_tags($username));} ?>" placeholder="Username" required="required"/>
 		</td>
 		
 		<td>
 			@ 
-			<select name="domain">
+			<select name="domain" <?php echo ($mode === "edit") ? ' disabled' : '';?> >
 				<?php  
 				//Load user data from DB
 				$sql = "SELECT `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."`;";
