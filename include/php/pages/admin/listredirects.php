@@ -71,4 +71,12 @@ if(!$result = $db->query($sql)){
 			</td>
 		</tr>
 	<?php endwhile; ?>
+	</tbody>
+<?php if ($result->num_rows > 0): ?>
+		<tfoot>
+		<tr>
+			<th><?php echo $result->num_rows;?> Redirects</th>
+		</tr>
+		</tfoot>
+	<?php endif; ?>
 </table>
