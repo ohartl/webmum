@@ -176,13 +176,12 @@
 	<a class="button button-small" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listusers/">&#10092; Back to user list</a>
 </p>
 
-<p>
-<?php 
-	if($mode === "edit"){
-		echo "Username and domain cannot be edited.";
-	}
-?>
-</p>
+<?php if($mode === "edit"): ?>
+	<p>
+		<strong>Username and domain cannot be edited.</strong><br>
+		To rename or move a mailbox, you have to move in the filesystem first and create a new user here after.
+	</p>
+<?php endif; ?>
 
 <form action="" method="post">	
 	<table>
