@@ -1,13 +1,13 @@
 <?php 
 	// If mailbox_limit is supported in the MySQL database
+	$mailbox_limit_default = 0;
 	if(defined('DBC_USERS_MAILBOXLIMIT')){
 		// Get mailbox_limit default value from DB
 		$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") AS `".DBC_USERS_MAILBOXLIMIT."` FROM `".DBT_USERS."` LIMIT 1;";
 		
 		if(!$result = $db->query($sql)){
-			die('There was an error running the query [' . $db->error . ']');
+			dbError($db->error);
 		}
-		
 		else{
 			while($row = $result->fetch_assoc()){
 				$mailbox_limit_default = $row[DBC_USERS_MAILBOXLIMIT];
@@ -21,17 +21,33 @@
 		
 		if($savemode === "edit"){
 			// Edit mode entered
-			$id = $db->escape_string($_POST['id']);	
-			
+
+			if(!isset($_POST['id'])){
+				// User id not set, redirect to overview
+				redirect("admin/listusers/");
+			}
+
+			$id = $db->escape_string($_POST['id']);
+
+			$sql = "SELECT `".DBC_USERS_ID."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
+			if(!$resultExists = $db->query($sql)){
+				dbError($db->error);
+			}
+
+			if($resultExists->num_rows !== 1){
+				// User does not exist, redirect to overview
+				redirect("admin/listusers/");
+			}
+
 			if(defined('DBC_USERS_MAILBOXLIMIT')){
+				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
 				if($mailbox_limit == ""){
 					$mailbox_limit = $mailbox_limit_default;
-				}	
-				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
-				
+				}
+
 				$sql = "UPDATE `".DBT_USERS."` SET `".DBC_USERS_MAILBOXLIMIT."` = '$mailbox_limit' WHERE `".DBC_USERS_ID."` = '$id';";
 				if(!$result = $db->query($sql)){
-					die('There was an error running the query [' . $db->error . ']');
+					dbError($db->error);
 				}
 			}
 
@@ -42,9 +58,9 @@
 					// Password is okay and can be set
 					$pass_hash = gen_pass_hash($_POST['password']);
 					write_pass_hash_to_db($pass_hash, $id);
-					// $editsuccessful = true;
-					add_message("success", "User edited successfully.");
-					
+
+					// Edit user password successfull, redirect to overview
+					redirect("admin/listusers/?edited=1");
 				}
 				else{
 					// Password is not okay
@@ -53,9 +69,9 @@
 				}
 			}
 			else{
-				// Redirect user to user list
-				header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?edited=1");
-			}				
+				// Edit user successfull, redirect to overview
+				redirect("admin/listusers/?edited=1");
+			}
 		}
 		
 		else if($savemode === "create"){
@@ -66,12 +82,12 @@
 			$domain = strtolower($domain);
 
 			if(defined('DBC_USERS_MAILBOXLIMIT')){
-				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);	
+				$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
 			}
 			else{
 				// make mailbox_limit dummy for "if"
 				$mailbox_limit = 0;
-			}		
+			}
 			$pass = $_POST['password'];
 			$pass_rep = $_POST['password_rep'];
 			
@@ -95,11 +111,11 @@
 							}
 						
 						if(!$result = $db->query($sql)){
-							die('There was an error running the query [' . $db->error . ']');
+							dbError($db->error);
 						}
 						
 						// Redirect user to user list
-						header("Location: ".FRONTEND_BASE_PATH."admin/listusers/?created=1");
+						redirect("admin/listusers/?created=1");
 					}
 					else{
 						// Password not okay
@@ -113,13 +129,13 @@
 		 	else{
 		 		// Fields missing
 		 		add_message("fail", "Not all fields were filled out.");
-		 	}		
+		 	}
 		}
 	}
 	
 	
 	// Select mode 
-	$mode = "create";	
+	$mode = "create";
 	if(isset($_GET['id'])){
 		$mode = "edit";
 		$id = $db->escape_string($_GET['id']);
@@ -130,22 +146,27 @@
 		$sql = "SELECT * from `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
 		
 		if(!$result = $db->query($sql)){
-			die('There was an error running the query [' . $db->error . ']');
+			dbError($db->error);
+		}
+
+		if($result->num_rows !== 1){
+			// User does not exist, redirect to overview
+			redirect("admin/listusers/");
 		}
 		
-		while($row = $result->fetch_assoc()){
-			$username = $row[DBC_USERS_USERNAME];
-			$domain = $row[DBC_USERS_DOMAIN];
-			if(defined('DBC_USERS_MAILBOXLIMIT')){
-				$mailbox_limit = $row[DBC_USERS_MAILBOXLIMIT];
-			}
+		$row = $result->fetch_assoc();
+
+		$username = $row[DBC_USERS_USERNAME];
+		$domain = $row[DBC_USERS_DOMAIN];
+		if(defined('DBC_USERS_MAILBOXLIMIT')){
+			$mailbox_limit = $row[DBC_USERS_MAILBOXLIMIT];
 		}
 	}
 ?>
 
 
 
-<h1><?php if($mode === "create") { ?> Create <?php } else {?>Edit <?php } ?>User</h1>
+<h1><?php echo ($mode === "create") ? 'Create' : 'Edit'; ?> User</h1>
 
 
 <?php output_messages(); ?>
@@ -169,18 +190,18 @@
 	
 	<tr>
 		<td>
-			<input name="username" class="textinput" type="text" autofocus value="<?php if(isset($username)){echo strtolower(strip_tags($username));} ?>" placeholder="Username" required="required"/>
+			<input name="username" class="textinput" type="text" autofocus <?php echo ($mode === "edit") ? ' disabled' : '';?> value="<?php if(isset($username)){echo strtolower(strip_tags($username));} ?>" placeholder="Username" required="required"/>
 		</td>
 		
 		<td>
 			@ 
-			<select name="domain">
+			<select name="domain" <?php echo ($mode === "edit") ? ' disabled' : '';?> >
 				<?php  
 				//Load user data from DB
 				$sql = "SELECT `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."`;";
 				
 				if(!$result = $db->query($sql)){
-					die('There was an error running the query [' . $db->error . ']');
+					dbError($db->error);
 				}
 				
 				while($row = $result->fetch_assoc()){

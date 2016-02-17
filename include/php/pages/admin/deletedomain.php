@@ -1,4 +1,9 @@
-<?php 
+<?php
+
+if(!isset($_GET['id'])){
+	// Domain id not set, redirect to overview
+	redirect("admin/listdomains/");
+}
 
 $id = $db->escape_string($_GET['id']);
 
@@ -6,12 +11,16 @@ $id = $db->escape_string($_GET['id']);
 $sql = "SELECT `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."` WHERE `".DBC_DOMAINS_ID."` = '$id' LIMIT 1;";
 
 if(!$result = $db->query($sql)){
-	die('There was an error running the query [' . $db->error . ']');
+	dbError($db->error);
 }
 
-while($row = $result->fetch_assoc()){
-	$domain = $row[DBC_DOMAINS_DOMAIN];
+if($result->num_rows !== 1){
+	// Domain does not exist, redirect to overview
+	redirect("admin/listdomains/");
 }
+
+$row = $result->fetch_assoc();
+$domain = $row[DBC_DOMAINS_DOMAIN];
 
 // Delete domain
 if(isset($_POST['confirm'])){
@@ -28,29 +37,31 @@ if(isset($_POST['confirm'])){
 		// Check if admin domain is affected
 		if(!in_array($domain, $admin_domains)){
 			$sql = "DELETE FROM `".DBT_DOMAINS."` WHERE `".DBC_DOMAINS_ID."` = '$id'";
-				
+
 			if(!$result = $db->query($sql)){
-				die('There was an error running the query [' . $db->error . ']');
+				dbError($db->error);
 			}
-			
 			else{
 				$sql = "DELETE FROM `".DBT_USERS."` WHERE `".DBC_USERS_DOMAIN."` = '$domain'";
-					
+
 				if(!$result = $db->query($sql)){
-					die('There was an error running the query [' . $db->error . ']');
+					dbError($db->error);
 				}
 				else{
-					header("Location: ".FRONTEND_BASE_PATH."admin/listdomains/?deleted=1");
+					// Delete domain successfull, redirect to overview
+					redirect("admin/listdomains/?deleted=1");
 				}
 			}
 		}
 		else{
-			header("Location: ".FRONTEND_BASE_PATH."admin/listdomains/?adm_del=1");
+			// Cannot delete domain with admin emails, redirect to overview
+			redirect("admin/listdomains/?adm_del=1");
 		}
 	}
 	
 	else{
-		header("Location: ".FRONTEND_BASE_PATH."admin/listdomains/");
+		// Choose to not delete domain, redirect to overview
+		redirect("admin/listdomains/");
 	}
 }
 ?>

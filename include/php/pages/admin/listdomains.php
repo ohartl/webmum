@@ -1,13 +1,13 @@
-<?php 
+<?php
 	if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
 		add_message("success", "Domain deleted successfully.");
 	}
 	else if(isset($_GET['created']) && $_GET['created'] == "1"){
 		add_message("success", "Domain created successfully.");
-	}	
+	}
 	else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
 		add_message("fail", "Domain could not be deleted because admin account would be affected.");
-	}	
+	}
 ?>
 
 
@@ -21,11 +21,11 @@ Add or delete domains.
 
 
 
-<?php 
+<?php
 	$sql = "SELECT * FROM `".DBT_DOMAINS."` ORDER BY `".DBC_DOMAINS_DOMAIN."` ASC;";
-	
+
 	if(!$result = $db->query($sql)){
-		die('There was an error running the query [' . $db->error . ']');
+		dbError($db->error);
 	}
 ?>
 
