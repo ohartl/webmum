@@ -21,17 +21,27 @@ if($user->isLoggedIn()){
 
 ?>
 
-
 <h1>Login</h1>
 
 <?php output_messages(); ?>
 
-<form action="" method="post">
-	<input name="email" class="textinput" type="text" placeholder="E-Mail Address" autofocus/><br>
-	<input name="password" class="textinput" type="password" placeholder="Password"/>
-	
-	<p>
-		<input type="submit" class="button button-small" value="Log in"/>
-	</p>
+<form class="form" action="" method="post">
+	<div class="input-group">
+		<label>Email address</label>
+		<div class="input">
+			<input type="text"  name="email" placeholder="Your email address" autofocus required/><br>
+		</div>
+	</div>
+
+	<div class="input-group">
+		<label>Password</label>
+		<div class="input">
+			<input type="password"  name="password" placeholder="Your password" required/>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<button type="submit" class="button button-primary">Log in</button>
+	</div>
 </form>
 

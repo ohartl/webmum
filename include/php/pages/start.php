@@ -7,11 +7,11 @@ if($user->isLoggedIn() === true){
 <h1>WebMUM</h1>
 
 <p>
-WebMUM is an easy to use webinterface for managing user accounts on your mailserver's MySQL user backend.<br/>
-Users of your server can log in here to change their passwords.
+	WebMUM is an easy to use webinterface for managing user accounts on your mailserver's MySQL user backend.<br/>
+	Users of your server can log in here to change their passwords.
 </p>
 
-<p style="margin-top:30px;">
-	<a class="button button-small" href="<?php echo url('login'); ?>">Log in</a>
-</p>
+<div class="buttons buttons-horizontal">
+	<a class="button" href="<?php echo url('login'); ?>">Log in</a>
+</div>
 
