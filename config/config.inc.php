@@ -34,6 +34,15 @@ define("DBC_DOMAINS_DOMAIN", "domain");
 define("DBC_ALIASES_ID", "id");
 define("DBC_ALIASES_SOURCE", "source");
 define("DBC_ALIASES_DESTINATION", "destination");
+// Enable multi source redirects, needs a new column in aliase table with VARCHAR(32)
+//define("DBC_ALIASES_MULTI_SOURCE", "multi_source");	// (Optional, Recommended)
+
+
+/*
+ * General options
+ */
+// Enable validating that the source addresses are ending with domain from domains
+//define("VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED", true);	// (Optional, Recommended)
 
 
 /*
@@ -76,5 +85,15 @@ define("MIN_PASS_LENGTH", 8);
 
 // define("WRITE_LOG", true);
 // define("WRITE_LOG_PATH","/var/www/webmum/log/");
+
+
+/*
+ * Frontend options
+ */
+
+// Separator for email lists
+define("FRONTEND_EMAIL_SEPARATOR_TEXT", ', '); // possible values: ', ' (default), '; ', PHP_EOL (newline)
+define("FRONTEND_EMAIL_SEPARATOR_FORM", ','); // possible values: ',' (default), ';', PHP_EOL (newline)
+
 
 ?>
