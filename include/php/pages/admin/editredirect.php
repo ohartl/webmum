@@ -37,7 +37,7 @@ if(isset($_GET['id'])){
 
 	if($result->num_rows !== 1){
 		// Redirect does not exist, redirect to overview
-		redirect("admin/listredirects/");
+		redirect("admin/listredirects");
 	}
 
 	$redirect = $result->fetch_assoc();
@@ -225,39 +225,38 @@ if(isset($_GET['id'])){
 
 <h1><?php echo ($mode === "create") ? 'Create' : 'Edit'; ?> Redirect</h1>
 
+<div class="buttons">
+	<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
+</div>
+
 <?php output_messages(); ?>
 
-<p>
-	<a class="button button-small" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listredirects/">&#10092; Back to redirects list</a>
-</p>
-
-<form action="" method="post">
+<form class="form" action="" method="post" autocomplete="off">
 	<input name="savemode" type="hidden" value="<?php echo isset($mode) ? $mode : ''; ?>"/>
 
-	<p>
-		Enter single or multiple addresses separated by comma, semicolon or newline.
-	</p>
+	<div class="input-group">
+		<div class="input-info">Enter single or multiple addresses separated by comma, semicolon or newline.</div>
+	</div>
 
-	<table>
-		<tr>
-			<th>Source</th>
-			<th>Destination</th>
-		</tr>
-		<tr>
-			<td>
-				<?php if(defined('DBC_ALIASES_MULTI_SOURCE')): ?>
-					<textarea name="source" class="textinput" placeholder="Source" required="required" autofocus><?php echo isset($sources) ? strip_tags(emailsToString($sources, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?></textarea>
-				<?php else: ?>
-					<input type="text" name="source" class="textinput" placeholder="Source (single address)" required="required" autofocus value="<?php echo isset($sources) ? strip_tags(emailsToString($sources, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?>"/>
-				<?php endif; ?>
-			</td>
-			<td>
-				<textarea name="destination" class="textinput" placeholder="Destination" required="required"><?php echo isset($destinations) ? strip_tags(emailsToString($destinations, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?></textarea>
-			</td>
-		</tr>
-	</table>
+	<div class="input-group">
+		<label for="source">Source</label>
+		<div class="input">
+			<?php if(defined('DBC_ALIASES_MULTI_SOURCE')): ?>
+				<textarea name="source" placeholder="Source" required autofocus><?php echo isset($sources) ? strip_tags(emailsToString($sources, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?></textarea>
+			<?php else: ?>
+				<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo isset($sources) ? strip_tags(emailsToString($sources, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?>"/>
+			<?php endif; ?>
+		</div>
+	</div>
 
-	<p>
-		<input type="submit" class="button button-small" value="Save settings">
-	</p>
+	<div class="input-group">
+		<label for="destination">Destination</label>
+		<div class="input">
+			<textarea name="destination" placeholder="Destination" required><?php echo isset($destinations) ? strip_tags(emailsToString($destinations, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?></textarea>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<button type="submit" class="button button-primary">Save settings</button>
+	</div>
 </form>

@@ -2,7 +2,7 @@
 
 if(!isset($_GET['id'])){
 	// Redirect id not set, redirect to overview
-	redirect("admin/listredirects/");
+	redirect("admin/listredirects");
 }
 
 $id = $db->escape_string($_GET['id']);
@@ -38,7 +38,7 @@ if(!$result = $db->query($sql)){
 
 if($result->num_rows !== 1){
 	// Redirect does not exist, redirect to overview
-	redirect("admin/listredirects/");
+	redirect("admin/listredirects");
 }
 
 $redirect = $result->fetch_assoc();
@@ -66,7 +66,7 @@ if(isset($_POST['confirm'])){
 	}
 	else{
 		// Choose to not delete redirect, redirect to overview
-		redirect("admin/listredirects/");
+		redirect("admin/listredirects");
 	}
 }
 
@@ -74,26 +74,37 @@ else{
 	$source = $redirect[DBC_ALIASES_SOURCE];
 	$destination = $redirect[DBC_ALIASES_DESTINATION];
 	?>
+
 	<h1>Delete redirection?</h1>
 
-	<table>
-		<tr>
-			<th>Source</th>
-			<th>Destination</th>
-		</tr>
-		<tr>
-			<td><?php echo strip_tags(formatEmails($source, FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
-			<td><?php echo strip_tags(formatEmails($destination, FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
-		</tr>
-	</table>
+	<div class="buttons">
+		<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirect list</a>
+	</div>
 
-	<form action="" method="post">
-		<select name="confirm">
-			<option value="no">No!</option>
-			<option value="yes">Yes!</option>
-		</select>
+	<form class="form" action="" method="post">
+		<div class="input-group">
+			<label>Source</label>
+			<div class="input-info"><?php echo strip_tags(formatEmails($source, FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
+		</div>
 
-		<input type="submit" class="button button-small" value="Okay"/>
+		<div class="input-group">
+			<label>Destination</label>
+			<div class="input-info"><?php echo strip_tags(formatEmails($destination, FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
+		</div>
+
+		<div class="input-group">
+			<label>Do you realy want to delete this redirect?</label>
+			<div class="input">
+				<select name="confirm" autofocus required>
+					<option value="no">No!</option>
+					<option value="yes">Yes!</option>
+				</select>
+			</div>
+		</div>
+
+		<div class="buttons">
+			<button type="submit" class="button button-primary">Delete</button>
+		</div>
 	</form>
 	<?php
 }

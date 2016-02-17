@@ -2,7 +2,7 @@
 
 if(!isset($_GET['id'])){
 	// Domain id not set, redirect to overview
-	redirect("admin/listdomains/");
+	redirect("admin/listdomains");
 }
 
 $id = $db->escape_string($_GET['id']);
@@ -16,7 +16,7 @@ if(!$result = $db->query($sql)){
 
 if($result->num_rows !== 1){
 	// Domain does not exist, redirect to overview
-	redirect("admin/listdomains/");
+	redirect("admin/listdomains");
 }
 
 $row = $result->fetch_assoc();
@@ -61,23 +61,34 @@ if(isset($_POST['confirm'])){
 	
 	else{
 		// Choose to not delete domain, redirect to overview
-		redirect("admin/listdomains/");
+		redirect("admin/listdomains");
 	}
 }
 ?>
 
 <h1>Delete domain "<?php echo $domain ?>"?</h1>
 
-<p>
-	<strong>All mailboxes matching the domain will be deleted from the user database!</strong><br>
-	Mailbox directories in the filesystem won't be affected.
-</p>
+<div class="buttons">
+	<a class="button" href="<?php echo url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
+</div>
 
-<form action="" method="post">
-	<select name="confirm" autofocus>
-		<option value="no">No!</option>
-		<option value="yes">Yes!</option>
-	</select>
-	
-	<input type="submit" class="button button-small" value="Okay"/>
+<form class="form" action="" method="post">
+	<div class="input-group">
+		<label>All mailboxes matching the domain will be deleted from the user database!</label>
+		<div class="input-info">Mailbox directories in the filesystem won't be affected.</div>
+	</div>
+
+	<div class="input-group">
+		<label>Do you realy want to delete this domain?</label>
+		<div class="input">
+			<select name="confirm" autofocus required>
+				<option value="no">No!</option>
+				<option value="yes">Yes!</option>
+			</select>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<button type="submit" class="button button-primary">Delete</button>
+	</div>
 </form>

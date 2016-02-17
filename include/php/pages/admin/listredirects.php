@@ -45,27 +45,30 @@ if(!$result = $db->query($sql)){
 
 <?php output_messages(); ?>
 
-<p>
-	<a class="button button-small" href="<?php echo FRONTEND_BASE_PATH; ?>admin/editredirect/">Create new redirect</a>
-</p>
+<div class="buttons">
+	<a class="button" href="<?php echo url('admin/editredirect'); ?>">Create new redirect</a>
+</div>
 
-<table class="list">
-	<tr class="head">
-		<th>Source</th>
-		<th>Destination</th>
-		<th></th>
-		<th></th>
-	<tr>
-<?php while($row = $result->fetch_assoc()): ?>
-	<tr>
-		<td><?php echo strip_tags(formatEmails($row[DBC_ALIASES_SOURCE], FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
-		<td><?php echo strip_tags(formatEmails($row[DBC_ALIASES_DESTINATION], FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
-		<td>
-			<a href="<?php echo FRONTEND_BASE_PATH; ?>admin/editredirect/?id=<?php echo $row[DBC_ALIASES_ID]; ?>">[Edit]</a>
-		</td>
-		<td>
-			<a href="<?php echo FRONTEND_BASE_PATH; ?>admin/deleteredirect/?id=<?php echo $row[DBC_ALIASES_ID]; ?>">[Delete]</a>
-		</td>
-	</tr>
-<?php endwhile; ?>
+<table class="table">
+	<thead>
+		<tr>
+			<th>Source</th>
+			<th>Destination</th>
+			<th></th>
+			<th></th>
+		<tr>
+	</thead>
+	<tbody>
+	<?php while($row = $result->fetch_assoc()): ?>
+		<tr>
+			<td><?php echo strip_tags(formatEmails($row[DBC_ALIASES_SOURCE], FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+			<td><?php echo strip_tags(formatEmails($row[DBC_ALIASES_DESTINATION], FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+			<td>
+				<a href="<?php echo url('admin/editredirect/?id='.$row[DBC_ALIASES_ID]); ?>">[Edit]</a>
+			</td>
+			<td>
+				<a href="<?php echo url('admin/deleteredirect/?id='.$row[DBC_ALIASES_ID]); ?>">[Delete]</a>
+			</td>
+		</tr>
+	<?php endwhile; ?>
 </table>

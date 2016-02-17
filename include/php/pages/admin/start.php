@@ -1,13 +1,9 @@
-<?php
-
-?>
-
 <h1>Admin Dashboard</h1>
 
-<p style="margin-top:50px;">
-	<a class="button button-big" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listusers/">Manage users</a>
+<div class="buttons buttons-horizontal button-large">
+	<a class="button" href="<?php echo url('admin/listusers'); ?>">Manage users</a>
 
-	<a class="button button-big" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listdomains/">Manage domains</a>
+	<a class="button" href="<?php echo url('admin/listdomains'); ?>">Manage domains</a>
 
-	<a class="button button-big" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listredirects/">Manage redirects</a>
-</p>
+	<a class="button" href="<?php echo url('admin/listredirects'); ?>">Manage redirects</a>
+</div>

@@ -1,7 +1,3 @@
-<?php
-
-?>
-
 <h1>Not allowed!</h1>
 
 <p>

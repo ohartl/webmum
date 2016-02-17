@@ -12,6 +12,6 @@ Users of your server can log in here to change their passwords.
 </p>
 
 <p style="margin-top:30px;">
-	<a class="button button-small" href="<?php echo FRONTEND_BASE_PATH; ?>login/">Log in</a>
+	<a class="button button-small" href="<?php echo url('login'); ?>">Log in</a>
 </p>
 

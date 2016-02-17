@@ -33,11 +33,19 @@ if(isset($_POST['domain'])){
 
 <?php output_messages(); ?>
 
-<p>
-	<a class="button button-small" href="<?php echo FRONTEND_BASE_PATH; ?>admin/listdomains/">&#10092; Back to domain list</a>
-</p>
+<div class="buttons">
+	<a class="button" href="<?php echo url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
+</div>
 
-<form action="" method="post">
-	<p><input name="domain" class="textinput" type="text" placeholder="domain.tld" autofocus/></p>
-	<p><input type="submit" class="button button-small" value="Create domain"/>
+<form class="form" action="" method="post" autocomplete="off">
+	<div class="input-group">
+		<label>Domain</label>
+		<div class="input">
+			<input type="text" name="domain" placeholder="domain.tld" autofocus required/>
+		</div>
+	</div>
+
+	<div class="buttons">
+		<button type="submit" class="button button-primary">Create domain</button>
+	</div>
 </form>

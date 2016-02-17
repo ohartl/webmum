@@ -1,255 +1,331 @@
-body{
-	font-family:Arial;
-	font-size:12px;
-	margin:0px;
-	background-color:white;
+body {
+	font-family: arial, serif;
+	font-size: 12px;
+	margin: 0;
+	background-color: white;
 }
-
 
 /*
  * Main Layout
  */
 
-#header{
-	position:relative;
-	height:50px;
-	width:100%;
-	background-color:rgba(15, 15, 15, 1);
+#header {
+	position: relative;
+	height: 50px;
+	width: 100%;
+	background-color: rgba(15, 15, 15, 1);
 	background: linear-gradient(rgba(63, 63, 63, 1), rgba(15, 15, 15, 1));
-	color:white;
-	line-height:50px;
-	box-sizing:border-box;
-	padding-left:20px;
-	padding-right:20px;
+	color: white;
+	line-height: 50px;
+	box-sizing: border-box;
+	padding-left: 20px;
+	padding-right: 20px;
 }
 
-	#header div.title{
-		float:left;
-		height:50px;
-		width:auto;
+	#header div.title {
+		float: left;
+		height: 50px;
+		width: auto;
 	}
-	
-		#header div.title a{
-			font-size:15px;
-			color:white;
-			text-decoration:none;
-		}
-		#header div.title a:hover{
-			text-decoration:underline;
-		}
-	
-	#header div.header-menu{
-		float:left;
-		padding-left:100px;
-	}
-	
-	#header div.header-button{
-		float:left;
-		height:50px;
-		margin-right:30px;
-		color:white;
-	}
-	
-	
-		#header div.header-button a{
-			color:white;
-			text-decoration:none;
-		}
-		#header div.header-button a:hover{
-			text-decoration:underline;
+
+		#header div.title a {
+			font-size: 15px;
+			color: white;
+			text-decoration: none;
 		}
 
-#content{
-	height:auto;
-	min-height:calc(100vh - 150px);
-	padding:20px;
-	background-color:white;
+		#header div.title a:hover {
+			text-decoration: underline;
+		}
+
+	#header div.header-menu {
+		float: left;
+		padding-left: 100px;
+	}
+
+	#header div.header-button {
+		float: left;
+		height: 50px;
+		margin-right: 30px;
+		color: white;
+	}
+
+		#header div.header-button a {
+			color: white;
+			text-decoration: none;
+		}
+
+		#header div.header-button a:hover {
+			text-decoration: underline;
+		}
+
+#content {
+	height: auto;
+	min-height: calc(100vh - 150px);
+	padding: 20px;
+	background-color: white;
 }
 
-	#content h1{
-		color:rgba(62, 59, 59, 1);
+	#content h1 {
+		color: rgba(62, 59, 59, 1);
 	}
-	
-	#content a{
+
+	#content a {
 		color: blue;
 		text-decoration: none;
 	}
-	#content a:hover{
-		text-decoration:underline;
+
+	#content a:hover {
+		text-decoration: underline;
 	}
 
 
-/*
- * Buttons
- */
+	#content .form {
+		margin: 25px 0;
+	}
 
-	#content .button{
-		background:none;
-		background: linear-gradient(white, rgba(237, 237, 237, 1));
-		border: 1px solid rgba(200, 200, 200, 1);
-		border-radius:3px;
-		font-family:arial;
-		min-width:200px;
-		margin-bottom:10px;
-		height:auto;
-		transition: box-shadow 0.2s;
+		#content .form .input-group, #content .form .buttons {
+			padding-bottom: 10px;
+		}
+
+		#content .form .input-group > label {
+			font-weight: bold;
+			line-height: 22px;
+			font-size: 13px;
+		}
+
+		#content .form .input-group > .input-info {
+			padding-bottom: 5px;
+			color: #999;
+		}
+
+		#content .form .input {
+		}
+
+			#content .form .input input, #content .form .input textarea, #content .form .input select {
+				background: #fefefe;
+				border: 1px solid rgba(200, 200, 200, 1);
+				border-radius: 3px;
+				margin-bottom: 5px;
+				padding: 0 10px;
+				box-shadow: inset 1px 1px 3px rgba(230, 230, 230, 1);
+			}
+
+			#content .form .input input:focus, #content .form .input input:focus, #content .form .input select:focus {
+				border: 1px solid rgba(137, 137, 137, 1);
+			}
+
+			#content .form .input input {
+				min-width: 180px;
+			}
+
+			#content .form .input input[type="number"] {
+				padding-right: 0;
+				min-width: 190px;
+			}
+
+			#content .form .input textarea {
+				min-height: 150px;
+				min-width: 400px;
+				line-height: 18px !important;
+				padding-top: 8px;
+				padding-bottom: 8px;
+			}
+
+			#content .form .input input,
+			#content .form .input textarea,
+			#content .form .input.input-labeled.input-labeled-left > *:first-child,
+			#content .form .input.input-labeled.input-labeled-right > *:last-child {
+				line-height: 33px;
+			}
+
+			#content .form .input select {
+				padding: 8px 10px 9px;
+				min-width: 200px;
+			}
+
+			#content .form .input select option[value=""] {
+				color: #ccc;
+			}
+
+			#content .form .input.input-labeled.input-labeled-left > *:first-child,
+			#content .form .input.input-labeled.input-labeled-right > *:last-child {
+				background: #eee;
+				border: 1px solid rgba(200, 200, 200, 1);
+				border-radius: 3px;
+				display: inline-block;
+				margin: 0 0 0 3px;
+				padding: 0 10px;
+				position: absolute;
+			}
+
+			#content .form .input.input-action > *:first-child,
+			#content .form .input.input-labeled > *:first-child {
+				border-top-right-radius: 0 !important;
+				border-bottom-right-radius: 0 !important;
+				margin-right: -4px;
+			}
+			#content .form .input.input-action > *:last-child,
+			#content .form .input.input-labeled > *:last-child {
+				border-top-left-radius: 0 !important;
+				border-bottom-left-radius: 0 !important;
+			}
+
+
+	#content .buttons {
+		margin: 15px 0;
 	}
-	
-	#content a.button{
-		display:block;
+
+	#content .form .buttons {
+		margin: 0;
+ 	}
+
+	#content .buttons.buttons-horizontal .button {
+		display: block;
+		margin-top: 10px;
 	}
-	
-	#content .button:hover{
-		box-shadow: 1px 1px 4px #DBDBDB;
-		text-decoration:none;
-		cursor:pointer;
-		transition: box-shadow 0.2s;
+
+	#content .buttons.buttons-horizontal .button:first-child {
+		margin-top: 0;
 	}
-	
-	#content .button-big{
-		width:300px;
-		font-size:18px;
-		line-height:45px;
-		padding-left:20px;
-		padding-right:20px;
-		color:rgba(57, 57, 57, 1);
-		text-decoration:none;
-	}
-	
-	#content .button-small{
-		width:200px;
-		font-size:13px;
-		line-height:30px;
-		padding-left:10px;
-		padding-right:10px;
-		color:rgba(57, 57, 57, 1);
-		text-decoration:none;
-	}
-	
-	
-	
-	#content .button a{
-		
-	}
-		
-	#content div.button-big a{
-		
-	}	
-	
-	
-	
-/****** Tables ******/
-	
-	#content table{
+
+		#content .button {
+			background: #dddddd;
+			background: linear-gradient(#ffffff, #eaeaea);
+			border: 1px solid rgba(200, 200, 200, 1);
+			border-radius: 3px;
+			font-family: arial, serif;
+			transition: all 0.2s;
+
+			height: auto;
+			min-width: 200px;
+			width: 200px;
+			line-height: 31px;
+			font-size: 13px;
+			text-align: center;
+			color: rgba(57, 57, 57, 1);
+			text-decoration: none;
+		}
+
+		#content a.button {
+			display: inline-block;
+		}
+
+		#content .button:hover {
+			box-shadow: 1px 1px 4px #dbdbdb;
+			text-decoration: none;
+			cursor: pointer;
+		}
+
+			#content .button.button-large,
+			#content .buttons.button-large .button {
+				min-width: 300px;
+				width: 300px;
+				font-size: 15px;
+				line-height: 45px;
+				color: rgba(57, 57, 57, 1);
+			}
+
+			#content .button.button-primary,
+			#content .buttons.button-primary .button {
+				background: #666;
+				background: linear-gradient(#999, #666);
+				border-color: #444;
+				color: #fff;
+			}
+
+			#content .button.button-primary:hover,
+			#content .button.button-primary:active,
+			#content .buttons.button-primary .button:hover,
+			#content .buttons.button-primary .button:active {
+				background: #777;
+				background: linear-gradient(#777777, #444);
+				border-color: #333;
+				color: #fff;
+			}
+
+
+	#content .table {
+		margin: 25px 0;
 		border-collapse: collapse;
-		border:none;
+		border: none;
 	}
-	
-	#content table tr th{
-		padding-bottom:10px;
-		padding-left:15px;
-		padding-right:15px;
-	}
-	
-	#content table tr td{
-		padding:10px;
-		border:1px solid rgba(179, 176, 176, 1);
-	}
-	
-	#content table.list{
-		margin-top:40px;
-	}
-	
-	#content table.list tr:hover{
-		background-color:rgba(234, 234, 234, 1);
-	}
-	#content table.list tr.head:hover{
-		background:none;
-	}
-	#content table.list tr:hover a{
-		color:blue;
-	}
-	
-	#content table.list a {
-		color:rgba(148, 148, 255, 1);
-	}
-	
-/****** Tables END ******/
 
+		#content .table thead th {
+			line-height: 38px;
+			padding: 2px 15px 0;
+			border: 1px solid rgba(179, 176, 176, 1);
+			background: #eeeeee;
+			background: linear-gradient(#ffffff, #eaeaea);
+			font-size: 13px;
+		}
 
-	#content input.textinput, textarea.textinput, select{
-		background: none repeat scroll 0% 0% transparent;
-		border: 1px solid rgba(200, 200, 200, 1);
-		border-radius: 3px;
-		margin-bottom: 5px;
-		padding: 3px;
-		box-shadow: inset 1px 1px 3px rgba(230, 230, 230, 1);
-	}
-	
-	#content input.textinput:focus, textarea.textinput:focus{
-		border: 1px solid rgba(137, 137, 137, 1);
-	}
-	
-	#content textarea.textinput{
-		min-height:150px;
-		min-width:400px;
-	}
-	
-	
+		#content .table tfoot th {
+			line-height: 33px;
+			text-align: left;
+			padding: 0 10px;
+			font-weight: normal;
+			color: #999;
+		}
+
+		#content .table tbody td {
+			line-height: 33px;
+			padding: 0 10px;
+			border: 1px solid rgba(179, 176, 176, 1);
+		}
+
+		#content .table tbody > tr:hover {
+			background-color: rgba(234, 234, 234, 1);
+		}
+
+		#content .table a {
+			color: rgb(148, 148, 255);
+		}
+		#content .table tbody > tr:hover a {
+			color: blue;
+		}
+
 /*
  * Footer
- */	
+ */
 
-#footer{
-	position:relative;
-	height:20px;	
-	width:100%;
-	background-color:white;
-	padding:20px;
-	box-sizing:border-box;
-	color:grey;
+#footer {
+	position: relative;
+	height: 20px;
+	width: 100%;
+	background-color: white;
+	padding: 20px;
+	box-sizing: border-box;
+	color: grey;
 }
 
-#footer a{
-	text-decoration:none;
-	color:grey;
+#footer a {
+	text-decoration: none;
+	color: grey;
 }
-
-
-
 
 /*
  * Notifications
  */
 
-div.notification{
-	height:auto;
-	width:100%;
-	margin-top:15px;
-	text-align:center;
-	border-style:solid;
-	border-width:1px;
-	border-radius:3px;
-	padding:10px;
-	box-sizing:border-box;
-	margin-bottom:40px;
+#content .notification {
+	height: auto;
+	width: 100%;
+	margin: 15px 0;
+	text-align: center;
+	border-style: solid;
+	border-width: 1px;
+	border-radius: 3px;
+	padding: 15px 10px;
+	box-sizing: border-box;
 }
 
-div.notification-fail{
-	background-color:#FCACAC;
-	border-color:red;
+#content .notification.notification-fail {
+	background-color: #fcacac;
+	border-color: red;
 }
 
-div.notification-success{
-	background-color:rgba(182, 255, 183, 1);
-	border-color:green;
-}
-
-
-/*
- * Headlines
- */
-
-#content h1{
-	font-size:
+#content .notification.notification-success {
+	background-color: rgba(182, 255, 183, 1);
+	border-color: green;
 }

@@ -22,12 +22,14 @@ function add_message($type, $message)
 
 function output_messages()
 {
-	echo "<div class=\"messages\">";
 	global $MESSAGES;
-	foreach($MESSAGES as $message){
-		echo "<div class=\"notification notification-".$message['type']."\">".$message['message']."</div>";
+	if(count($MESSAGES) > 0) {
+		echo '<div class="messages">';
+		foreach($MESSAGES as $message){
+			echo '<div class="notification notification-'.$message['type'].'">'.$message['message'].'</div>';
+		}
+		echo '</div>';
 	}
-	echo "</div>";
 }
 
 
@@ -134,10 +136,26 @@ function writeLog($text)
 
 /**
  * @param string $url
+ * @return string
+ */
+function url($url)
+{
+	$base = FRONTEND_BASE_PATH;
+	if (substr($base, -1) === '/') {
+		$base = substr($base, 0, -1);
+	}
+	if (strlen($url) > 0 && $url[0] === '/') {
+		$url = substr($url, 1);
+	}
+	return $base.'/'.$url;
+}
+
+/**
+ * @param string $url
  */
 function redirect($url)
 {
-	header("Location: ".FRONTEND_BASE_PATH.$url);
+	header("Location: ".url($url));
 	exit;
 }
 
