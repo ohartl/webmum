@@ -16,7 +16,7 @@ Now configure your webserver. URL rewriting to index.php is required.
 
 ### Nginx
 
-Nginx config examples following, but you still need to change domain and path in config as explained in WebMum Config -> Paths.
+Nginx config examples following, but you still need to change domain and path in config as explained in **WebMUM Configuration Config > Paths**.
 
 With subdirectory `webmum/` in URL (e.g. `http://mydomain.tld/webmum/`):
 
@@ -64,7 +64,7 @@ server {
 }
 ```
 
-### Apache 
+### Apache
 
 Apache config examples following, but you still need to change domain and path in config as explained in WebMum Config -> Paths.
 
@@ -106,7 +106,7 @@ Without subdirectory in URL (e.g. `http://webmum.mydomain.tld/`):
 
 ## WebMUM Configuration
 
-Configure WebMUM via the configuration file at `config/config.inc.php`. 
+Configure WebMUM via the configuration file at `config/config.inc.php`.
 
 ### MySQL
 
@@ -190,7 +190,6 @@ ALTER TABLE `aliases` ADD COLUMN `multi_source` VARCHAR(32) NULL DEFAULT NULL;
 WebMUM will then show a larger field for source addresses in the frontend and you can not list emails in source field.
 
 ### Paths
-(#path-config)
 
 Define the URL of the web application, and it's subfolder:
 
@@ -295,19 +294,19 @@ git stash
 git pull origin master
 git stash pop
 ```
-	
+
 ... and you are ready to go. Git might complain about conflicting files - you will have to resolve the merge conflict manually then.
 
 If you downloaded WebMUM as a ZIP package, you have to update WebMUM manually.
 
-**After every update:** 
+**After every update:**
 Please check if your config.inc.php fits the current requirements by comparing your version of the file with the config.inc.php in the repository.
 
 ## FAQ
 
 ### Which password scheme does WebMUM use?
 
-By default WebMUM uses SHA512-CRYPT password scheme. It cloud be change in the config file to SHA256-CRYPT or BLOWFISH-CRYPT.
+By default WebMUM uses `SHA-512` encryption for passwords. You can also between the alternatives `SHA-256` or `BLOWFISH` in the config.
 
 ```php
  /*
