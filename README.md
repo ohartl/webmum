@@ -36,7 +36,13 @@ server {
     }
 
     location /webmum {
-            try_files $uri $uri/ /webmum/index.php?$args;
+        try_files $uri $uri/ /webmum/index.php?$args;
+    }
+
+    # protect the codebase by denying direct access
+    location ^~ /webmum/include/php {
+        deny all;
+        return 403;
     }
 }
 ```
@@ -59,7 +65,13 @@ server {
     }
 
     location / {
-            try_files $uri $uri/ /index.php?$args;
+        try_files $uri $uri/ /index.php?$args;
+    }
+
+    # protect the codebase by denying direct access
+    location ^~ /include/php {
+        deny all;
+        return 403;
     }
 }
 ```
@@ -103,6 +115,10 @@ Without subdirectory in URL (e.g. `http://webmum.mydomain.tld/`):
 	RewriteRule ^(.*)$ /index.php [L,QSA]
 </VirtualHost>
 ```
+
+Access to the codebase is denied with a `.htaccess` file under ^/include/php^.
+
+
 
 ## WebMUM Configuration
 
