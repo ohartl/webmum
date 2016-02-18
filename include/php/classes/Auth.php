@@ -125,7 +125,7 @@ class Auth
 
 
 	/**
-	 * Check if current user has a certain role
+	 * Check if current user has a certain role, but User::ROLE_ADMIN will have access to all
 	 *
 	 * @param string $requiredRole
 	 *

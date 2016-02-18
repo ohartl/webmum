@@ -31,7 +31,7 @@ function load_page($p){
 	
 	if(preg_match("/^\/private(.*)$/", $p) == 1){
 		// Page is user page
-		if(Auth::hasPermission('user')){
+		if(Auth::hasPermission(User::ROLE_USER)){
 			switch($p){
 				case "/private/":
 					return "include/php/pages/private/start.php";
@@ -48,7 +48,7 @@ function load_page($p){
 
 	else if(preg_match("/^\/admin(.*)$/", $p) == 1){
 		// Page is admin page
-		if(Auth::hasPermission('admin')){
+		if(Auth::hasPermission(User::ROLE_ADMIN)){
 			switch($p){
 				case "/admin/":
 					return "include/php/pages/admin/start.php";

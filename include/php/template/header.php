@@ -30,7 +30,7 @@
 					<a href="<?php echo url('private'); ?>">[Personal Dashboard]</a>
 				</div>
 			<?php endif; ?>
-			<?php if(Auth::hasPermission('user')): ?>
+			<?php if(Auth::isLoggedIn()): ?>
 				<div class="header-button">
 					Logged in as <?php echo Auth::getUser()->getEmail(); ?>
 					<a href="<?php echo url('logout'); ?>">[Logout]</a>
