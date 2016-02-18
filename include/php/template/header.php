@@ -20,17 +20,19 @@
 	<div id="header">
 		<div class="title"><a href="<?php echo url('/'); ?>">WebMUM - Web Mailserver User Manager</a></div>
 		<div class="header-menu">
-			<?php if(user_has_permission("admin")): ?>
+			<?php if(Auth::hasPermission(User::ROLE_ADMIN)): ?>
 				<div class="header-button">
 					<a href="<?php echo url('admin'); ?>">[Admin Dashboard]</a>
 				</div>
+			<?php endif; ?>
+			<?php if(Auth::hasPermission(User::ROLE_USER)): ?>
 				<div class="header-button">
 					<a href="<?php echo url('private'); ?>">[Personal Dashboard]</a>
 				</div>
 			<?php endif; ?>
-			<?php if($user->isLoggedIn()): ?>
+			<?php if(Auth::hasPermission('user')): ?>
 				<div class="header-button">
-					Logged in as <?php echo $_SESSION['email']; ?>
+					Logged in as <?php echo Auth::getUser()->getEmail(); ?>
 					<a href="<?php echo url('logout'); ?>">[Logout]</a>
 				</div>
 			<?php endif; ?>

@@ -118,4 +118,20 @@ class User
 
 		return static::ROLE_USER;
 	}
+
+
+	/**
+	 * Change this users password, throws Exception if password is invalid.
+	 *
+	 * @param string $password
+	 * @param string $passwordRepeated
+	 *
+	 * @throws Exception
+	 */
+	public function changePassword($password, $passwordRepeated)
+	{
+		Auth::validateNewPassword($password, $passwordRepeated);
+
+		Auth::changeUserPassword($this->id, $password);
+	}
 }

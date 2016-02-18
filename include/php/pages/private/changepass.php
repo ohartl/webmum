@@ -1,14 +1,13 @@
 <?php
 
 if(isset($_POST['password']) && isset($_POST['password_repeat'])){
-	// User tries to change password
-	$change_pass_success = $user->change_password($_POST['password'], $_POST['password_repeat']);
-	
-	if($change_pass_success === true){
+	try {
+		Auth::getUser()->changePassword($_POST['password'], $_POST['password_repeat']);
+
 		add_message("success", "Password changed successfully!");
 	}
-	else if($change_pass_success === false){
-		add_message("fail", "Error while changing password! ".$PASS_ERR_MSG);
+	catch(Exception $passwordInvalidException){
+		add_message("fail", $passwordInvalidException->getMessage());
 	}
 }
 

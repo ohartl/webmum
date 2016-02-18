@@ -54,25 +54,23 @@ if(isset($_POST['savemode'])){
 		}
 
 		// Is there a changed password?
-		if($_POST['password'] !== ""){
-			$pass_ok = check_new_pass($_POST['password'], $_POST['password_repeat']);
-			if($pass_ok === true){
+		if(empty($_POST['password']) && empty($_POST['password_repeat'])){
+			// Edit user successfull, redirect to overview
+			redirect("admin/listusers/?edited=1");
+		}
+		else {
+			try{
+				Auth::validateNewPassword($_POST['password'], $_POST['password_repeat']);
+
 				// Password is okay and can be set
-				$pass_hash = gen_pass_hash($_POST['password']);
-				write_pass_hash_to_db($pass_hash, $id);
+				Auth::changeUserPassword($id, $_POST['password']);
 
 				// Edit user password successfull, redirect to overview
 				redirect("admin/listusers/?edited=1");
 			}
-			else{
-				// Password is not okay
-				// $editsuccessful = 2;
-				add_message("fail", $PASS_ERR_MSG);
+			catch(Exception $passwordInvalidException){
+				add_message("fail", $passwordInvalidException->getMessage());
 			}
-		}
-		else{
-			// Edit user successfull, redirect to overview
-			redirect("admin/listusers/?edited=1");
 		}
 	}
 
@@ -87,38 +85,36 @@ if(isset($_POST['savemode'])){
 			$mailbox_limit = 0;
 		}
 
-		$pass = $_POST['password'];
-		$pass_rep = $_POST['password_repeat'];
-
-		if(!empty($username) && !empty($domain) && !empty($mailbox_limit)){
+		if(!empty($username) && !empty($domain) && !empty($mailbox_limit) && !empty($_POST['password']) && !empty($_POST['password_repeat'])){
 			// Check if user already exists
 			$user_exists = $db->query("SELECT `".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_USERNAME."` = '$username' AND `".DBC_USERS_DOMAIN."` = '$domain';");
 			if($user_exists->num_rows == 0){
-				// All fields filled with content
-				// Check passwords
-				$pass_ok = check_new_pass($pass, $pass_rep);
-				if($pass_ok === true){
-					// Password is okay ... continue
-					$pass_hash = gen_pass_hash($pass);
+				try{
+					// Check password then go on an insert user first
+					Auth::validateNewPassword($_POST['password'], $_POST['password_repeat']);
 
-					// Differ between version with mailbox_limit and version without
+					// Optional mailbox_limit support
 					if(defined('DBC_USERS_MAILBOXLIMIT')){
-						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`, `".DBC_USERS_MAILBOXLIMIT."`) VALUES ('$username', '$domain', '$pass_hash', '$mailbox_limit')";
+						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_MAILBOXLIMIT."`) VALUES ('$username', '$domain', '$mailbox_limit')";
 					}
 					else{
-						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_PASSWORD."`) VALUES ('$username', '$domain', '$pass_hash')";
+						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`) VALUES ('$username', '$domain')";
 					}
 
 					if(!$result = $db->query($sql)){
 						dbError($db->error);
 					}
 
+					$userId = $db->insert_id;
+
+					// Password is validated and user was created, we can insert the password now
+					Auth::changeUserPassword($userId, $_POST['password']);
+
 					// Redirect user to user list
 					redirect("admin/listusers/?created=1");
 				}
-				else{
-					// Password not okay
-					add_message("fail", $PASS_ERR_MSG);
+				catch(Exception $passwordInvalidException){
+					add_message("fail", $passwordInvalidException->getMessage());
 				}
 			}
 			else{

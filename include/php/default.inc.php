@@ -1,4 +1,7 @@
 <?php
+// Start session
+session_start();
+session_regenerate_id();
 
 // Include config
 if(file_exists('config/config.inc.php')){
@@ -19,17 +22,18 @@ function dbError($errorMessage){
 // Establish database connection
 
 $db = new mysqli(MYSQL_HOST, MYSQL_USER, MYSQL_PASSWORD, MYSQL_DATABASE);
-
 if($db->connect_errno > 0){
 	die('Unable to connect to database [' . $db->connect_error . ']');
 }
 
-/* Import classes */
-require_once 'include/php/classes/user.class.php';
+/* Import models */
+require_once 'include/php/models/User.php';
 
-$user = new USER();
+/* Import classes */
+require_once 'include/php/classes/Auth.php';
+
+/* Initialize Authentication (Login User if in session) */
+Auth::init();
 
 require_once 'include/php/global.inc.php';
-require_once 'include/php/checkpermissions.inc.php';
 
-?>

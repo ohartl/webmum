@@ -1,5 +1,5 @@
 <?php
-if($user->isLoggedIn() === true){
+if(Auth::isLoggedIn()){
 	redirect("private/");
 }
 ?>

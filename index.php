@@ -31,7 +31,7 @@ function load_page($p){
 	
 	if(preg_match("/^\/private(.*)$/", $p) == 1){
 		// Page is user page
-		if(user_has_permission("user")){
+		if(Auth::hasPermission('user')){
 			switch($p){
 				case "/private/":
 					return "include/php/pages/private/start.php";
@@ -45,10 +45,10 @@ function load_page($p){
 		}
 		else{ return "include/php/pages/not-allowed.php"; }
 	}
-	
+
 	else if(preg_match("/^\/admin(.*)$/", $p) == 1){
 		// Page is admin page
-		if(user_has_permission("admin")){
+		if(Auth::hasPermission('admin')){
 			switch($p){
 				case "/admin/":
 					return "include/php/pages/admin/start.php";
@@ -86,7 +86,7 @@ function load_page($p){
 		}
 		else{ return "include/php/pages/not-allowed.php"; }
 	}
-	
+
 	else{
 		// Page is public accessible
 		switch($p){
