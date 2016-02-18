@@ -183,7 +183,8 @@ if(isset($_POST['savemode'])){
 
 					$values = array();
 					if(count($sources) === 1){
-						$values[] = "('$source', '$destination', NULL)";
+						$additionalSqlValue = defined('DBC_ALIASES_MULTI_SOURCE') ? ", NULL" : "";
+						$values[] = "('$source', '$destination' $additionalSqlValue)";
 					}
 					else{
 						// multi source handling
