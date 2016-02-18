@@ -26,11 +26,15 @@ if($db->connect_errno > 0){
 	die('Unable to connect to database [' . $db->connect_error . ']');
 }
 
-/* Import models */
-require_once 'include/php/models/User.php';
-
-/* Import classes */
-require_once 'include/php/classes/Auth.php';
+// register automatic loading for dependency injection
+spl_autoload_register(function($class){
+	if(file_exists('include/php/models/'.$class.'.php')){
+		include 'include/php/models/'.$class.'.php';
+	}
+	elseif(file_exists('include/php/classes/'.$class.'.php')){
+		include 'include/php/classes/'.$class.'.php';
+	}
+});
 
 /* Initialize Authentication (Login User if in session) */
 Auth::init();

@@ -116,7 +116,7 @@ Without subdirectory in URL (e.g. `http://webmum.mydomain.tld/`):
 </VirtualHost>
 ```
 
-Access to the codebase is denied with a `.htaccess` file under ^/include/php^.
+Access to the codebase is denied with a `.htaccess` file, that can be found in `/include/php`.
 
 
 
