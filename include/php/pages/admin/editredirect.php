@@ -62,7 +62,7 @@ if(isset($_POST['savemode'])){
 		}
 	}
 
-	if(defined('VALIDATE_ALIASES_SOURCE_ENABLED')){
+	if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED')){
 		$sql = "SELECT GROUP_CONCAT(`".DBC_DOMAINS_DOMAIN."` SEPARATOR ',') as `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."`";
 		if(!$resultDomains = $db->query($sql)){
 			dbError($db->error);
