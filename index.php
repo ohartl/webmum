@@ -130,7 +130,4 @@ include load_page($path);
  */
 
 require_once 'include/php/template/footer.php';
-include_once 'include/php/db_close.inc.php';
-?>
-
 
