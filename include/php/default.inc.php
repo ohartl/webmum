@@ -1,11 +1,11 @@
 <?php
 
 // Include config
-if(file_exists('config/config_override.inc.php')){
-	require_once 'config/config_override.inc.php';
+if(file_exists('config/config.inc.php')){
+	require_once 'config/config.inc.php';
 }
 else{
-	require_once 'config/config.inc.php';
+	require_once 'config/config.inc.php.example';
 }
 
 
