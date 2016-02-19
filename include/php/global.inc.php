@@ -1,15 +1,27 @@
 <?php
 
-/*
- * Message manager
- * Types of notifications:
- * success
- * fail
- * info
+/**
+ * @param string $errorMessage
+ * @param null|string $sql
  */
+function dbError($errorMessage, $sql = null)
+{
+	die('There was an error running the query ['.$errorMessage.']'.(!is_null($sql)?' with statement "'.$sql.'"':''));
+}
 
+
+/**
+ * Holds all messages
+ * @var array
+ */
 $MESSAGES = array();
 
+
+/**
+ * Add a new message
+ * @param string $type Supported types: success, fail, info
+ * @param string $message
+ */
 function add_message($type, $message)
 {
 	global $MESSAGES;
@@ -20,6 +32,9 @@ function add_message($type, $message)
 	$MESSAGES[] = $newmessage;
 }
 
+/**
+ * Print all messages
+ */
 function output_messages()
 {
 	global $MESSAGES;
@@ -33,8 +48,10 @@ function output_messages()
 }
 
 
-/*
+/**
  * Add message to logfile
+ *
+ * @param string $text
  */
 function writeLog($text)
 {
@@ -53,22 +70,20 @@ function writeLog($text)
 
 
 /**
+ * Generate full url
+ *
  * @param string $url
+ *
  * @return string
  */
 function url($url)
 {
-	$base = FRONTEND_BASE_PATH;
-	if (substr($base, -1) === '/') {
-		$base = substr($base, 0, -1);
-	}
-	if (strlen($url) > 0 && $url[0] === '/') {
-		$url = substr($url, 1);
-	}
-	return $base.'/'.$url;
+	return sprintf('%s/%s', rtrim(BASE_URL, '/'), trim($url));
 }
 
 /**
+ * Redirect user to an url
+ *
  * @param string $url
  */
 function redirect($url)
@@ -87,22 +102,25 @@ function redirect($url)
  */
 function stringToEmails($input)
 {
-	$separators = array(',', ';', "\r\n", "\r", "\n", '|', ':');
+	$list = explode(
+		'|',
+		str_replace(
+			array(',', ';', "\r\n", "\r", "\n", '|', ':'),
+			'|',
+			$input
+		)
+	);
 
-	$list = explode('|', str_replace($separators, '|', $input));
 	foreach($list as $i => &$email){
 		if(empty($email)){
 			unset($list[$i]);
 		}
-		else{
-			$email = trim($email);
-		}
 	}
 
 	return array_values(
-		array_map(
-			'strtolower',
-			array_unique(
+		array_unique(
+			array_map(
+				'formatEmail',
 				$list
 			)
 		)
@@ -119,6 +137,10 @@ function stringToEmails($input)
  */
 function emailsToString($list, $glue = ',')
 {
+	if(is_string($list)){
+		return $list;
+	}
+
 	return implode($glue, $list);
 }
 
@@ -126,6 +148,7 @@ function emailsToString($list, $glue = ',')
  * Format single email address
  *
  * @param string $input
+ *
  * @return string
  */
 function formatEmail($input)
@@ -138,6 +161,7 @@ function formatEmail($input)
  *
  * @param string|array $input
  * @param string $glue
+ *
  * @return string
  */
 function formatEmails($input, $glue)

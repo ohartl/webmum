@@ -1,13 +1,13 @@
 <?php
 if(Auth::isLoggedIn()){
-	redirect("private/");
+	redirect("private");
 }
 ?>
 
 <h1>WebMUM</h1>
 
 <p>
-	WebMUM is an easy to use webinterface for managing user accounts on your mailserver's MySQL user backend.<br/>
+	WebMUM is an easy to use web interface for managing user accounts on your e-mail server with a MySQL user backend.<br/>
 	Users of your server can log in here to change their passwords.
 </p>
 

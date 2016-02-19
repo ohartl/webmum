@@ -3,6 +3,7 @@
 <head>
 	<title>WebMUM</title>
 	<link rel=stylesheet href="<?php echo url('include/css/style.css'); ?>" type="text/css" media=screen>
+<?php if(defined('MIN_PASS_LENGTH')): ?>
 	<script type="text/javascript">
 		function generatePassword() {
 			var length = <?php echo MIN_PASS_LENGTH + 1; ?>,
@@ -14,6 +15,7 @@
 			return retVal;
 		}
 	</script>
+<?php endif; ?>
 </head>
 
 <body>

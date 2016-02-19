@@ -21,8 +21,17 @@
  * along with this program. If not, see <http://www.gnu.org/licenses/>.
  */
 
-
 define("BACKEND_BASE_PATH", preg_replace("#index.php#", "", $_SERVER['SCRIPT_FILENAME']));
+
+function getBaseUrl(){
+	$sec = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? 's' : '';
+	$host = $_SERVER["SERVER_NAME"].($_SERVER["SERVER_PORT"] != "80" ? ':'.$_SERVER["SERVER_PORT"] : '');
+
+	return sprintf("http%s://%s%s", $sec, $host, str_replace('index.php', '', $_SERVER["DOCUMENT_URI"]));
+}
+define("BASE_URL", getBaseUrl());
+
+
 require_once 'include/php/default.inc.php';
 
 require_once 'include/php/template/header.php';
