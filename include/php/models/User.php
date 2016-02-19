@@ -1,60 +1,57 @@
 <?php
 
-class User
+class User extends AbstractModel
 {
+
+	/**
+	 * @inheritdoc
+	 */
+	public static $table = DBT_USERS;
+
+	/**
+	 * @inheritdoc
+	 */
+	public static $idAttribute = DBC_USERS_ID;
+
+
 	const ROLE_USER = 'user';
 	const ROLE_ADMIN = 'admin';
 
-	/**
-	 * @var int|string
-	 */
-	private $id;
 
 	/**
-	 * @var string
+	 * @inheritdoc
 	 */
-	private $username;
-
-	/**
-	 * @var string
-	 */
-	private $domain;
-
-	/**
-	 * @var int
-	 */
-	private $mailboxLimit = 0;
-
-	/**
-	 * @var string
-	 */
-	private $role;
-
-
-	/**
-	 * User constructor.
-	 *
-	 * @param array $userData
-	 */
-	function __construct($userData)
+	protected function setupDbMapping($childMapping = array())
 	{
-		$this->id = $userData[DBC_USERS_ID];
-		$this->username = $userData[DBC_USERS_USERNAME];
-		$this->domain = $userData[DBC_USERS_DOMAIN];
-		$this->role = static::getRoleByEmail($this->getEmail());
+		$thisMappings = array(
+			'username' => DBC_USERS_USERNAME,
+			'domain' => DBC_USERS_DOMAIN,
+		);
 
 		if(defined('DBC_USERS_MAILBOXLIMIT')){
-			$this->mailboxLimit = $userData[DBC_USERS_MAILBOXLIMIT];
+			$thisMappings['mailboxLimit'] = DBC_USERS_MAILBOXLIMIT;
 		}
+
+		return array_replace(
+			parent::setupDbMapping($thisMappings),
+			$childMapping
+		);
 	}
 
 
 	/**
-	 * @return int|string
+	 * @inheritdoc
 	 */
-	public function getId()
+	protected function __construct($data)
 	{
-		return $this->id;
+		parent::__construct($data);
+
+		$this->setUsername($data[DBC_USERS_USERNAME]);
+		$this->setDomain($data[DBC_USERS_DOMAIN]);
+		$this->setPasswordHash($data[DBC_USERS_PASSWORD]);
+		$this->setMailboxLimit(defined('DBC_USERS_MAILBOXLIMIT') ? intval($data[DBC_USERS_MAILBOXLIMIT]) : 0);
+
+		$this->setAttribute('role', static::getRoleByEmail($this->getEmail()));
 	}
 
 
@@ -63,7 +60,16 @@ class User
 	 */
 	public function getUsername()
 	{
-		return $this->username;
+		return $this->getAttribute('username');
+	}
+
+
+	/**
+	 * @param string $value
+	 */
+	public function setUsername($value)
+	{
+		$this->setAttribute('username', strtolower($value));
 	}
 
 
@@ -72,7 +78,16 @@ class User
 	 */
 	public function getDomain()
 	{
-		return $this->domain;
+		return $this->getAttribute('domain');
+	}
+
+
+	/**
+	 * @param string $value
+	 */
+	public function setDomain($value)
+	{
+		$this->setAttribute('domain', strtolower($value));
 	}
 
 
@@ -81,7 +96,25 @@ class User
 	 */
 	public function getEmail()
 	{
-		return $this->username.'@'.$this->domain;
+		return $this->getUsername().'@'.$this->getDomain();
+	}
+
+
+	/**
+	 * @return string
+	 */
+	public function getPasswordHash()
+	{
+		return $this->getAttribute('password_hash');
+	}
+
+
+	/**
+	 * @param string $value
+	 */
+	public function setPasswordHash($value)
+	{
+		$this->setAttribute('password_hash', $value);
 	}
 
 
@@ -90,7 +123,43 @@ class User
 	 */
 	public function getMailboxLimit()
 	{
-		return $this->mailboxLimit;
+		return $this->getAttribute('mailboxLimit');
+	}
+
+
+	/**
+	 * @param int $value
+	 */
+	public function setMailboxLimit($value)
+	{
+		$this->setAttribute('mailboxLimit', $value);
+	}
+
+
+	/**
+	 * Get mailbox limit default via database default value
+	 *
+	 * @return int
+	 */
+	public static function getMailboxLimitDefault()
+	{
+		global $db;
+
+		if(defined('DBC_USERS_MAILBOXLIMIT')){
+
+			$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") FROM `".static::$table."` LIMIT 1";
+			if(!$result = $db->query($sql)){
+				dbError($db->error, $sql);
+			}
+
+			if($result->num_rows === 1){
+				$row = $result->fetch_array();
+
+				return intval($row[0]);
+			}
+		}
+
+		return 0;
 	}
 
 
@@ -99,7 +168,7 @@ class User
 	 */
 	public function getRole()
 	{
-		return $this->role;
+		return $this->getAttribute('role');
 	}
 
 
@@ -132,6 +201,39 @@ class User
 	{
 		Auth::validateNewPassword($password, $passwordRepeated);
 
-		Auth::changeUserPassword($this->id, $password);
+		Auth::changeUserPassword($this->getId(), $password);
 	}
+
+
+	/**
+	 * @inheritdoc
+	 */
+	public static function findAll($orderBy = array(DBC_USERS_DOMAIN, DBC_USERS_USERNAME))
+	{
+		return parent::findAll($orderBy);
+	}
+
+
+	/**
+	 * @param string $email
+	 *
+	 * @return static|null
+	 */
+	public static function findByEmail($email)
+	{
+		$emailInParts = explode("@", $email);
+		if(count($emailInParts) !== 2){
+			return null;
+		}
+		$username = $emailInParts[0];
+		$domain = $emailInParts[1];
+
+		return static::findWhereFirst(
+			array(
+				array('username', $username),
+				array('domain', $domain)
+			)
+		);
+	}
+
 }
