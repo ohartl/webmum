@@ -1,35 +1,11 @@
 <?php
-/*
- * #################### This is WebMUM Version 0.1.9 ######################
- * 
- * Project on GitHub: https://github.com/ThomasLeister/webmum
- * Author's Blog: https://thomas-leister.de
- * 
- * Please report bugs on GitHub.
- * 
- * Copyright (C) 2014 Thomas Leister
- * 
- * This program is free software: you can redistribute it and/or modify
- * it under the terms of the GNU General Public License as published by
- * the Free Software Foundation, either version 3 of the License, or
- * (at your option) any later version.
- * This program is distributed in the hope that it will be useful,
- * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
- * GNU General Public License for more details.
- * You should have received a copy of the GNU General Public License
- * along with this program. If not, see <http://www.gnu.org/licenses/>.
- */
+// Start session as the very first thing
+session_start();
+session_regenerate_id();
+
 
 define("BACKEND_BASE_PATH", preg_replace("#index.php#", "", $_SERVER['SCRIPT_FILENAME']));
 
-function getBaseUrl(){
-	$sec = (isset($_SERVER["HTTPS"]) && $_SERVER["HTTPS"] == "on") ? 's' : '';
-	$host = $_SERVER["SERVER_NAME"].($_SERVER["SERVER_PORT"] != "80" ? ':'.$_SERVER["SERVER_PORT"] : '');
-
-	return sprintf("http%s://%s%s", $sec, $host, str_replace('index.php', '', $_SERVER["DOCUMENT_URI"]));
-}
-define("BASE_URL", getBaseUrl());
 
 
 require_once 'include/php/default.inc.php';
