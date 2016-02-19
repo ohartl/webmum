@@ -9,16 +9,7 @@ else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
 	add_message("fail", "Domain could not be deleted because admin account would be affected.");
 }
 
-$sql = "SELECT d.*, COUNT(DISTINCT u.`".DBC_USERS_ID."`) AS `user_count`, COUNT(DISTINCT r.`".DBC_ALIASES_ID."`) AS `redirect_count`
-FROM `".DBT_DOMAINS."` AS d
-LEFT JOIN `".DBT_USERS."` AS u ON (u.`".DBC_USERS_DOMAIN."` = d.`".DBC_DOMAINS_DOMAIN."`)
-LEFT JOIN `".DBT_ALIASES."` AS r ON (r.`".DBC_ALIASES_SOURCE."` LIKE CONCAT('%@', d.`".DBC_DOMAINS_DOMAIN."`))
-GROUP BY d.`".DBC_DOMAINS_DOMAIN."`
-ORDER BY `".DBC_DOMAINS_DOMAIN."` ASC;";
-
-if(!$result = $db->query($sql)){
-	dbError($db->error);
-}
+$domains = Domain::findAll();
 
 ?>
 
@@ -40,21 +31,21 @@ if(!$result = $db->query($sql)){
 		<tr>
 	</thead>
 	<tbody>
-	<?php while($row = $result->fetch_assoc()): ?>
+	<?php foreach($domains as $domain): /** @var Domain $domain */ ?>
 		<tr>
-			<td><?php echo strip_tags($row[DBC_DOMAINS_DOMAIN]); ?></td>
-			<td><?php echo strip_tags($row['user_count']); ?></td>
-			<td><?php echo strip_tags($row['redirect_count']); ?></td>
+			<td><?php echo $domain->getDomain(); ?></td>
+			<td><?php echo $domain->countUsers(); ?></td>
+			<td><?php echo $domain->countRedirects(); ?></td>
 			<td>
-				<a href="<?php echo url('admin/deletedomain/?id='.$row[DBC_DOMAINS_ID]); ?>">[Delete]</a>
+				<a href="<?php echo url('admin/deletedomain/?id='.$domain->getId()); ?>">[Delete]</a>
 			</td>
 		</tr>
-	<?php endwhile; ?>
+	<?php endforeach; ?>
 	</tbody>
-<?php if ($result->num_rows > 0): ?>
+<?php if ($domains->count() > 0): ?>
 	<tfoot>
 	<tr>
-		<th><?php echo $result->num_rows;?> Domains</th>
+		<th><?php echo $domains->count();?> Domains</th>
 	</tr>
 	</tfoot>
 <?php endif; ?>

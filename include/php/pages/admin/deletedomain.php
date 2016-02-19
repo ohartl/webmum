@@ -5,53 +5,45 @@ if(!isset($_GET['id'])){
 	redirect("admin/listdomains");
 }
 
-$id = $db->escape_string($_GET['id']);
+$id = $_GET['id'];
 
-//Load user data from DB
-$sql = "SELECT `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."` WHERE `".DBC_DOMAINS_ID."` = '$id' LIMIT 1;";
+/** @var Domain $domain */
+$domain = Domain::find($id);
 
-if(!$result = $db->query($sql)){
-	dbError($db->error);
-}
-
-if($result->num_rows !== 1){
+if(is_null($domain)){
 	// Domain does not exist, redirect to overview
 	redirect("admin/listdomains");
 }
 
-$row = $result->fetch_assoc();
-$domain = $row[DBC_DOMAINS_DOMAIN];
-
 // Delete domain
 if(isset($_POST['confirm'])){
 	$confirm = $_POST['confirm'];
-	
+
 	if($confirm === "yes"){
 
-		$admin_domains = array();
-		foreach($admins as $admin) {
+		// Check if admin domain is affected
+		$isAdminDomain = false;
+		foreach($admins as $admin){
 			$parts = explode("@", $admin);
-			$admin_domains[] = $parts[1];
+			if(count($parts) === 2 && $parts[2] === $domain->getDomain()){
+				$isAdminDomain = true;
+				break;
+			}
 		}
 
-		// Check if admin domain is affected
-		if(!in_array($domain, $admin_domains)){
-			$sql = "DELETE FROM `".DBT_DOMAINS."` WHERE `".DBC_DOMAINS_ID."` = '$id'";
+		if(!$isAdminDomain){
 
-			if(!$result = $db->query($sql)){
-				dbError($db->error);
-			}
-			else{
-				$sql = "DELETE FROM `".DBT_USERS."` WHERE `".DBC_USERS_DOMAIN."` = '$domain'";
+			$users = User::findWhere(array(DBC_USERS_DOMAIN, $domain->getDomain()));
 
-				if(!$result = $db->query($sql)){
-					dbError($db->error);
-				}
-				else{
-					// Delete domain successfull, redirect to overview
-					redirect("admin/listdomains/?deleted=1");
-				}
+			/** @var User $user */
+			foreach($users as $user){
+				$user->delete();
 			}
+
+			$domain->delete();
+
+			// Delete domain successfull, redirect to overview
+			redirect("admin/listdomains/?deleted=1");
 		}
 		else{
 			// Cannot delete domain with admin emails, redirect to overview
@@ -66,7 +58,7 @@ if(isset($_POST['confirm'])){
 }
 ?>
 
-<h1>Delete domain "<?php echo $domain ?>"?</h1>
+<h1>Delete domain "<?php echo $domain->getDomain() ?>"?</h1>
 
 <div class="buttons">
 	<a class="button" href="<?php echo url('admin/listdomains'); ?>">&#10092; Back to domain list</a>

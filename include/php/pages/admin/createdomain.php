@@ -1,22 +1,22 @@
 <?php 
 
 if(isset($_POST['domain'])){
-	$domain = $db->escape_string($_POST['domain']);
-	$domain = strtolower($domain);
-	
-	if($domain !== ""){
-		// Check if domain exists in database
-		$domain_exists = $db->query("SELECT `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."` WHERE `".DBC_DOMAINS_DOMAIN."` = '$domain';");
-		if($domain_exists->num_rows == 0){
-			$sql = "INSERT INTO `".DBT_DOMAINS."` (`".DBC_DOMAINS_DOMAIN."`) VALUES ('$domain');";
-				
-			if(!$result = $db->query($sql)){
-				dbError($db->error);
-			}
-			else{
-				// Created domain successfull, redirect to overview
-				redirect("admin/listdomains/?created=1");
-			}
+	$inputDomain = $_POST['domain'];
+
+	if(!empty($inputDomain)){
+
+		$existingDomain = Domain::findWhere(array(DBC_DOMAINS_DOMAIN, $inputDomain));
+
+		if(!is_null($existingDomain)){
+
+			Domain::createAndSave(
+				array(
+					DBC_DOMAINS_DOMAIN => $inputDomain,
+				)
+			);
+
+			// Created domain successfull, redirect to overview
+			redirect("admin/listdomains/?created=1");
 		}
 		else{
 			add_message("fail", "Domain already exists in database.");

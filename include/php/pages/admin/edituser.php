@@ -1,27 +1,25 @@
 <?php 
-// If mailbox_limit is supported in the MySQL database
-$mailbox_limit_default = 0;
-if(defined('DBC_USERS_MAILBOXLIMIT')){
-	// Get mailbox_limit default value from DB
-	$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") AS `".DBC_USERS_MAILBOXLIMIT."` FROM `".DBT_USERS."` LIMIT 1;";
 
-	if(!$result = $db->query($sql)){
-		dbError($db->error);
-	}
-	else{
-		while($row = $result->fetch_assoc()){
-			$mailbox_limit_default = $row[DBC_USERS_MAILBOXLIMIT];
+$mailboxLimitDefault = User::getMailboxLimitDefault();
+
+$saveMode = (isset($_POST['savemode']) && in_array($_POST['savemode'], array('edit', 'create')))
+	? $_POST['savemode']
+	: null;
+
+if(!is_null($saveMode)){
+
+	$inputPassword = isset($_POST['password']) ? $_POST['password'] : null;
+	$inputPasswordRepeated = isset($_POST['password_repeat']) ? $_POST['password_repeat'] : null;
+
+	$inputMailboxLimit = null;
+	if(defined('DBC_USERS_MAILBOXLIMIT')){
+		$inputMailboxLimit = isset($_POST['mailbox_limit']) ? intval($_POST['mailbox_limit']) : $mailboxLimitDefault;
+		if(!$inputMailboxLimit === 0 && empty($inputMailboxLimit)){
+			$inputMailboxLimit = $mailboxLimitDefault;
 		}
 	}
-}
 
-$username = isset($_POST['username']) ? $db->escape_string(strtolower($_POST['username'])) : '';
-$domain = isset($_POST['domain']) ? $db->escape_string(strtolower($_POST['domain'])) : '';
-
-if(isset($_POST['savemode'])){
-	$savemode = $_POST['savemode'];
-
-	if($savemode === "edit"){
+	if($saveMode === 'edit'){
 		// Edit mode entered
 
 		if(!isset($_POST['id'])){
@@ -29,86 +27,79 @@ if(isset($_POST['savemode'])){
 			redirect("admin/listusers");
 		}
 
-		$id = $db->escape_string($_POST['id']);
+		$inputId = $_POST['id'];
 
-		$sql = "SELECT `".DBC_USERS_ID."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
-		if(!$resultExists = $db->query($sql)){
-			dbError($db->error);
-		}
+		/** @var User $userToEdit */
+		$userToEdit = User::find($inputId);
 
-		if($resultExists->num_rows !== 1){
+		if(is_null($userToEdit)){
 			// User does not exist, redirect to overview
 			redirect("admin/listusers");
 		}
 
-		if(defined('DBC_USERS_MAILBOXLIMIT')){
-			$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
-			if($mailbox_limit == ""){
-				$mailbox_limit = $mailbox_limit_default;
-			}
-
-			$sql = "UPDATE `".DBT_USERS."` SET `".DBC_USERS_MAILBOXLIMIT."` = '$mailbox_limit' WHERE `".DBC_USERS_ID."` = '$id';";
-			if(!$result = $db->query($sql)){
-				dbError($db->error);
-			}
+		if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
+			$userToEdit->setMailboxLimit($inputMailboxLimit);
 		}
+
+		$passwordError = false;
 
 		// Is there a changed password?
-		if(empty($_POST['password']) && empty($_POST['password_repeat'])){
-			// Edit user successfull, redirect to overview
-			redirect("admin/listusers/?edited=1");
-		}
-		else {
+		if(!empty($inputPassword) || !empty($inputPasswordRepeated)){
 			try{
-				Auth::validateNewPassword($_POST['password'], $_POST['password_repeat']);
-
-				// Password is okay and can be set
-				Auth::changeUserPassword($id, $_POST['password']);
-
-				// Edit user password successfull, redirect to overview
-				redirect("admin/listusers/?edited=1");
+				$userToEdit->changePassword($inputPassword, $inputPasswordRepeated);
 			}
 			catch(Exception $passwordInvalidException){
 				add_message("fail", $passwordInvalidException->getMessage());
+				$passwordError = true;
 			}
+		}
+
+		$userToEdit->save();
+
+		if(!$passwordError){
+			// Edit user successfull, redirect to overview
+			redirect("admin/listusers/?edited=1");
 		}
 	}
 
-	else if($savemode === "create"){
+	else if($saveMode === 'create'){
 		// Create mode entered
 
-		if(defined('DBC_USERS_MAILBOXLIMIT')){
-			$mailbox_limit = $db->escape_string($_POST['mailbox_limit']);
-		}
-		else{
-			// make mailbox_limit dummy for "if"
-			$mailbox_limit = 0;
-		}
+		$inputUsername = isset($_POST['username']) ? $_POST['username'] : null;
+		$inputDomain = isset($_POST['domain']) ? $_POST['domain'] : null;
 
-		if(!empty($username) && !empty($domain) && !empty($mailbox_limit) && !empty($_POST['password']) && !empty($_POST['password_repeat'])){
+		if(!empty($inputUsername)
+			&& !empty($inputDomain)
+			&& (!empty($inputPassword) || !empty($inputPasswordRepeated))
+		){
+
+			/** @var User $user */
+			$user = User::findWhereFirst(
+				array(
+					array(DBC_USERS_USERNAME, $inputUsername),
+					array(DBC_USERS_DOMAIN, $inputDomain),
+				)
+			);
+
 			// Check if user already exists
-			$user_exists = $db->query("SELECT `".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_USERNAME."` = '$username' AND `".DBC_USERS_DOMAIN."` = '$domain';");
-			if($user_exists->num_rows == 0){
+			if(is_null($user)){
 				try{
 					// Check password then go on an insert user first
-					Auth::validateNewPassword($_POST['password'], $_POST['password_repeat']);
+					Auth::validateNewPassword($inputPassword, $inputPasswordRepeated);
 
-					// Optional mailbox_limit support
-					if(defined('DBC_USERS_MAILBOXLIMIT')){
-						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`, `".DBC_USERS_MAILBOXLIMIT."`) VALUES ('$username', '$domain', '$mailbox_limit')";
+
+					$data = array(
+						DBC_USERS_USERNAME => $inputUsername,
+						DBC_USERS_DOMAIN => $inputDomain,
+						DBC_USERS_PASSWORD => Auth::generatePasswordHash($inputPassword)
+					);
+
+					if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
+						$data[DBC_USERS_MAILBOXLIMIT] = $inputMailboxLimit;
 					}
-					else{
-						$sql = "INSERT INTO `".DBT_USERS."` (`".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."`) VALUES ('$username', '$domain')";
-					}
 
-					if(!$result = $db->query($sql)){
-						dbError($db->error);
-					}
-
-					$userId = $db->insert_id;
-
-					// Password is validated and user was created, we can insert the password now
-					Auth::changeUserPassword($userId, $_POST['password']);
+					/** @var User $user */
+					$user = User::createAndSave($data);
 
 					// Redirect user to user list
 					redirect("admin/listusers/?created=1");
@@ -122,6 +113,7 @@ if(isset($_POST['savemode'])){
 			}
 		}
 		else{
+			var_dump($_POST);
 			// Fields missing
 			add_message("fail", "Not all fields were filled out.");
 		}
@@ -132,39 +124,23 @@ if(isset($_POST['savemode'])){
 $mode = "create";
 if(isset($_GET['id'])){
 	$mode = "edit";
-	$id = $db->escape_string($_GET['id']);
+	$id = $_GET['id'];
 
-	//Load user data from DB
-	$sql = "SELECT * from `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
+	/** @var User $user */
+	$user = User::find($id);
 
-	if(!$result = $db->query($sql)){
-		dbError($db->error);
-	}
-
-	if($result->num_rows !== 1){
+	if(is_null($user)){
 		// User does not exist, redirect to overview
 		redirect("admin/listusers");
 	}
-
-	$row = $result->fetch_assoc();
-
-	$username = $row[DBC_USERS_USERNAME];
-	$domain = $row[DBC_USERS_DOMAIN];
-	if(defined('DBC_USERS_MAILBOXLIMIT')){
-		$mailbox_limit = $row[DBC_USERS_MAILBOXLIMIT];
-	}
 }
 
-//Load user data from DB
-$sql = "SELECT `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."`;";
-
-if(!$resultDomains = $db->query($sql)){
-	dbError($db->error);
-}
+/** @var ModelCollection $domains */
+$domains = Domain::findAll();
 
 ?>
 
-<h1><?php echo ($mode === "create") ? 'Create User' : 'Edit user "'.$username.'@'.$domain.'"'; ?></h1>
+<h1><?php echo ($mode === "create") ? "Create User" : "Edit user \"{$user->getEmail()}\""; ?></h1>
 
 <div class="buttons">
 	<a class="button" href="<?php echo url('admin/listusers'); ?>">&#10092; Back to user list</a>
@@ -172,8 +148,8 @@ if(!$resultDomains = $db->query($sql)){
 
 <form class="form" action="" method="post">
 	<input type="hidden" name="savemode" value="<?php echo $mode; ?>"/>
-<?php if($mode === "edit" && isset($id)): ?>
-	<input type="hidden" name="id" value="<?php echo $id; ?>"/>
+<?php if($mode === "edit"): ?>
+	<input type="hidden" name="id" value="<?php echo $user->getId(); ?>"/>
 <?php endif; ?>
 
 	<?php output_messages(); ?>
@@ -187,7 +163,7 @@ if(!$resultDomains = $db->query($sql)){
 	<div class="input-group">
 		<label for="username">Username</label>
 		<div class="input">
-			<input type="text" name="username" placeholder="Username" value="<?php echo isset($username) ? strip_tags($username) : ''; ?>" autofocus required/>
+			<input type="text" name="username" placeholder="Username" value="<?php echo isset($_POST['username']) ? strip_tags($_POST['username']) : (isset($user) ? $user->getUsername() : ''); ?>" autofocus required/>
 		</div>
 	</div>
 
@@ -196,11 +172,11 @@ if(!$resultDomains = $db->query($sql)){
 		<div class="input">
 			<select name="domain" required>
 				<option value="">-- Select a domain --</option>
-			<?php while($row = $resultDomains->fetch_assoc()): ?>
-				<option value="<?php echo strip_tags($row[DBC_DOMAINS_DOMAIN]); ?>" <?php echo (isset($domain) && $row[DBC_DOMAINS_DOMAIN] == $domain) ? 'selected' : ''; ?>>
-					<?php echo strip_tags($row[DBC_DOMAINS_DOMAIN]); ?>
+			<?php foreach($domains as $domain): /** @var Domain $domain */ ?>
+				<option value="<?php echo $domain->getDomain(); ?>" <?php echo ((isset($_POST['domain']) && $_POST['domain'] === $domain->getDomain()) || (isset($user) && $user->getDomain() == $domain->getDomain())) ? 'selected' : ''; ?>>
+					<?php echo $domain->getDomain(); ?>
 				</option>
-			<?php endwhile; ?>
+			<?php endforeach; ?>
 			</select>
 		</div>
 	</div>
@@ -221,9 +197,9 @@ if(!$resultDomains = $db->query($sql)){
 <?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
 	<div class="input-group">
 		<label>Mailbox limit</label>
-		<div class="input-info">The default limit is <?php echo $mailbox_limit_default; ?> MB. Limit set to 0 means no limit in size.</div>
+		<div class="input-info">The default limit is <?php echo $mailboxLimitDefault; ?> MB. Limit set to 0 means no limit in size.</div>
 		<div class="input input-labeled input-labeled-right">
-			<input name="mailbox_limit" type="number" value="<?php echo strip_tags(isset($mailbox_limit) ? $mailbox_limit : $mailbox_limit_default); ?>" placeholder="Mailbox limit in MB" min="0" required/>
+			<input name="mailbox_limit" type="number" value="<?php echo isset($_POST['mailbox_limit']) ? strip_tags($_POST['mailbox_limit']) : ((isset($user) && defined('DBC_USERS_MAILBOXLIMIT')) ? $user->getMailboxLimit() : $mailboxLimitDefault); ?>" placeholder="Mailbox limit in MB" min="0" required/>
 			<span class="input-label">MB</span>
 		</div>
 	</div>

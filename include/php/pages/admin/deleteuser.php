@@ -1,37 +1,32 @@
-<?php 
+<?php
 
-$id = $db->escape_string($_GET['id']);
-
-//Load user data from DB
-$sql = "SELECT `".DBC_USERS_USERNAME."`, `".DBC_USERS_DOMAIN."` FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id' LIMIT 1;";
-
-if(!$result = $db->query($sql)){
-	dbError($db->error);
+if(!isset($_GET['id'])){
+	// Redirect id not set, redirect to overview
+	redirect("admin/listredirects");
 }
 
-$row = $result->fetch_assoc();
+$id = $_GET['id'];
 
-$username = $row[DBC_USERS_USERNAME];
-$domain = $row[DBC_USERS_DOMAIN];
+/** @var User $user */
+$user = User::find($id);
 
-$mailAddress = $username."@".$domain;
+if(is_null($user)){
+	// User does not exist, redirect to overview
+	redirect("admin/listusers");
+}
 
 // Delete user
 if(isset($_POST['confirm'])){
 	$confirm = $_POST['confirm'];
-	
+
 	if($confirm === "yes"){
 		// Check if admin is affected
-		if (!in_array($mailAddress, $admins)) {
-			$sql = "DELETE FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$id'";
-				
-			if(!$result = $db->query($sql)){
-				dbError($db->error);
-			}
-			else{
-				// Delete user successfull, redirect to overview
-				redirect("admin/listusers/?deleted=1");
-			}
+		if(!in_array($user->getEmail(), $admins)){
+
+			$user->delete();
+
+			// Delete user successfull, redirect to overview
+			redirect("admin/listusers/?deleted=1");
 		}
 		else{
 			// Admin tried to delete himself, redirect to overview
@@ -46,7 +41,7 @@ if(isset($_POST['confirm'])){
 
 ?>
 
-<h1>Delete user "<?php echo strip_tags($mailAddress) ?>"?</h1>
+<h1>Delete user "<?php echo $user->getEmail() ?>"?</h1>
 
 <div class="buttons">
 	<a class="button" href="<?php echo url('admin/listusers'); ?>">&#10092; Back to user list</a>

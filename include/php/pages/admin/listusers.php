@@ -13,11 +13,7 @@ else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
 	add_message("fail", "Admin user cannot be deleted.");
 }
 
-$sql = "SELECT * FROM `".DBT_USERS."` ORDER BY `".DBC_USERS_DOMAIN."`, `".DBC_USERS_USERNAME."` ASC;";
-
-if(!$result = $db->query($sql)){
-	dbError($db->error);
-}
+$users = User::findAll();
 
 ?>
 
@@ -43,29 +39,27 @@ if(!$result = $db->query($sql)){
 		<tr>
 	</thead>
 	<tbody>
-	<?php while($row = $result->fetch_assoc()): ?>
+	<?php foreach($users as $user): /** @var User $user */ ?>
 		<tr>
-			<td><?php echo strip_tags($row[DBC_USERS_USERNAME]); ?></td>
-			<td><?php echo strip_tags($row[DBC_USERS_DOMAIN]); ?></td>
-		<?php if(defined('DBC_USERS_MAILBOXLIMIT')):
-			$limit = strip_tags($row[DBC_USERS_MAILBOXLIMIT]);
-			?>
-			<td style="text-align: right"><?php echo ($limit > 0) ? $limit.' MB' : 'No limit'; ?></td>
-		<?php endif;?>
-			<td><?php echo in_array($row[DBC_USERS_USERNAME].'@'.$row[DBC_USERS_DOMAIN], $admins) ? 'Admin' : 'User'; ?></td>
+			<td><?php echo$user->getUsername(); ?></td>
+			<td><?php echo $user->getDomain(); ?></td>
+		<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+			<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>
+		<?php endif; ?>
+			<td><?php echo ($user->getRole() === User::ROLE_ADMIN) ? 'Admin' : 'User'; ?></td>
 			<td>
-				<a href="<?php echo url('admin/edituser/?id='.$row[DBC_USERS_ID]); ?>">[Edit]</a>
+				<a href="<?php echo url('admin/edituser/?id='.$user->getId()); ?>">[Edit]</a>
 			</td>
 			<td>
-				<a href="<?php echo url('admin/deleteuser/?id='.$row[DBC_USERS_ID]); ?>">[Delete]</a>
+				<a href="<?php echo url('admin/deleteuser/?id='.$user->getId()); ?>">[Delete]</a>
 			</td>
 		</tr>
-	<?php endwhile; ?>
+	<?php endforeach; ?>
 	</tbody>
-<?php if ($result->num_rows > 0): ?>
+<?php if ($users->count() > 0): ?>
 	<tfoot>
 		<tr>
-			<th><?php echo $result->num_rows;?> User</th>
+			<th><?php echo $users->count();?> User</th>
 		</tr>
 	</tfoot>
 <?php endif; ?>

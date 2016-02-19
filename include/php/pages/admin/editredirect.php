@@ -4,83 +4,61 @@ $id = null;
 $redirect = null;
 
 if(isset($_GET['id'])){
-	$id = $db->escape_string($_GET['id']);
+	$id = $_GET['id'];
 
-	if(defined('DBC_ALIASES_MULTI_SOURCE')){
-		$sql = "SELECT r.* FROM (
-			SELECT
-				group_concat(g.`".DBC_ALIASES_ID."` ORDER BY g.`".DBC_ALIASES_ID."` SEPARATOR ',') AS `".DBC_ALIASES_ID."`,
-				group_concat(g.`".DBC_ALIASES_SOURCE."` SEPARATOR ',') AS `".DBC_ALIASES_SOURCE."`,
-				g.`".DBC_ALIASES_DESTINATION."`,
-				g.`".DBC_ALIASES_MULTI_SOURCE."`
-			FROM `".DBT_ALIASES."` AS g
-			WHERE g.`".DBC_ALIASES_MULTI_SOURCE."` IS NOT NULL
-			GROUP BY g.`".DBC_ALIASES_MULTI_SOURCE."`
-		UNION
-			SELECT
-				s.`".DBC_ALIASES_ID."`,
-				s.`".DBC_ALIASES_SOURCE."`,
-				s.`".DBC_ALIASES_DESTINATION."`,
-				s.`".DBC_ALIASES_MULTI_SOURCE."`
-			FROM `".DBT_ALIASES."` AS s
-			WHERE s.`".DBC_ALIASES_MULTI_SOURCE."` IS NULL
-		) AS r
-		WHERE `".DBC_ALIASES_ID."` = '$id' LIMIT 1;";
-	}
-	else{
-		$sql = "SELECT `".DBC_ALIASES_ID."`, `".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = '$id' LIMIT 1;";
-	}
+	/** @var AbstractRedirect $redirect */
+	$redirect = AbstractRedirect::findMulti($id);
 
-	if(!$result = $db->query($sql)){
-		dbError($db->error);
-	}
-
-	if($result->num_rows !== 1){
+	if(is_null($redirect)){
 		// Redirect does not exist, redirect to overview
 		redirect("admin/listredirects");
 	}
-
-	$redirect = $result->fetch_assoc();
-
-	$sources = stringToEmails($redirect[DBC_ALIASES_SOURCE]);
-	$destinations = stringToEmails($redirect[DBC_ALIASES_DESTINATION]);
 }
 
 if(isset($_POST['savemode'])){
 	$savemode = $_POST['savemode'];
 
-	$sources = stringToEmails($_POST['source']);
-	$destinations = stringToEmails($_POST['destination']);
+	$inputSources = stringToEmails($_POST['source']);
+	$inputDestinations = stringToEmails($_POST['destination']);
 
 	// validate emails
 	$emailErrors = array();
 
 	// basic email validation is not working 100% correct though
-	foreach(array_merge($sources, $destinations) as $email){
+	foreach(array_merge($inputSources, $inputDestinations) as $email){
 		if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-			$emailErrors[$email] = "Address \"$email\" is not a valid email address.";
+			$emailErrors[$email] = "Address \"{$email}\" is not a valid email address.";
 		}
 	}
 
+	// validate source emails are on domains
 	if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED')){
-		$sql = "SELECT GROUP_CONCAT(`".DBC_DOMAINS_DOMAIN."` SEPARATOR ',') as `".DBC_DOMAINS_DOMAIN."` FROM `".DBT_DOMAINS."`";
-		if(!$resultDomains = $db->query($sql)){
-			dbError($db->error);
-		}
-		$domainRow = $resultDomains->fetch_assoc();
-		$domains = explode(',', $domainRow[DBC_DOMAINS_DOMAIN]);
+		$domains = Domain::findAll();
 
-		// validate source emails are on domains
-		foreach($sources as $email){
+		foreach($inputSources as $email){
 			if(isset($emailErrors[$email])){
 				continue;
 			}
-			$splited = explode('@', $email);
-			if(count($splited) !== 2 || !in_array($splited[1], $domains)){
-				$emailErrors[$email] = "Domain of source address \"$email\" not in domains.";
+
+			$emailParts = explode('@', $email);
+			$searchResult = $domains->search(
+				function($domain) use ($emailParts){
+					/** @var Domain $domain */
+					return $domain->getDomain() === $emailParts[1];
+				}
+			);
+
+			if(is_null($searchResult)){
+				$emailErrors[$email] = "Domain of source address \"{$email}\" not in domains.";
 			}
 		}
 	}
+
+	// validate no redirect loops
+	foreach(array_intersect($inputSources, $inputDestinations) as $email){
+		$emailErrors[$email] = "Address \"{$email}\" cannot be in source and destination in same redirect.";
+	}
+
 
 	if(count($emailErrors) > 0){
 		add_message("fail", implode("<br>", $emailErrors));
@@ -88,64 +66,55 @@ if(isset($_POST['savemode'])){
 	else{
 		if(count($emailErrors) === 0 && $savemode === "edit" && !is_null($redirect)){
 
-			if(count($sources) > 0 && count($destinations) > 0){
-				$destination = $db->escape_string(emailsToString($destinations));
-				$source = $db->escape_string(emailsToString($sources));
+			if(count($inputSources) > 0 && count($inputDestinations) > 0){
+				$inputDestination = emailsToString();
 
-				$key = DBC_ALIASES_ID;
-				if(defined('DBC_ALIASES_MULTI_SOURCE') && !empty($redirect[DBC_ALIASES_MULTI_SOURCE])){
-					$key = DBC_ALIASES_MULTI_SOURCE;
-				}
-				$value = $redirect[$key];
-
-				$sql = "SELECT `".DBC_ALIASES_ID."`, `".DBC_ALIASES_SOURCE."` FROM `".DBT_ALIASES."` WHERE `$key` = '$value'";
-				if(!$resultExisting = $db->query($sql)){
-					dbError($db->error);
-				}
-
-				$sourceIdMap = array();
-				while($existingRedirect = $resultExisting->fetch_assoc()){
-					$sourceIdMap[$existingRedirect[DBC_ALIASES_SOURCE]] = $existingRedirect[DBC_ALIASES_ID];
-				}
+				$existingRedirects = AbstractRedirect::findWhere(
+					(defined('DBC_ALIASES_MULTI_SOURCE') && $redirect instanceof AbstractMultiRedirect)
+						? array(DBC_ALIASES_MULTI_SOURCE, $redirect->getMultiHash())
+						: array(DBC_ALIASES_ID, $redirect->getId())
+				);
 
 				// multi source handling
-				$hash = (count($sources) === 1) ? "NULL" : "'".md5($source)."'";
+				$hash = (count($inputSources) === 1) ? null : md5(emailsToString($inputSources));
 
-				foreach($sources as $sourceAddress){
-					$sourceAddress = $db->escape_string(formatEmail($sourceAddress));
+				foreach($inputSources as $sourceAddress){
+					$sourceAddress = formatEmail($sourceAddress);
 
-					if(isset($sourceIdMap[$sourceAddress])){
-						// edit existing source
-						$id = $sourceIdMap[$sourceAddress];
-
-						$additionalSql = defined('DBC_ALIASES_MULTI_SOURCE') ? ", `".DBC_ALIASES_MULTI_SOURCE."` = $hash " : "";
-						$sql = "UPDATE `".DBT_ALIASES."` SET `".DBC_ALIASES_SOURCE."` = '$sourceAddress', `".DBC_ALIASES_DESTINATION."` = '$destination' $additionalSql WHERE `".DBC_ALIASES_ID."` = '$id';";
-
-						if(!$result = $db->query($sql)){
-							dbError($db->error);
+					/** @var AbstractRedirect $thisRedirect */
+					$thisRedirect = $existingRedirects->search(
+						function($model) use ($sourceAddress){
+							/** @var AbstractRedirect $model */
+							return $model->getSource() === $sourceAddress;
 						}
+					);
 
-						unset($sourceIdMap[$sourceAddress]); // mark updated
+					if(!is_null($thisRedirect)){
+						// edit existing source
+
+						$thisRedirect->setSource($sourceAddress);
+						$thisRedirect->setDestination($inputDestinations);
+						$thisRedirect->setMultiHash($hash);
+						$thisRedirect->save();
+
+						$existingRedirects->delete($thisRedirect->getId()); // mark updated
 					}
 					else{
-						// add new source
-						$additionalSql = defined('DBC_ALIASES_MULTI_SOURCE') ? ", `".DBC_ALIASES_MULTI_SOURCE."`" : "";
-						$additionalSqlValue = defined('DBC_ALIASES_MULTI_SOURCE') ? ", $hash" : "";
-						$sql = "INSERT INTO `".DBT_ALIASES."` (`".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` $additionalSql) VALUES ('$sourceAddress', '$destination' $additionalSqlValue);";
-
-						if(!$result = $db->query($sql)){
-							dbError($db->error);
+						$data = array(
+							DBC_ALIASES_SOURCE => $sourceAddress,
+							DBC_ALIASES_DESTINATION => $inputDestination,
+						);
+						if(defined('DBC_ALIASES_MULTI_SOURCE')){
+							$data[DBC_ALIASES_MULTI_SOURCE] = $hash;
 						}
+
+						AbstractRedirect::createAndSave($data);
 					}
 				}
 
-				// delete none updated redirect
-				foreach($sourceIdMap as $source => $id){
-					$sql = "DELETE FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_ID."` = '$id';";
-
-					if(!$result = $db->query($sql)){
-						dbError($db->error);
-					}
+				// Delete none updated redirect
+				foreach($existingRedirects as $redirect){
+					$redirect->delete();
 				}
 
 				// Edit successfull, redirect to overview
@@ -157,56 +126,46 @@ if(isset($_POST['savemode'])){
 		}
 
 		else if(count($emailErrors) === 0 && $savemode === "create"){
-			if(count($sources) > 0 && count($destinations) > 0){
+			if(count($inputSources) > 0 && count($inputDestinations) > 0){
 
-				$values = array();
-				foreach($sources as $source){
-					$values[] = "'$source'";
-				}
-				$sql = "SELECT `".DBC_ALIASES_SOURCE."` FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_SOURCE."` IN (".implode(',', $values).");";
-				if(!$resultExisting = $db->query($sql)){
-					dbError($db->error);
-				}
+				$existingRedirects = AbstractRedirect::findWhere(
+					array(DBC_ALIASES_SOURCE, 'IN', $inputSources)
+				);
 
-				$errorExisting = array();
-				while($existingRedirect = $resultExisting->fetch_assoc()){
-					$email = $existingRedirect[DBC_ALIASES_SOURCE];
-					$errorExisting[] = "Source address \"$email\" is already redirected to some destination.";
-				}
+				if($existingRedirects->count() > 0){
+					$errorMessages = array();
+					/** @var AbstractRedirect $existingRedirect */
+					foreach($existingRedirects as $existingRedirect){
+						$errorMessages[] = "Source address \"{$existingRedirect->getSource()}\" is already redirected to some destination.";
+					}
 
-				if(count($errorExisting) > 0){
-					add_message("fail", implode("<br>", $errorExisting));
+					add_message("fail", implode("<br>", $errorMessages));
 				}
 				else{
-					$destination = $db->escape_string(emailsToString($destinations));
-					$source = $db->escape_string(emailsToString($sources));
+					$inputDestination = emailsToString($inputDestinations);
 
-					$values = array();
-					if(count($sources) === 1){
-						$additionalSqlValue = defined('DBC_ALIASES_MULTI_SOURCE') ? ", NULL" : "";
-						$values[] = "('$source', '$destination' $additionalSqlValue)";
+					if(defined('DBC_ALIASES_MULTI_SOURCE') && count($inputSources) > 1){
+						$hash = md5(emailsToString($inputSources));
 					}
-					else{
-						// multi source handling
-						$hash = md5($source);
+					else {
+						$hash = null;
+					}
 
-						foreach($sources as $sourceAddress){
-							$sourceAddress = $db->escape_string(formatEmail($sourceAddress));
-							$additionalSqlValue = defined('DBC_ALIASES_MULTI_SOURCE') ? ", '$hash'" : "";
-							$values[] = "('$sourceAddress', '$destination' $additionalSqlValue)";
+					foreach($inputSources as $inputSource){
+						$data = array(
+							DBC_ALIASES_SOURCE => $inputSource,
+							DBC_ALIASES_DESTINATION => $inputDestination,
+						);
+
+						if(defined('DBC_ALIASES_MULTI_SOURCE')){
+							$data[DBC_ALIASES_MULTI_SOURCE] = $hash;
 						}
+
+						$a = AbstractRedirect::createAndSave($data);
 					}
 
-					$additionalSql = defined('DBC_ALIASES_MULTI_SOURCE') ? ", `".DBC_ALIASES_MULTI_SOURCE."`" : "";
-					$sql = "INSERT INTO `".DBT_ALIASES."` (`".DBC_ALIASES_SOURCE."`, `".DBC_ALIASES_DESTINATION."` $additionalSql) VALUES ".implode(',', $values).";";
-
-					if(!$result = $db->query($sql)){
-						dbError($db->error);
-					}
-					else{
-						// Redirect created, redirect to overview
-						redirect("admin/listredirects/?created=1");
-					}
+					// Redirect created, redirect to overview
+					redirect("admin/listredirects/?created=1");
 				}
 			}
 			else{
@@ -233,7 +192,7 @@ if(isset($_GET['id'])){
 <?php output_messages(); ?>
 
 <form class="form" action="" method="post" autocomplete="off">
-	<input name="savemode" type="hidden" value="<?php echo isset($mode) ? $mode : ''; ?>"/>
+	<input name="savemode" type="hidden" value="<?php echo $mode; ?>"/>
 
 	<div class="input-group">
 		<div class="input-info">Enter single or multiple addresses separated by comma, semicolon or newline.</div>
@@ -243,9 +202,9 @@ if(isset($_GET['id'])){
 		<label for="source">Source</label>
 		<div class="input">
 			<?php if(defined('DBC_ALIASES_MULTI_SOURCE')): ?>
-				<textarea name="source" placeholder="Source" required autofocus><?php echo isset($sources) ? strip_tags(emailsToString($sources, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?></textarea>
+				<textarea name="source" placeholder="Source" required autofocus><?php echo formatEmails(isset($_POST['source']) ? strip_tags($_POST['source']) : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
 			<?php else: ?>
-				<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo isset($sources) ? strip_tags(emailsToString($sources, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?>"/>
+				<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo strip_tags(formatEmails(isset($_POST['source']) ? $_POST['source'] : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM)); ?>"/>
 			<?php endif; ?>
 		</div>
 	</div>
@@ -253,7 +212,7 @@ if(isset($_GET['id'])){
 	<div class="input-group">
 		<label for="destination">Destination</label>
 		<div class="input">
-			<textarea name="destination" placeholder="Destination" required><?php echo isset($destinations) ? strip_tags(emailsToString($destinations, FRONTEND_EMAIL_SEPARATOR_FORM)) : ''; ?></textarea>
+			<textarea name="destination" placeholder="Destination" required><?php echo formatEmails(isset($_POST['destination']) ? strip_tags($_POST['destination']) : (is_null($redirect) ? '' : $redirect->getDestination()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
 		</div>
 	</div>
 
