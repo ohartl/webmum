@@ -42,11 +42,11 @@ class Auth
 
 
 	/**
-	 * @param array $userData
+	 * @param AbstractModel $user
 	 */
-	private static function loginUserByArray($userData)
+	private static function loginUserByModel($user)
 	{
-		static::$loggedInUser = new User($userData);
+		static::$loggedInUser = $user;
 	}
 
 
@@ -55,24 +55,19 @@ class Auth
 	 */
 	private static function loginUserViaSession()
 	{
-		global $_SESSION, $db;
+		global $_SESSION;
 
 		if(isset($_SESSION[static::SESSION_IDENTIFIER])
 			&& !empty($_SESSION[static::SESSION_IDENTIFIER])
 		){
 			$userId = $_SESSION[static::SESSION_IDENTIFIER];
 
+			/** @var User $user */
+			$user = User::find($userId);
+
 			// check if user still exists in database
-			$sql = "SELECT * FROM `".DBT_USERS."` WHERE `".DBC_USERS_ID."` = '$userId' LIMIT 1;";
-			if(!$userExists = $db->query($sql)){
-				dbError($db->error);
-			}
-
-			// User exists,
-			if($userExists->num_rows === 1){
-				$userData = $userExists->fetch_assoc();
-
-				static::loginUserByArray($userData);
+			if(!is_null($user)){
+				static::loginUserByModel($user);
 			}
 		}
 	}
@@ -88,10 +83,7 @@ class Auth
 	 */
 	public static function login($email, $password)
 	{
-		global $db;
-
-		$email = $db->escape_string(strtolower($email));
-		$password = $db->escape_string($password);
+		$email = strtolower($email);
 
 		$emailInParts = explode("@", $email);
 		if(count($emailInParts) !== 2) {
@@ -100,21 +92,21 @@ class Auth
 		$username = $emailInParts[0];
 		$domain = $emailInParts[1];
 
-		// Check for user in database
-		$sql = "SELECT * FROM `".DBT_USERS."` WHERE `".DBC_USERS_USERNAME."` = '$username' AND `".DBC_USERS_DOMAIN."` = '$domain' LIMIT 1;";
-		if(!$result = $db->query($sql)){
-			dbError($db->error);
-		}
+		/** @var User $user */
+		$user = User::findWhereFirst(
+			array(
+				array(DBC_USERS_USERNAME, $username),
+				array(DBC_USERS_DOMAIN, $domain),
+			)
+		);
 
 		// Check if user exists
-		if($result->num_rows === 1){
-			$userData = $result->fetch_assoc();
+		if(!is_null($user)){
+			if(static::checkPasswordByHash($password, $user->getPasswordHash())){
 
-			if(static::checkPasswordByHash($password, $userData[DBC_USERS_PASSWORD])){
+				static::loginUserByModel($user);
 
-				static::loginUserByArray($userData);
-
-				$_SESSION[static::SESSION_IDENTIFIER] = $userData[DBC_USERS_ID];
+				$_SESSION[static::SESSION_IDENTIFIER] = $user->getId();
 
 				return true;
 			}
@@ -135,7 +127,9 @@ class Auth
 	{
 		if(static::isLoggedIn()) {
 			$user = static::getUser();
-			return $user->getRole() === $requiredRole || $user->getRole() === User::ROLE_ADMIN;
+
+			return $user->getRole() === $requiredRole
+				|| $user->getRole() === User::ROLE_ADMIN;
 		}
 
 		return false;
@@ -213,7 +207,7 @@ class Auth
 	 *
 	 * @return string
 	 */
-	private static function generatePasswordHash($password)
+	public static function generatePasswordHash($password)
 	{
 		$salt = base64_encode(rand(1, 1000000) + microtime());
 		$schemaPrefix = static::getPasswordSchemaPrefix();
@@ -230,15 +224,12 @@ class Auth
 	 */
 	public static function changeUserPassword($userId, $password)
 	{
-		global $db;
-
 		$passwordHash = static::generatePasswordHash($password);
 
-		$userId = $db->escape_string($userId);
-		$passwordHash = $db->escape_string($passwordHash);
+		/** @var User $user */
+		$user = User::find($userId);
 
-		if(!$db->query("UPDATE `".DBT_USERS."` SET `".DBC_USERS_PASSWORD."` = '$passwordHash' WHERE `".DBC_USERS_ID."` = '$userId';")){
-			dbError($db->error);
-		}
+		$user->setPasswordHash($passwordHash);
+		$user->save();
 	}
 }
