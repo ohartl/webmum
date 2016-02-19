@@ -1,22 +1,30 @@
-WebMUM - Web Mailserver User Manager
-======
+# WebMUM - Web Mailserver User Manager
 
-WebMUM is a web frontend based on PHP which helps you to manage mail accounts via MySQL. This software is licensed under the MIT license. 
+WebMUM is a web frontend based on PHP which helps you to manage e-mail server via MySQL. This software is licensed under the MIT license.
+
+Lead and started by [ThomasLeister](https://github.com/ThomasLeister), a passioned [blogger](https://thomas-leister.de/) speacialised topics like linux, open-source, servers etc., this project is developed together with [ohartl](https://github.com/ohartl) and the [contributes](https://github.com/ThomasLeister/webmum/graphs/contributors).
+
+Feel free to send in issues and pull requests, your support for this project is much appreciated!
 
 
 ## Installation
 
 Clone the WebMUM Repository to your webserver's virtual host root directory:
 
-```php
+```bash
 git clone https://github.com/ThomasLeister/webmum
 ```
-	
+
+A update / upgrade guide can be found [here](#update--upgrade-webmum).
+
+
+### Webserver
+
 Now configure your webserver. URL rewriting to index.php is required.
 
-### Nginx
+#### Nginx
 
-Nginx config examples following, but you still need to change domain and path in config as explained in **WebMUM Configuration Config > Paths**.
+Nginx config examples following, but you still need to change domain and path in config as explained [here](#paths).
 
 With subdirectory `webmum/` in URL (e.g. `http://mydomain.tld/webmum/`):
 
@@ -76,9 +84,9 @@ server {
 }
 ```
 
-### Apache
+#### Apache
 
-Apache config examples following, but you still need to change domain and path in config as explained in WebMum Config -> Paths.
+Apache config examples following, but you still need to change domain and path in config as explained [here](#paths).
 
 Please note: mod_rewrite must be enabled for URL rewriting:
 
