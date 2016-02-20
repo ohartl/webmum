@@ -269,8 +269,8 @@ body {
 		}
 
 		#content .table tbody td {
-			line-height: 33px;
-			padding: 0 10px;
+			line-height: 21px;
+			padding: 9px 10px;
 			border: 1px solid rgba(179, 176, 176, 1);
 		}
 
