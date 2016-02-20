@@ -229,7 +229,9 @@ class Auth
 		/** @var User $user */
 		$user = User::find($userId);
 
-		$user->setPasswordHash($passwordHash);
-		$user->save();
+		if(!is_null($user)){
+			$user->setPasswordHash($passwordHash);
+			$user->save();
+		}
 	}
 }

@@ -26,6 +26,7 @@ class User extends AbstractModel
 		$thisMappings = array(
 			'username' => DBC_USERS_USERNAME,
 			'domain' => DBC_USERS_DOMAIN,
+			'password_hash' => DBC_USERS_PASSWORD,
 		);
 
 		if(defined('DBC_USERS_MAILBOXLIMIT')){
