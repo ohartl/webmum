@@ -67,58 +67,94 @@ if(isset($_POST['savemode'])){
 		if(count($emailErrors) === 0 && $savemode === "edit" && !is_null($redirect)){
 
 			if(count($inputSources) > 0 && count($inputDestinations) > 0){
-				$inputDestination = emailsToString();
 
-				$existingRedirects = AbstractRedirect::findWhere(
-					(defined('DBC_ALIASES_MULTI_SOURCE') && $redirect instanceof AbstractMultiRedirect)
-						? array(DBC_ALIASES_MULTI_SOURCE, $redirect->getMultiHash())
-						: array(DBC_ALIASES_ID, $redirect->getId())
-				);
-
-				// multi source handling
-				$hash = (count($inputSources) === 1) ? null : md5(emailsToString($inputSources));
-
-				foreach($inputSources as $sourceAddress){
-					$sourceAddress = formatEmail($sourceAddress);
-
-					/** @var AbstractRedirect $thisRedirect */
-					$thisRedirect = $existingRedirects->search(
-						function($model) use ($sourceAddress){
-							/** @var AbstractRedirect $model */
-							return $model->getSource() === $sourceAddress;
-						}
+				if(defined('DBC_ALIASES_MULTI_SOURCE') && $redirect instanceof AbstractMultiRedirect){
+					$existingRedirectsToEdit = AbstractRedirect::findWhere(
+						array(DBC_ALIASES_MULTI_SOURCE, $redirect->getMultiHash())
 					);
+				}
+				else{
+					$existingRedirectsToEdit = AbstractRedirect::findWhere(
+						array(DBC_ALIASES_ID, $redirect->getId())
+					);
+				}
 
-					if(!is_null($thisRedirect)){
-						// edit existing source
-
-						$thisRedirect->setSource($sourceAddress);
-						$thisRedirect->setDestination($inputDestinations);
-						$thisRedirect->setMultiHash($hash);
-						$thisRedirect->save();
-
-						$existingRedirects->delete($thisRedirect->getId()); // mark updated
+				$emailsToCheck = $inputSources;
+				foreach($existingRedirectsToEdit as $r) {
+					$key = array_search($r->getSource(), $emailsToCheck);
+					if($key !== false) {
+						unset($emailsToCheck[$key]);
 					}
-					else{
-						$data = array(
-							DBC_ALIASES_SOURCE => $sourceAddress,
-							DBC_ALIASES_DESTINATION => $inputDestination,
-						);
-						if(defined('DBC_ALIASES_MULTI_SOURCE')){
-							$data[DBC_ALIASES_MULTI_SOURCE] = $hash;
+				}
+
+				if (count($emailsToCheck) > 0) {
+					$existingRedirectsOther = AbstractRedirect::findWhere(
+						array(
+							array(DBC_ALIASES_SOURCE, 'IN', $emailsToCheck)
+						)
+					);
+				}
+				else {
+					$existingRedirectsOther = null;
+				}
+
+				if(!is_null($existingRedirectsOther) && $existingRedirectsOther->count() > 0){
+					$errorMessages = array();
+					/** @var AbstractRedirect $existingRedirect */
+					foreach($existingRedirectsOther as $id => $existingRedirect){
+						if(!$existingRedirectsToEdit->has($id)){
+							$errorMessages[] = "Source address \"{$existingRedirect->getSource()}\" is already redirected to some destination.";
 						}
-
-						AbstractRedirect::createAndSave($data);
 					}
-				}
 
-				// Delete none updated redirect
-				foreach($existingRedirects as $redirect){
-					$redirect->delete();
+					add_message("fail", implode("<br>", $errorMessages));
 				}
+				else{
+					// multi source handling
+					$hash = (count($inputSources) === 1) ? null : md5(emailsToString($inputSources));
 
-				// Edit successfull, redirect to overview
-				redirect("admin/listredirects/?edited=1");
+					foreach($inputSources as $sourceAddress){
+						$sourceAddress = formatEmail($sourceAddress);
+
+						/** @var AbstractRedirect $thisRedirect */
+						$thisRedirect = $existingRedirectsToEdit->search(
+							function($model) use ($sourceAddress){
+								/** @var AbstractRedirect $model */
+								return $model->getSource() === $sourceAddress;
+							}
+						);
+
+						if(!is_null($thisRedirect)){
+							// edit existing source
+
+							$thisRedirect->setSource($sourceAddress);
+							$thisRedirect->setDestination($inputDestinations);
+							$thisRedirect->setMultiHash($hash);
+							$thisRedirect->save();
+
+							$existingRedirectsToEdit->delete($thisRedirect->getId()); // mark updated
+						}
+						else{
+							$data = array(
+								DBC_ALIASES_SOURCE => $sourceAddress,
+								DBC_ALIASES_DESTINATION => emailsToString($inputDestinations),
+							);
+							if(defined('DBC_ALIASES_MULTI_SOURCE')){
+								$data[DBC_ALIASES_MULTI_SOURCE] = $hash;
+							}
+
+							AbstractRedirect::createAndSave($data);
+						}
+					}
+
+					// Delete none updated redirect
+					foreach($existingRedirectsToEdit as $redirect){
+						$redirect->delete();
+					}
+
+					// Edit successfull, redirect to overview
+					redirect("admin/listredirects/?edited=1");
+				}
 			}
 			else{
 				add_message("fail", "Redirect could not be edited. Fill out all fields.");
@@ -147,7 +183,7 @@ if(isset($_POST['savemode'])){
 					if(defined('DBC_ALIASES_MULTI_SOURCE') && count($inputSources) > 1){
 						$hash = md5(emailsToString($inputSources));
 					}
-					else {
+					else{
 						$hash = null;
 					}
 
