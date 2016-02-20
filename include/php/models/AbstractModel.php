@@ -200,7 +200,13 @@ abstract class AbstractModel
 	 */
 	public static function createMultipleFromDbResult($result)
 	{
-		return static::createMultiple($result->fetch_all(MYSQLI_ASSOC));
+		$rows = array();
+
+		while($row = $result->fetch_assoc()) {
+			$rows[] = $row;
+		}
+
+		return static::createMultiple($rows);
 	}
 
 
