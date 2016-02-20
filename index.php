@@ -7,112 +7,123 @@ session_regenerate_id();
 define("BACKEND_BASE_PATH", preg_replace("#index.php#", "", $_SERVER['SCRIPT_FILENAME']));
 
 
-
 require_once 'include/php/default.inc.php';
 
-require_once 'include/php/template/header.php';
 
-function load_page($p){
-	
-	if(preg_match("/^\/private(.*)$/", $p) == 1){
+/**
+ * @param string $file
+ * @return string
+ */
+function loadAndBufferOutput($file)
+{
+	ob_start();
+
+	require $file;
+
+	return ob_get_clean();
+}
+
+
+/**
+ * @param string $url
+ * @return string
+ */
+function loadPageByRoute($url)
+{
+	$file = 'include/php/pages/404.php';
+
+	$routes = array(
+		'/login/' => 'include/php/pages/login.php',
+		'/logout/' => 'include/php/pages/logout.php',
+		'/' => 'include/php/pages/start.php',
+	);
+
+	$adminRoutes = array(
+		'/admin/' => 'include/php/pages/admin/start.php',
+		'/admin/listusers/' => 'include/php/pages/admin/listusers.php',
+		'/admin/edituser/' => 'include/php/pages/admin/edituser.php',
+		'/admin/deleteuser/' => 'include/php/pages/admin/deleteuser.php',
+		'/admin/listdomains/' => 'include/php/pages/admin/listdomains.php',
+		'/admin/deletedomain/' => 'include/php/pages/admin/deletedomain.php',
+		'/admin/createdomain/' => 'include/php/pages/admin/createdomain.php',
+		'/admin/listredirects/' => 'include/php/pages/admin/listredirects.php',
+		'/admin/editredirect/' => 'include/php/pages/admin/editredirect.php',
+		'/admin/deleteredirect/' => 'include/php/pages/admin/deleteredirect.php',
+	);
+
+	$userRoutes = array(
+		'/private/' => 'include/php/pages/private/start.php',
+		'/private/changepass/' => 'include/php/pages/private/changepass.php',
+	);
+
+
+	if(preg_match("/^\/private(.*)$/", $url) == 1){
 		// Page is user page
 		if(Auth::hasPermission(User::ROLE_USER)){
-			switch($p){
-				case "/private/":
-					return "include/php/pages/private/start.php";
-					break;
-				case "/private/changepass/":
-					return "include/php/pages/private/changepass.php";
-					break;
-				default:
-					return "include/php/pages/404.php";
+			if(isset($userRoutes[$url])){
+				$file = $userRoutes[$url];
 			}
 		}
-		else{ return "include/php/pages/not-allowed.php"; }
+		else{
+			$file = 'include/php/pages/not-allowed.php';
+		}
 	}
-
-	else if(preg_match("/^\/admin(.*)$/", $p) == 1){
+	else if(preg_match("/^\/admin(.*)$/", $url) == 1){
 		// Page is admin page
 		if(Auth::hasPermission(User::ROLE_ADMIN)){
-			switch($p){
-				case "/admin/":
-					return "include/php/pages/admin/start.php";
-					break;
-				case "/admin/listusers/":
-					return "include/php/pages/admin/listusers.php";
-					break;
-				case "/admin/edituser/":
-					return "include/php/pages/admin/edituser.php";
-					break;
-				case "/admin/deleteuser/":
-					return "include/php/pages/admin/deleteuser.php";
-					break;
-				case "/admin/listdomains/":
-					return "include/php/pages/admin/listdomains.php";
-					break;
-				case "/admin/deletedomain/":
-					return "include/php/pages/admin/deletedomain.php";
-					break;
-				case "/admin/createdomain/":
-					return "include/php/pages/admin/createdomain.php";
-					break;
-				case "/admin/listredirects/":
-					return "include/php/pages/admin/listredirects.php";
-					break;
-				case "/admin/editredirect/":
-					return "include/php/pages/admin/editredirect.php";
-					break;
-				case "/admin/deleteredirect/":
-					return "include/php/pages/admin/deleteredirect.php";
-					break;
-				default:
-					return "include/php/pages/404.php";
+			if(isset($adminRoutes[$url])){
+				$file = $adminRoutes[$url];
 			}
 		}
-		else{ return "include/php/pages/not-allowed.php"; }
-	}
-
-	else{
-		// Page is public accessible
-		switch($p){
-			case "/login/":
-				return "include/php/pages/login.php";
-				break;
-			case "/logout/":
-				return "include/php/pages/logout.php";
-				break;
-			case "/":
-				return "include/php/pages/start.php";
-				break;
-			default:
-				return "include/php/pages/404.php";
+		else{
+			$file = 'include/php/pages/not-allowed.php';
 		}
 	}
+	else{
+		// Page is public accessible
+		if(isset($routes[$url])){
+			$file = $routes[$url];
+		}
+	}
+
+	if(file_exists($file)){
+		return loadAndBufferOutput($file);
+	}
+
+	die('Page file "'.$file.'" could not be found');
 }
 
+/**
+ * @return string
+ */
+function preparedUrlForRouting()
+{
+	$url = $_SERVER['REQUEST_URI'];
 
-$path = $_SERVER["REQUEST_URI"];
-// Remove GET Parameters
-$path = preg_replace('/\?.*/', '', $path);
-// Remove prescending directory part e.g. webmum/ defined in SUBDIR
-$path = preg_replace("#".SUBDIR."#", '', $path);
+	// Remove GET Parameters
+	$url = preg_replace('/\?.*/', '', $url);
 
-// Webserver should add trailing slash, but if there is no trailing slash for any reason, add one ;)
-if(strrpos($path,"/") != strlen($path)-1){
-	$path = $path."/";
+	// Remove prescending directory part e.g. webmum/ defined in SUBDIR
+	$url = preg_replace("#".SUBDIR."#", '', $url);
+
+	// Webserver should add trailing slash, but if there is no trailing slash for any reason, add one ;)
+	if(strrpos($url, '/') != strlen($url) - 1){
+		$url = $url.'/';
+	}
+
+	return $url;
 }
 
 
 /*
- * Include page content here
+ * Build page
  */
 
-include load_page($path);
+$content = loadPageByRoute(
+	preparedUrlForRouting()
+);
 
+$header = loadAndBufferOutput('include/php/template/header.php');
+$footer = loadAndBufferOutput('include/php/template/footer.php');
 
-/*
- * End of dynamic content
- */
-
-require_once 'include/php/template/footer.php';
-
+echo $header.$content.$footer;

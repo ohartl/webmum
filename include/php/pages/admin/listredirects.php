@@ -10,7 +10,6 @@ else if(isset($_GET['edited']) && $_GET['edited'] == "1"){
 	add_message("success", "Redirect edited successfully.");
 }
 
-AbstractRedirect::find(21);
 $redirects = AbstractRedirect::findMultiAll();
 
 ?>
