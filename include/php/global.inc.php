@@ -78,7 +78,7 @@ function writeLog($text)
  */
 function url($url)
 {
-	return sprintf('%s/%s', rtrim(FRONTEND_BASE_PATH, '/'), trim($url));
+	return sprintf('%s/%s', rtrim(FRONTEND_BASE_PATH, '/'), trim($url, '/'));
 }
 
 /**
