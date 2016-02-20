@@ -215,24 +215,18 @@ WebMUM will then show a larger field for source addresses in the frontend and yo
 
 ### Paths
 
-Define the URL of the web application, and it's subfolder:
+The `FRONTEND_BASE_PATH` is the URL your WebMUM installation is accessible from outside, this also includes subfolders if you installed it in a subfolder for that specific domain.
 
 ```php
-/*
- * Frontend paths
- */
-
 define("FRONTEND_BASE_PATH", "http://mydomain.tld/webmum/");
-define("SUBDIR", "webmum/");
 ```
 
-In the example above, WebMUM is located in a subfolder named "webmum/". If you don't want to use a subfolder, but install WebMUM directly into the domain root,
-set the settings like this:
+In the example above, WebMUM is located in a subfolder named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `FRONTEND_BASE_PATH` to something like this:
 
 ```php
 define("FRONTEND_BASE_PATH", "http://webmum.mydomain.tld/");
-define("SUBDIR", "");
 ```
+
 
 ### Admin e-mail address
 

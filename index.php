@@ -94,24 +94,37 @@ function loadPageByRoute($url)
 }
 
 /**
+ * @param bool $removeGetParameters
+ *
+ * @return string
+ */
+function getCurrentUrlPath($removeGetParameters = true)
+{
+	$baseUrl = parse_url(FRONTEND_BASE_PATH);
+	$basePath = isset($baseUrl['path']) ? rtrim($baseUrl['path'], '/') : '';
+
+	$url = $_SERVER['REQUEST_URI'];
+
+	if($removeGetParameters) {
+		$url = preg_replace('/\?.*/', '', $url); // Trim GET Parameters
+	}
+
+	// Trim all leading slashes
+	$url = rtrim($url, '/');
+
+	if(!empty($basePath) && ($basePathPos = strpos($url, $basePath)) === 0){
+		$url = substr($url, strlen($basePath));
+	}
+
+	return $url;
+}
+
+/**
  * @return string
  */
 function preparedUrlForRouting()
 {
-	$url = $_SERVER['REQUEST_URI'];
-
-	// Remove GET Parameters
-	$url = preg_replace('/\?.*/', '', $url);
-
-	// Remove prescending directory part e.g. webmum/ defined in SUBDIR
-	$url = preg_replace("#".SUBDIR."#", '', $url);
-
-	// Webserver should add trailing slash, but if there is no trailing slash for any reason, add one ;)
-	if(strrpos($url, '/') != strlen($url) - 1){
-		$url = $url.'/';
-	}
-
-	return $url;
+	return getCurrentUrlPath(true).'/';
 }
 
 
