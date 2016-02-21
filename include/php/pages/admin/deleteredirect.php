@@ -56,12 +56,12 @@ else{
 	<form class="form" action="" method="post">
 		<div class="input-group">
 			<label>Source</label>
-			<div class="input-info"><?php echo formatEmails($redirect->getSource(), FRONTEND_EMAIL_SEPARATOR_TEXT); ?></div>
+			<div class="input-info"><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
 		</div>
 
 		<div class="input-group">
 			<label>Destination</label>
-			<div class="input-info"><?php echo formatEmails($redirect->getDestination(), FRONTEND_EMAIL_SEPARATOR_TEXT); ?></div>
+			<div class="input-info"><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
 		</div>
 
 		<div class="input-group">

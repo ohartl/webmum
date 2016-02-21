@@ -34,8 +34,8 @@ $redirects = AbstractRedirect::findMultiAll();
 	<tbody>
 	<?php foreach($redirects as $redirect): /** @var AbstractRedirect $redirect */ ?>
 		<tr>
-			<td><?php echo formatEmails($redirect->getSource(), FRONTEND_EMAIL_SEPARATOR_TEXT); ?></td>
-			<td><?php echo formatEmails($redirect->getDestination(), FRONTEND_EMAIL_SEPARATOR_TEXT); ?></td>
+			<td><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+			<td><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
 			<td>
 				<a href="<?php echo url('admin/editredirect/?id='.$redirect->getId()); ?>">[Edit]</a>
 			</td>
