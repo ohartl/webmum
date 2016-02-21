@@ -90,7 +90,7 @@ function loadPageByRoute($url)
 		return loadAndBufferOutput($file);
 	}
 
-	die('Page file "'.$file.'" could not be found');
+	die('Page file "'.$file.'" couldn\'t be found');
 }
 
 /**

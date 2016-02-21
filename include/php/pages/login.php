@@ -14,7 +14,7 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 		if(Auth::login($_POST['email'], $_POST['password'])){
 			redirect("private");
 		}
-		// If login is not successful
+		// If login isn't successful
 		else{
 			//Log error message
 			writeLog("WebMUM login failed for IP ".$_SERVER['REMOTE_ADDR']);
