@@ -202,7 +202,10 @@ class User extends AbstractModel
 	{
 		Auth::validateNewPassword($password, $passwordRepeated);
 
-		Auth::changeUserPassword($this->getId(), $password);
+		$passwordHash = Auth::generatePasswordHash($password);
+
+		$this->setPasswordHash($passwordHash);
+		$this->save();
 	}
 
 
