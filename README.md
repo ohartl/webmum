@@ -101,11 +101,11 @@ With subdirectory `webmum/` in URL (e.g. `http://mydomain.tld/webmum/`):
     ServerName domain.tld
     DocumentRoot /var/www/domain.tld
 
-	RewriteEngine on
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule ^\/webmum/(.*)\.css$ /webmum/$1.css [L]
-	RewriteRule ^\/webmum/(.*)$ /webmum/index.php [L,QSA]
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule ^\/webmum/(.*)\.css$ /webmum/$1.css [L]
+    RewriteRule ^\/webmum/(.*)$ /webmum/index.php [L,QSA]
 </VirtualHost>
 ```
 
@@ -116,11 +116,11 @@ Without subdirectory in URL (e.g. `http://webmum.mydomain.tld/`):
     ServerName webmum.domain.tld
     DocumentRoot /var/www/domain.tld/webmum
 
-	RewriteEngine on
-	RewriteCond %{REQUEST_FILENAME} !-d
-	RewriteCond %{REQUEST_FILENAME} !-f
-	RewriteRule (.*)\.css$ $1.css [L]
-	RewriteRule ^(.*)$ /index.php [L,QSA]
+    RewriteEngine on
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteRule (.*)\.css$ $1.css [L]
+    RewriteRule ^(.*)$ /index.php [L,QSA]
 </VirtualHost>
 ```
 
@@ -137,10 +137,6 @@ Configure WebMUM via the configuration file at `config/config.inc.php`.
 At first the database access has to be configured.
 
 ```php
-/*
- * MySQL server and database settings
- */
-
 define("MYSQL_HOST", "localhost");
 define("MYSQL_USER", "vmail");
 define("MYSQL_PASSWORD", "vmail");
@@ -150,10 +146,6 @@ define("MYSQL_DATABASE", "vmail");
 ... then define the table names according to your own setup:
 
 ```php
-/*
- * Database table names
- */
-
 // Table names
 define("DBT_USERS", "users");
 define("DBT_DOMAINS", "domains");
@@ -170,7 +162,6 @@ define("DBC_USERS_DOMAIN", "domain");
 define("DBC_USERS_PASSWORD", "password");
 //define("DBC_USERS_MAILBOXLIMIT", "mailbox_limit");
 
-
 // Domains table columns
 define("DBC_DOMAINS_ID", "id");
 define("DBC_DOMAINS_DOMAIN", "domain");
@@ -182,7 +173,8 @@ define("DBC_ALIASES_DESTINATION", "destination");
 //define("DBC_ALIASES_MULTI_SOURCE", "multi_source");
 ```
 
-### Mailbox limit
+### Mailbox limit (Optional)
+
 If you have a "mailbox_limit" column to limit the size of your users' mailboxes, just comment in the line
 
 ```php
@@ -192,7 +184,7 @@ define("DBC_USERS_MAILBOXLIMIT", "mailbox_limit");
 in your configuration. WebMUM will then show a new field "Mailbox limit" in the frontend.
 
 
-### Multiple source redirect support
+### Multiple source redirect support (Optional)
 
 As mailservers can only process a single source address for redirects the database table for aliases / redirects can only hold a single source address in a row.
 WebMum will, if you enabled the multiple source redirect support, do some magic so there is only a single address in a row even though multiple adresses where entered.
@@ -212,6 +204,26 @@ ALTER TABLE `aliases` ADD COLUMN `multi_source` VARCHAR(32) NULL DEFAULT NULL;
 ```
 
 WebMUM will then show a larger field for source addresses in the frontend and you can not list emails in source field.
+
+
+### Admin domain limits (Optional)
+
+If you share your mailserver with others, host their domains and they should be able to manage their domains, but not all domains on that mailserver then this is the right option for you. 
+You have to add that user to the `$admins` array in your configuration and enable admin domain limits be uncommenting the following line:
+
+```php
+define("ADMIN_DOMAIN_LIMITS_ENABLED", true); // (Optional)
+```
+
+also you have to make an entry in the `$adminDomainLimits` array, for example `peter@his.tld` should be able to manage his domains `his.tld` and `his-company.tld` then configure the following:
+
+```php
+$adminDomainLimits = array(
+    "peter@his.tld" => array("his.tld", "his-company.tld"),
+);
+```
+
+Admins that have been listed in `$adminDomainLimits` don't have access to the "Manage domains" pages, otherwise they could delete domains they are managing, but maybe someone else owns.
 
 ### Paths
 
@@ -233,10 +245,6 @@ define("FRONTEND_BASE_PATH", "http://webmum.mydomain.tld/");
 Only users with one of the specified email addresses will have access to the administrator's dashboard and will be able to create, edit and delete users, domains and redirects.
 
 ```php
-/*
- * Admin e-mail address
- */
-
 $admins = array("admin@domain.tld");
 ```
 
@@ -245,10 +253,6 @@ Admin email accounts must exist in the virtual user database on your own server.
 ### Minimal required password length
 
 ```php
-/*
- * Minimal password length
- */
-
 define("MIN_PASS_LENGTH", 8);
 ```
 
@@ -322,15 +326,11 @@ Please check if your config.inc.php fits the current requirements by comparing y
 
 ## FAQ
 
-### Which password scheme does WebMUM use?
+### Which password scheme / encryption does WebMUM use?
 
 By default WebMUM uses `SHA-512` encryption for passwords. You can also between the alternatives `SHA-256` or `BLOWFISH` in the config.
 
 ```php
- /*
- * Select one of the following algorithms
- * SHA-512, SHA-256, BLOWFISH
- */
 define("PASS_HASH_SCHEMA", "SHA-512");
 ```
 

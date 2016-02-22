@@ -2,6 +2,7 @@
 
 class Domain extends AbstractModel
 {
+	use DomainLimitTrait;
 
 	/**
 	 * @inheritdoc
@@ -87,4 +88,5 @@ class Domain extends AbstractModel
 
 		return $result->fetch_array(MYSQLI_NUM)[0];
 	}
+
 }

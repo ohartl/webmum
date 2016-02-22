@@ -630,7 +630,7 @@ abstract class AbstractModel
 				$values[] = $data[$attribute];
 			}
 
-			$sql = "INSERT INTO `".static::$table."`"
+			$sql = "INSERT INTO `{".static::$table."`"
 				." (".static::sqlHelperAttributeList($attributes).")"
 				." VALUES ".static::sqlHelperValueList($values);
 		}

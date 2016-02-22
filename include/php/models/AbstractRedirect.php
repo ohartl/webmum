@@ -2,6 +2,7 @@
 
 abstract class AbstractRedirect extends AbstractModel
 {
+	use DomainLimitTrait;
 
 	/**
 	 * @inheritdoc
@@ -175,6 +176,28 @@ abstract class AbstractRedirect extends AbstractModel
 
 
 	/**
+	 * @return array
+	 */
+	protected function getDomain()
+	{
+		$sources = $this->getSource();
+		if(is_string($sources)){
+			$sources = array($sources);
+		}
+
+		$domains = array();
+		foreach($sources as $source){
+			$emailParts = explode('@', $source);
+			if(count($emailParts) === 2) {
+				$domains[] = $emailParts[1];
+			}
+		}
+
+		return array_unique($domains);
+	}
+
+
+	/**
 	 * @inheritdoc
 	 */
 	public static function findAll($orderBy = array(DBC_ALIASES_SOURCE))
@@ -183,37 +206,34 @@ abstract class AbstractRedirect extends AbstractModel
 	}
 
 
-	private static $baseSqlQueryCache = null;
-
+	/**
+	 * @return string
+	 */
 	private static function generateRedirectBaseQuery()
 	{
-		if(is_null(static::$baseSqlQueryCache)){
-			if(defined('DBC_ALIASES_MULTI_SOURCE')){
-				static::$baseSqlQueryCache = "SELECT r.* FROM (
-		SELECT
-			GROUP_CONCAT(g.`".static::$idAttribute."` ORDER BY g.`".static::$idAttribute."` SEPARATOR ',') AS `".static::$idAttribute."`,
-			GROUP_CONCAT(g.`".DBC_ALIASES_SOURCE."` SEPARATOR ',') AS `".DBC_ALIASES_SOURCE."`,
-			g.`".DBC_ALIASES_DESTINATION."`,
-			g.`".DBC_ALIASES_MULTI_SOURCE."`
-		FROM `".static::$table."` AS g
-		WHERE g.`".DBC_ALIASES_MULTI_SOURCE."` IS NOT NULL
-		GROUP BY g.`".DBC_ALIASES_MULTI_SOURCE."`
-	UNION
-		SELECT
-			s.`".DBC_ALIASES_ID."`,
-			s.`".DBC_ALIASES_SOURCE."`,
-			s.`".DBC_ALIASES_DESTINATION."`,
-			s.`".DBC_ALIASES_MULTI_SOURCE."`
-		FROM `".static::$table."` AS s
-		WHERE s.`".DBC_ALIASES_MULTI_SOURCE."` IS NULL
-	) AS r";
-			}
-			else{
-				static::$baseSqlQueryCache = "SELECT * FROM `".static::$table."`";
-			}
+		if(defined('DBC_ALIASES_MULTI_SOURCE')){
+			return "SELECT r.* FROM (
+	SELECT
+		GROUP_CONCAT(g.`".static::$idAttribute."` ORDER BY g.`".static::$idAttribute."` SEPARATOR ',') AS `".static::$idAttribute."`,
+		GROUP_CONCAT(g.`".DBC_ALIASES_SOURCE."` SEPARATOR ',') AS `".DBC_ALIASES_SOURCE."`,
+		g.`".DBC_ALIASES_DESTINATION."`,
+		g.`".DBC_ALIASES_MULTI_SOURCE."`
+	FROM `".static::$table."` AS g
+	WHERE g.`".DBC_ALIASES_MULTI_SOURCE."` IS NOT NULL
+	GROUP BY g.`".DBC_ALIASES_MULTI_SOURCE."`
+UNION
+	SELECT
+		s.`".DBC_ALIASES_ID."`,
+		s.`".DBC_ALIASES_SOURCE."`,
+		s.`".DBC_ALIASES_DESTINATION."`,
+		s.`".DBC_ALIASES_MULTI_SOURCE."`
+	FROM `".static::$table."` AS s
+	WHERE s.`".DBC_ALIASES_MULTI_SOURCE."` IS NULL
+) AS r";
 		}
-
-		return static::$baseSqlQueryCache;
+		else{
+			return "SELECT * FROM `".static::$table."`";
+		}
 	}
 
 
@@ -252,4 +272,14 @@ abstract class AbstractRedirect extends AbstractModel
 		return static::findMultiWhereFirst(array(static::$idAttribute, $id));
 	}
 
+
+	/**
+	 * @param array|User|null $limitedBy
+	 *
+	 * @return ModelCollection|static[]
+	 */
+	public static function getMultiByLimitedDomains($limitedBy = null)
+	{
+		return static::filterModelCollectionByLimitedDomains(static::findMultiAll(), $limitedBy);
+	}
 }

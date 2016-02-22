@@ -2,6 +2,7 @@
 
 class User extends AbstractModel
 {
+	use DomainLimitTrait;
 
 	/**
 	 * @inheritdoc
@@ -187,6 +188,41 @@ class User extends AbstractModel
 		}
 
 		return static::ROLE_USER;
+	}
+
+
+	/**
+	 * Is user limited by domain limits?
+	 *
+	 * @return bool
+	 */
+	public function isDomainLimited()
+	{
+		global $adminDomainLimits;
+
+		return defined('ADMIN_DOMAIN_LIMITS_ENABLED')
+		&& isset($adminDomainLimits) && isset($adminDomainLimits[$this->getEmail()]);
+	}
+
+
+	/**
+	 * Get domain limits, returns an empty array if user has no limits or ADMIN_DOMAIN_LIMITS_ENABLED is disabled
+	 *
+	 * @return array
+	 */
+	public function getDomainLimits()
+	{
+		global $adminDomainLimits;
+
+		if($this->isDomainLimited()){
+			if (!is_array($adminDomainLimits[$this->getEmail()])) {
+				throw new InvalidArgumentException('Config value of admin domain limits for email "'.$this->getEmail().'" needs to be of type array.');
+			}
+
+			return $adminDomainLimits[$this->getEmail()];
+		}
+
+		return array();
 	}
 
 

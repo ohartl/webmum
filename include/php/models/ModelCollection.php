@@ -43,7 +43,7 @@ class ModelCollection implements Iterator, ArrayAccess, Countable
 
 	/**
 	 * Adds a model to the collection,
-	 * but will not replace if it exists with that key
+	 * but won't replace if it exists with that key
 	 *
 	 * @param AbstractModel $model
 	 * @param mixed|null $key
@@ -163,6 +163,27 @@ class ModelCollection implements Iterator, ArrayAccess, Countable
 		}
 
 		return $collection;
+	}
+
+
+	/**
+	 * Convert models to an array of strings
+	 *
+	 * @param callable $callable Gives back a string for a model
+	 *
+	 * @return array|string[]
+	 */
+	public function toStringArray($callable)
+	{
+		$strings = array();
+
+		if(is_callable($callable)){
+			foreach($this->models as $model){
+				$strings[] = $callable($model);
+			}
+		}
+
+		return $strings;
 	}
 
 

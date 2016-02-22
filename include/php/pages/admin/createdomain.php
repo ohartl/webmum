@@ -1,4 +1,8 @@
-<?php 
+<?php
+
+if(Auth::getUser()->isDomainLimited()){
+	redirect('not-allowed');
+}
 
 if(isset($_POST['domain'])){
 	$inputDomain = $_POST['domain'];
@@ -23,7 +27,7 @@ if(isset($_POST['domain'])){
 		}
 	}
 	else{
-		add_message("fail", "Empty domain could not be created.");
+		add_message("fail", "Empty domain couldn't be created.");
 	}
 }
 
