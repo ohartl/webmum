@@ -1,7 +1,7 @@
 <?php
 
 if(Auth::getUser()->isDomainLimited()){
-	redirect('not-allowed');
+	Router::displayError(403);
 }
 
 if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){

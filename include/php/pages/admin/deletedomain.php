@@ -1,7 +1,7 @@
 <?php
 
 if(Auth::getUser()->isDomainLimited()){
-	redirect('not-allowed');
+	Router::displayError(403);
 }
 
 if(!isset($_GET['id'])){
@@ -17,6 +17,10 @@ $domain = Domain::find($id);
 if(is_null($domain)){
 	// Domain doesn't exist, redirect to overview
 	redirect("admin/listdomains");
+}
+
+if(!$domain->isInLimitedDomains()){
+	redirect("admin/listdomains/?missing-permission=1");
 }
 
 // Delete domain

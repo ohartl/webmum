@@ -16,7 +16,7 @@ if(is_null($redirect)){
 }
 
 if(!$redirect->isInLimitedDomains()){
-	//redirect("admin/listredirects/?missing-permission=1");
+	redirect("admin/listredirects/?missing-permission=1");
 }
 
 if(isset($_POST['confirm'])){
