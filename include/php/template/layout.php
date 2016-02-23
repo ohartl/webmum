@@ -41,4 +41,13 @@
 		</div>
 	</div>
 
-	<div id="content"> <!-- Opening content -->
+	<div id="content">
+		<?php echo $content; ?>
+	</div>
+
+	<div id="footer">
+		Software by Thomas Leister and contributors<br/> WebMUM on GitHub:
+		<a href="https://git.io/v2fQg">https://github.com/ThomasLeister/webmum</a> | License: MIT
+	</div>
+</body>
+</html>

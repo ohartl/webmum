@@ -46,3 +46,7 @@ if($db->connect_errno > 0){
 Auth::init();
 
 
+/**
+ * Setup routes
+ */
+require_once 'include/php/routes.inc.php';
