@@ -231,6 +231,11 @@ $domains = Domain::getByLimitedDomains();
 		<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
 	</div>
 
+<div class="notification">
+	Please note that mailservers will prefer to deliver mails to redirects over mailboxes.<br>
+	So make sure you don't accidentally override a mailbox with a redirect.
+</div>
+
 <?php output_messages(); ?>
 
 <?php if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED') && Auth::getUser()->isDomainLimited() && $domains->count() === 0): ?>

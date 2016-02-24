@@ -43,8 +43,13 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 		</thead>
 		<tbody>
 		<?php foreach($redirects as $redirect): /** @var AbstractRedirect $redirect */ ?>
-			<tr>
-				<td><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+			<tr<?php echo $redirect->getConflictingUsers()->count() > 0 ? ' class="warning"' : ''; ?>>
+				<td>
+					<?php if($redirect->getConflictingUsers()->count() > 0): ?>
+						<strong><?php echo $redirect->getConflictingUsers()->count() === 1 ? 'The marked redirect overrides a mailbox.' : 'The marked redirects override mailboxes.'; ?></strong><br>
+					<?php endif; ?>
+					<?php echo formatEmails($redirect->getConflictingMarkedSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?>
+				</td>
 				<td><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
 				<td>
 					<a href="<?php echo url('admin/editredirect/?id='.$redirect->getId()); ?>">[Edit]</a>

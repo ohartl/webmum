@@ -105,7 +105,7 @@ function stringToEmails($input)
 	$list = explode(
 		'|',
 		str_replace(
-			array(',', ';', "\r\n", "\r", "\n", '|', ':'),
+			array(' ', ',', ';', "\r\n", "\r", "\n", '|', ':'),
 			'|',
 			$input
 		)

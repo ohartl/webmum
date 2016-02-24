@@ -40,9 +40,9 @@ $users = User::getByLimitedDomains();
 		<tr>
 			<th>Username</th>
 			<th>Domain</th>
-			<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
-				<th>Mailbox Limit</th>
-			<?php endif; ?>
+		<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+			<th>Mailbox Limit</th>
+		<?php endif; ?>
 			<th>Role</th>
 			<th></th>
 			<th></th>
@@ -50,8 +50,13 @@ $users = User::getByLimitedDomains();
 		</thead>
 		<tbody>
 		<?php foreach($users as $user): /** @var User $user */ ?>
-			<tr>
-				<td><?php echo $user->getUsername(); ?></td>
+			<tr<?php echo !is_null($user->getConflictingRedirect()) ? ' class="warning"' : ''; ?>>
+				<td>
+					<?php if(!is_null($user->getConflictingRedirect())): ?>
+						<strong>This mailbox is overridden by a redirect.</strong><br>
+					<?php endif; ?>
+					<?php echo $user->getUsername(); ?>
+				</td>
 				<td><?php echo $user->getDomain(); ?></td>
 				<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
 					<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>
@@ -67,9 +72,9 @@ $users = User::getByLimitedDomains();
 		<?php endforeach; ?>
 		</tbody>
 		<tfoot>
-		<tr>
-			<th><?php echo ($users->count() > 1) ? $users->count().' Users' : '1 User'; ?></th>
-		</tr>
+			<tr>
+				<th><?php echo ($users->count() > 1) ? $users->count().' Users' : '1 User'; ?></th>
+			</tr>
 		</tfoot>
 	</table>
 <?php elseif(!(Auth::getUser()->isDomainLimited() && count(Domain::getByLimitedDomains()) === 0)): ?>

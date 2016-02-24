@@ -20,6 +20,12 @@ class User extends AbstractModel
 
 
 	/**
+	 * @var AbstractRedirect
+	 */
+	protected $conflictingRedirect = null;
+
+
+	/**
 	 * @inheritdoc
 	 */
 	protected function setupDbMapping($childMapping = array())
@@ -223,6 +229,21 @@ class User extends AbstractModel
 		}
 
 		return array();
+	}
+
+
+	/**
+	 * @return AbstractRedirect
+	 */
+	public function getConflictingRedirect()
+	{
+		if(is_null($this->conflictingRedirect)){
+			$this->conflictingRedirect = AbstractRedirect::findWhereFirst(
+				array(DBC_ALIASES_SOURCE, $this->getEmail())
+			);
+		}
+
+		return $this->conflictingRedirect;
 	}
 
 
