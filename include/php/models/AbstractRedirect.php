@@ -15,6 +15,12 @@ abstract class AbstractRedirect extends AbstractModel
 
 
 	/**
+	 * @var ModelCollection
+	 */
+	protected $conflictingUsers = null;
+
+
+	/**
 	 * @inheritdoc
 	 */
 	protected function setupDbMapping($childMapping = array())
@@ -171,6 +177,56 @@ abstract class AbstractRedirect extends AbstractModel
 	public function setMultiHash($value)
 	{
 		$this->setAttribute('multiHash', $value);
+	}
+
+
+	/**
+	 * @return ModelCollection
+	 */
+	public function getConflictingUsers()
+	{
+		if(is_null($this->conflictingUsers)){
+			$sources = $this->getSource();
+
+			if(is_string($sources)){
+				$sources = array($sources);
+			}
+
+			$this->conflictingUsers = new ModelCollection();
+			foreach($sources as $source){
+				$user = User::findByEmail($source);
+				if(!is_null($user)){
+					$this->conflictingUsers->add($user);
+				}
+			}
+		}
+
+		return $this->conflictingUsers;
+	}
+
+
+	/**
+	 * @param string $template
+	 *
+	 * @return array|string
+	 */
+	public function getConflictingMarkedSource($template = "<u>%email%</u>")
+	{
+		$conflictingUsers = $this->getConflictingUsers();
+
+		$sources = $this->getSource();
+
+		if(is_string($sources)){
+			$sources = array($sources);
+		}
+
+		foreach($conflictingUsers as $user){
+			if(($key = array_search($user->getEmail(), $sources)) !== false){
+				$sources[$key] = str_replace('%email%', $sources[$key], $template);
+			}
+		}
+
+		return $sources;
 	}
 
 

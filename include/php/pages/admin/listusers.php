@@ -40,8 +40,13 @@ $users = User::findAll();
 	</thead>
 	<tbody>
 	<?php foreach($users as $user): /** @var User $user */ ?>
-		<tr>
-			<td><?php echo$user->getUsername(); ?></td>
+		<tr<?php echo !is_null($user->getConflictingRedirect()) ? ' class="warning"' : ''; ?>>
+			<td>
+			<?php if(!is_null($user->getConflictingRedirect())): ?>
+				<strong>This mailbox is overridden by a redirect.</strong><br>
+			<?php endif; ?>
+				<?php echo $user->getUsername(); ?>
+			</td>
 			<td><?php echo $user->getDomain(); ?></td>
 		<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
 			<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>

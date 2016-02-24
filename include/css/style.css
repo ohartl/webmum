@@ -278,6 +278,10 @@ body {
 			background-color: rgba(234, 234, 234, 1);
 		}
 
+		#content .table tbody > tr.warning {
+			background-color: #fcf897;
+		}
+
 		#content .table a {
 			color: rgb(148, 148, 255);
 		}

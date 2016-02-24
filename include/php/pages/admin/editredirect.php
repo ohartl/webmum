@@ -225,6 +225,11 @@ if(isset($_GET['id'])){
 	<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
 </div>
 
+<div class="notification">
+	Please note that mailservers will prefer to deliver mails to redirects over mailboxes.<br>
+	So make sure you don't accidentally override a mailbox with a redirect.
+</div>
+
 <?php output_messages(); ?>
 
 <form class="form" action="" method="post" autocomplete="off">
