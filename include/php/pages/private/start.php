@@ -7,3 +7,7 @@
 <div class="buttons buttons-horizontal button-large">
 	<a class="button" href="<?php echo url('private/changepass'); ?>">Change your password</a>
 </div>
+
+<div class="buttons buttons-horizontal button-large">
+	<a class="button" href="<?php echo url('private/yourredirects'); ?>">Redirects to your mailbox</a>
+</div>

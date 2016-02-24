@@ -18,6 +18,7 @@ Router::addGet('/logout', function(){
  */
 Router::addGet('/private', 'include/php/pages/private/start.php', User::ROLE_USER);
 Router::addMixed('/private/changepass', 'include/php/pages/private/changepass.php', User::ROLE_USER);
+Router::addGet('/private/yourredirects', 'include/php/pages/private/yourredirects.php', User::ROLE_USER);
 
 
 /**
