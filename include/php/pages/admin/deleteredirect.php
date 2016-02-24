@@ -11,8 +11,12 @@ $id = $_GET['id'];
 $redirect = AbstractRedirect::findMulti($id);
 
 if(is_null($redirect)){
-	// Redirect does not exist, redirect to overview
+	// Redirect doesn't exist, redirect to overview
 	redirect("admin/listredirects");
+}
+
+if(!$redirect->isInLimitedDomains()){
+	redirect("admin/listredirects/?missing-permission=1");
 }
 
 if(isset($_POST['confirm'])){
@@ -53,7 +57,7 @@ else{
 		<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirect list</a>
 	</div>
 
-	<form class="form" action="" method="post">
+	<form class="form" action="" method="post" autocomplete="off">
 		<div class="input-group">
 			<label>Source</label>
 			<div class="input-info"><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
@@ -65,7 +69,7 @@ else{
 		</div>
 
 		<div class="input-group">
-			<label>Do you realy want to delete this redirect?</label>
+			<label for="confirm">Do you realy want to delete this redirect?</label>
 			<div class="input">
 				<select name="confirm" autofocus required>
 					<option value="no">No!</option>

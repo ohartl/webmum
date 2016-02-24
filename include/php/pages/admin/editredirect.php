@@ -10,8 +10,12 @@ if(isset($_GET['id'])){
 	$redirect = AbstractRedirect::findMulti($id);
 
 	if(is_null($redirect)){
-		// Redirect does not exist, redirect to overview
+		// Redirect doesn't exist, redirect to overview
 		redirect("admin/listredirects");
+	}
+
+	if(!$redirect->isInLimitedDomains()){
+		redirect("admin/listredirects/?missing-permission=1");
 	}
 }
 
@@ -24,16 +28,16 @@ if(isset($_POST['savemode'])){
 	// validate emails
 	$emailErrors = array();
 
-	// basic email validation is not working 100% correct though
+	// basic email validation isn't working 100% correct though
 	foreach(array_merge($inputSources, $inputDestinations) as $email){
 		if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
-			$emailErrors[$email] = "Address \"{$email}\" is not a valid email address.";
+			$emailErrors[$email] = "Address \"{$email}\" isn't a valid email address.";
 		}
 	}
 
 	// validate source emails are on domains
 	if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED')){
-		$domains = Domain::findAll();
+		$domains = Domain::getByLimitedDomains();
 
 		foreach($inputSources as $email){
 			if(isset($emailErrors[$email])){
@@ -49,7 +53,7 @@ if(isset($_POST['savemode'])){
 			);
 
 			if(is_null($searchResult)){
-				$emailErrors[$email] = "Domain of source address \"{$email}\" not in domains.";
+				$emailErrors[$email] = "Domain of source address \"{$email}\" not in your domains.";
 			}
 		}
 	}
@@ -80,21 +84,21 @@ if(isset($_POST['savemode'])){
 				}
 
 				$emailsToCheck = $inputSources;
-				foreach($existingRedirectsToEdit as $r) {
+				foreach($existingRedirectsToEdit as $r){
 					$key = array_search($r->getSource(), $emailsToCheck);
-					if($key !== false) {
+					if($key !== false){
 						unset($emailsToCheck[$key]);
 					}
 				}
 
-				if (count($emailsToCheck) > 0) {
+				if(count($emailsToCheck) > 0){
 					$existingRedirectsOther = AbstractRedirect::findWhere(
 						array(
 							array(DBC_ALIASES_SOURCE, 'IN', $emailsToCheck)
 						)
 					);
 				}
-				else {
+				else{
 					$existingRedirectsOther = null;
 				}
 
@@ -157,7 +161,7 @@ if(isset($_POST['savemode'])){
 				}
 			}
 			else{
-				add_message("fail", "Redirect could not be edited. Fill out all fields.");
+				add_message("fail", "Redirect couldn't be edited. Fill out all fields.");
 			}
 		}
 
@@ -205,7 +209,7 @@ if(isset($_POST['savemode'])){
 				}
 			}
 			else{
-				add_message("fail", "Redirect could not be created. Fill out all fields.");
+				add_message("fail", "Redirect couldn't be created. Fill out all fields.");
 			}
 		}
 	}
@@ -217,13 +221,15 @@ $mode = "create";
 if(isset($_GET['id'])){
 	$mode = "edit";
 }
+
+$domains = Domain::getByLimitedDomains();
 ?>
 
-<h1><?php echo ($mode === "create") ? 'Create' : 'Edit'; ?> Redirect</h1>
+	<h1><?php echo ($mode === "create") ? 'Create' : 'Edit'; ?> Redirect</h1>
 
-<div class="buttons">
-	<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
-</div>
+	<div class="buttons">
+		<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
+	</div>
 
 <div class="notification">
 	Please note that mailservers will prefer to deliver mails to redirects over mailboxes.<br>
@@ -232,32 +238,55 @@ if(isset($_GET['id'])){
 
 <?php output_messages(); ?>
 
-<form class="form" action="" method="post" autocomplete="off">
-	<input name="savemode" type="hidden" value="<?php echo $mode; ?>"/>
-
-	<div class="input-group">
-		<div class="input-info">Enter single or multiple addresses separated by comma, semicolon or newline.</div>
+<?php if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED') && Auth::getUser()->isDomainLimited() && $domains->count() === 0): ?>
+	<div class="notification notification-fail">
+		You are listed for limited access to domains, but it seems there are no domains listed you can access.
 	</div>
+<?php else: ?>
+	<form class="form" action="" method="post" autocomplete="off">
+		<input name="savemode" type="hidden" value="<?php echo $mode; ?>"/>
 
-	<div class="input-group">
-		<label for="source">Source</label>
-		<div class="input">
-			<?php if(defined('DBC_ALIASES_MULTI_SOURCE')): ?>
-				<textarea name="source" placeholder="Source" required autofocus><?php echo formatEmails(isset($_POST['source']) ? strip_tags($_POST['source']) : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
-			<?php else: ?>
-				<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo strip_tags(formatEmails(isset($_POST['source']) ? $_POST['source'] : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM)); ?>"/>
-			<?php endif; ?>
+		<div class="input-group">
+			<div class="input-info">Enter single or multiple addresses separated by comma, semicolon or newline.</div>
 		</div>
-	</div>
 
-	<div class="input-group">
-		<label for="destination">Destination</label>
-		<div class="input">
-			<textarea name="destination" placeholder="Destination" required><?php echo formatEmails(isset($_POST['destination']) ? strip_tags($_POST['destination']) : (is_null($redirect) ? '' : $redirect->getDestination()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
+		<div class="input-group">
+			<label for="source">Source</label>
+			<div class="input-info">
+				<?php if($domains->count() > 0): ?>
+					<?php if(Auth::getUser()->isDomainLimited()): ?>
+						You can create redirects for source addresses from these domains only:
+					<?php else: ?>
+						You can create redirects for every domain you want,<br>
+						but here's a list of domains managed by WebMUM:
+					<?php endif; ?>
+					<ul>
+						<?php foreach($domains as $domain): /** @var Domain $domain */ ?>
+							<li><?php echo $domain->getDomain(); ?></li>
+						<?php endforeach; ?>
+					</ul>
+				<?php else: ?>
+					There are no domains managed by in WebMUM yet.
+				<?php endif; ?>
+			</div>
+			<div class="input">
+				<?php if(defined('DBC_ALIASES_MULTI_SOURCE')): ?>
+					<textarea name="source" placeholder="Source" required autofocus><?php echo formatEmails(isset($_POST['source']) ? strip_tags($_POST['source']) : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
+				<?php else: ?>
+					<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo strip_tags(formatEmails(isset($_POST['source']) ? $_POST['source'] : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM)); ?>"/>
+				<?php endif; ?>
+			</div>
 		</div>
-	</div>
 
-	<div class="buttons">
-		<button type="submit" class="button button-primary">Save settings</button>
-	</div>
-</form>
+		<div class="input-group">
+			<label for="destination">Destination</label>
+			<div class="input">
+				<textarea name="destination" placeholder="Destination" required><?php echo formatEmails(isset($_POST['destination']) ? strip_tags($_POST['destination']) : (is_null($redirect) ? '' : $redirect->getDestination()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
+			</div>
+		</div>
+
+		<div class="buttons">
+			<button type="submit" class="button button-primary">Save settings</button>
+		</div>
+	</form>
+<?php endif; ?>

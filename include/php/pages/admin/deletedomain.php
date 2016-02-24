@@ -1,5 +1,9 @@
 <?php
 
+if(Auth::getUser()->isDomainLimited()){
+	Router::displayError(403);
+}
+
 if(!isset($_GET['id'])){
 	// Domain id not set, redirect to overview
 	redirect("admin/listdomains");
@@ -11,8 +15,12 @@ $id = $_GET['id'];
 $domain = Domain::find($id);
 
 if(is_null($domain)){
-	// Domain does not exist, redirect to overview
+	// Domain doesn't exist, redirect to overview
 	redirect("admin/listdomains");
+}
+
+if(!$domain->isInLimitedDomains()){
+	redirect("admin/listdomains/?missing-permission=1");
 }
 
 // Delete domain
@@ -64,14 +72,14 @@ if(isset($_POST['confirm'])){
 	<a class="button" href="<?php echo url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
 </div>
 
-<form class="form" action="" method="post">
+<form class="form" action="" method="post" autocomplete="off">
 	<div class="input-group">
 		<label>All mailboxes matching the domain will be deleted from the user database!</label>
 		<div class="input-info">Mailbox directories in the filesystem won't be affected.</div>
 	</div>
 
 	<div class="input-group">
-		<label>Do you realy want to delete this domain?</label>
+		<label for="confirm">Do you realy want to delete this domain?</label>
 		<div class="input">
 			<select name="confirm" autofocus required>
 				<option value="no">No!</option>

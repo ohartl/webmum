@@ -5,16 +5,12 @@ body {
 	background-color: white;
 }
 
-/*
- * Main Layout
- */
 
 #header {
 	position: relative;
 	height: 50px;
 	width: 100%;
-	background-color: rgba(15, 15, 15, 1);
-	background: linear-gradient(rgba(63, 63, 63, 1), rgba(15, 15, 15, 1));
+	background: rgba(15, 15, 15, 1) linear-gradient(rgba(63, 63, 63, 1), rgba(15, 15, 15, 1));
 	color: white;
 	line-height: 50px;
 	box-sizing: border-box;
@@ -289,9 +285,33 @@ body {
 			color: blue;
 		}
 
-/*
- * Footer
- */
+
+	#content .notification {
+		height: auto;
+		width: 100%;
+		margin: 15px 0;
+		text-align: center;
+		border: 1px solid;
+		border-radius: 3px;
+		padding: 15px 10px;
+		box-sizing: border-box;
+	}
+
+	#content .notification.notification-fail {
+		background-color: #fcacac;
+		border-color: red;
+	}
+
+		#content .notification.notification-warning {
+			background-color: #fcf897;
+			border-color: #ffe600;
+		}
+
+		#content .notification.notification-success {
+			background-color: rgba(182, 255, 183, 1);
+			border-color: green;
+		}
+
 
 #footer {
 	position: relative;
@@ -306,30 +326,4 @@ body {
 #footer a {
 	text-decoration: none;
 	color: grey;
-}
-
-/*
- * Notifications
- */
-
-#content .notification {
-	height: auto;
-	width: 100%;
-	margin: 15px 0;
-	text-align: center;
-	border-style: solid;
-	border-width: 1px;
-	border-radius: 3px;
-	padding: 15px 10px;
-	box-sizing: border-box;
-}
-
-#content .notification.notification-fail {
-	background-color: #fcacac;
-	border-color: red;
-}
-
-#content .notification.notification-success {
-	background-color: rgba(182, 255, 183, 1);
-	border-color: green;
 }

@@ -2,6 +2,10 @@
 
 class Router
 {
+	const METHOD_GET = 'GET';
+	const METHOD_POST = 'POST';
+
+
 	/**
 	 * @var array
 	 */
@@ -58,34 +62,34 @@ class Router
 
 	/**
 	 * @param string $pattern
-	 * @param callable|array|string $routeConfig
+	 * @param callable|string $routeConfig
 	 * @param array $permission
 	 */
 	public static function addGet($pattern, $routeConfig, $permission = null)
 	{
-		static::addRoute('GET', $pattern, $routeConfig, $permission);
+		static::addRoute(static::METHOD_GET, $pattern, $routeConfig, $permission);
 	}
 
 
 	/**
 	 * @param string $pattern
-	 * @param callable|array|string $routeConfig
+	 * @param callable|string $routeConfig
 	 * @param array $permission
 	 */
 	public static function addPost($pattern, $routeConfig, $permission = null)
 	{
-		static::addRoute('POST', $pattern, $routeConfig, $permission);
+		static::addRoute(static::METHOD_POST, $pattern, $routeConfig, $permission);
 	}
 
 
 	/**
 	 * @param string $pattern
-	 * @param callable|array|string $routeConfig
+	 * @param callable|string $routeConfig
 	 * @param array $permission
 	 */
 	public static function addMixed($pattern, $routeConfig, $permission = null)
 	{
-		static::addRoute(array('GET', 'POST'), $pattern, $routeConfig, $permission);
+		static::addRoute(array(static::METHOD_GET, static::METHOD_POST), $pattern, $routeConfig, $permission);
 	}
 
 
@@ -95,11 +99,11 @@ class Router
 	 *
 	 * @return string
 	 */
-	public static function execute($url, $method = 'GET')
+	public static function execute($url, $method = self::METHOD_GET)
 	{
 		$method = strtoupper($method);
 
-		if(!in_array($method, array('GET', 'POST')) && !isset(self::$routes[$method])){
+		if(!in_array($method, array(static::METHOD_GET, static::METHOD_POST)) && !isset(self::$routes[$method])){
 			return 'Unsupported HTTP method.';
 		}
 
@@ -125,8 +129,28 @@ class Router
 	{
 		return static::execute(
 			static::getCurrentUrlPath(),
-			isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : 'GET'
+			isset($_SERVER['REQUEST_METHOD']) ? $_SERVER['REQUEST_METHOD'] : static::METHOD_GET
 		);
+	}
+
+
+	/**
+	 * @param int $errorNumber
+	 * @return string|null
+	 */
+	public static function displayError($errorNumber)
+	{
+		$errorPage = isset(static::$errorPages[$errorNumber])
+			? static::loadAndBufferOutput(static::$errorPages[$errorNumber])
+			: '';
+
+		echo Router::loadAndBufferOutput(
+			'include/php/template/layout.php',
+			array(
+				'content' => $errorPage,
+			)
+		);
+		exit;
 	}
 
 
@@ -168,6 +192,9 @@ class Router
 			if(file_exists($config)){
 				return static::loadAndBufferOutput($config);
 			}
+		}
+		elseif(is_callable($config) && $config instanceof Closure){
+			return $config();
 		}
 
 		return static::loadAndBufferOutput(static::$errorPages[404]);

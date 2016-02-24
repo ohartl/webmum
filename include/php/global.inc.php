@@ -63,7 +63,7 @@ function writeLog($text)
 			fclose($logfile);
 		}
 		else{
-			die("Directory \"".WRITE_LOG_PATH."\" is not writable");
+			die("Directory \"".WRITE_LOG_PATH."\" isn't writable");
 		}
 	}
 }

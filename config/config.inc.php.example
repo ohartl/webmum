@@ -68,6 +68,21 @@ define("FRONTEND_BASE_PATH", "http://localhost/webmum/");
 $admins = array("admin@domain.tld");
 
 
+/**
+ * Limited admin domain access
+ *
+ * Unlisted admins have access to every domain, the admin is limited to listed domains only!
+ * Unlisted domains aren't accessible by that admin.
+ *
+ * Note that listed admins also cannot create new domains!
+ */
+
+//define("ADMIN_DOMAIN_LIMITS_ENABLED", true); // (Optional)
+
+$adminDomainLimits = array(
+// Example:
+// "low_rank_admin@domain.tld" => array("his-domain.tld", "shared-domain.tld"),
+);
 
 /*
  * Password

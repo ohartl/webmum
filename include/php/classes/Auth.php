@@ -117,6 +117,17 @@ class Auth
 
 
 	/**
+	 * @return void
+	 */
+	public static function logout()
+	{
+		unset($_SESSION[static::SESSION_IDENTIFIER]);
+
+		session_destroy();
+	}
+
+
+	/**
 	 * Check if current user has a certain role, but User::ROLE_ADMIN will have access to all
 	 *
 	 * @param string $requiredRole
@@ -144,7 +155,7 @@ class Auth
 	 *
 	 * @throws Exception Codes explained below
 	 * 		2: One password field is empty
-	 * 		3: Passwords are not equal
+	 * 		3: Passwords aren't equal
 	 * 		4: Passwort is too snort
 	 */
 	public static function validateNewPassword($password, $passwordRepeated)

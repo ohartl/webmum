@@ -7,7 +7,11 @@ Router::addGet('/', 'include/php/pages/start.php');
  * Auth
  */
 Router::addMixed('/login', 'include/php/pages/login.php');
-Router::addGet('/logout', 'include/php/pages/logout.php');
+Router::addGet('/logout', function(){
+	Auth::logout();
+	redirect('/');
+	return;
+});
 
 /**
  * Private area

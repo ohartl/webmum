@@ -1,4 +1,4 @@
-<?php 
+<?php
 
 $mailboxLimitDefault = User::getMailboxLimitDefault();
 
@@ -33,8 +33,12 @@ if(!is_null($saveMode)){
 		$userToEdit = User::find($inputId);
 
 		if(is_null($userToEdit)){
-			// User does not exist, redirect to overview
+			// User doesn't exist, redirect to overview
 			redirect("admin/listusers");
+		}
+
+		if(!$userToEdit->isInLimitedDomains()){
+			redirect("admin/listusers/?missing-permission=1");
 		}
 
 		if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
@@ -73,43 +77,57 @@ if(!is_null($saveMode)){
 			&& (!empty($inputPassword) || !empty($inputPasswordRepeated))
 		){
 
-			/** @var User $user */
-			$user = User::findWhereFirst(
-				array(
-					array(DBC_USERS_USERNAME, $inputUsername),
-					array(DBC_USERS_DOMAIN, $inputDomain),
-				)
+			/** @var Domain $selectedDomain */
+			$selectedDomain = Domain::findWhereFirst(
+				array(DBC_DOMAINS_DOMAIN, $inputDomain)
 			);
 
-			// Check if user already exists
-			if(is_null($user)){
-				try{
-					// Check password then go on an insert user first
-					Auth::validateNewPassword($inputPassword, $inputPasswordRepeated);
+			if(!is_null($selectedDomain)){
 
-
-					$data = array(
-						DBC_USERS_USERNAME => $inputUsername,
-						DBC_USERS_DOMAIN => $inputDomain,
-						DBC_USERS_PASSWORD => Auth::generatePasswordHash($inputPassword)
-					);
-
-					if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
-						$data[DBC_USERS_MAILBOXLIMIT] = $inputMailboxLimit;
-					}
-
-					/** @var User $user */
-					$user = User::createAndSave($data);
-
-					// Redirect user to user list
-					redirect("admin/listusers/?created=1");
+				if(!$selectedDomain->isInLimitedDomains()){
+					redirect("admin/listusers/?missing-permission=1");
 				}
-				catch(Exception $passwordInvalidException){
-					add_message("fail", $passwordInvalidException->getMessage());
+
+				/** @var User $user */
+				$user = User::findWhereFirst(
+					array(
+						array(DBC_USERS_USERNAME, $inputUsername),
+						array(DBC_USERS_DOMAIN, $selectedDomain->getDomain()),
+					)
+				);
+
+				// Check if user already exists
+				if(is_null($user)){
+					try{
+						// Check password then go on an insert user first
+						Auth::validateNewPassword($inputPassword, $inputPasswordRepeated);
+
+						$data = array(
+							DBC_USERS_USERNAME => $inputUsername,
+							DBC_USERS_DOMAIN => $selectedDomain->getDomain(),
+							DBC_USERS_PASSWORD => Auth::generatePasswordHash($inputPassword)
+						);
+
+						if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
+							$data[DBC_USERS_MAILBOXLIMIT] = $inputMailboxLimit;
+						}
+
+						/** @var User $user */
+						$user = User::createAndSave($data);
+
+						// Redirect user to user list
+						redirect("admin/listusers/?created=1");
+					}
+					catch(Exception $passwordInvalidException){
+						add_message("fail", $passwordInvalidException->getMessage());
+					}
+				}
+				else{
+					add_message("fail", "User already exists in database.");
 				}
 			}
 			else{
-				add_message("fail", "User already exists in database.");
+				add_message("fail", "The selected domain doesn't exist.");
 			}
 		}
 		else{
@@ -130,13 +148,14 @@ if(isset($_GET['id'])){
 	$user = User::find($id);
 
 	if(is_null($user)){
-		// User does not exist, redirect to overview
+		// User doesn't exist, redirect to overview
 		redirect("admin/listusers");
 	}
-}
 
-/** @var ModelCollection $domains */
-$domains = Domain::findAll();
+	if(!$user->isInLimitedDomains()){
+		redirect("admin/listusers/?missing-permission=1");
+	}
+}
 
 ?>
 
@@ -146,41 +165,44 @@ $domains = Domain::findAll();
 	<a class="button" href="<?php echo url('admin/listusers'); ?>">&#10092; Back to user list</a>
 </div>
 
-<form class="form" action="" method="post">
+<form class="form" action="" method="post" autocomplete="off">
 	<input type="hidden" name="savemode" value="<?php echo $mode; ?>"/>
-<?php if($mode === "edit"): ?>
-	<input type="hidden" name="id" value="<?php echo $user->getId(); ?>"/>
-<?php endif; ?>
+	<?php if($mode === "edit"): ?>
+		<input type="hidden" name="id" value="<?php echo $user->getId(); ?>"/>
+	<?php endif; ?>
 
 	<?php output_messages(); ?>
 
-<?php if($mode === "edit"): ?>
-	<div class="input-group">
-		<label>Username and Group cannot be edited</label>
-		<div class="input-info">To rename or move a mailbox, you have to move in the filesystem first and create a new user here after.</div>
-	</div>
-<?php else: ?>
-	<div class="input-group">
-		<label for="username">Username</label>
-		<div class="input">
-			<input type="text" name="username" placeholder="Username" value="<?php echo isset($_POST['username']) ? strip_tags($_POST['username']) : (isset($user) ? $user->getUsername() : ''); ?>" autofocus required/>
+	<?php if($mode === "edit"): ?>
+		<div class="input-group">
+			<label>Username and Group cannot be edited</label>
+			<div class="input-info">To rename or move a mailbox, you have to move in the filesystem first and create a new user here after.</div>
 		</div>
-	</div>
+	<?php else:
+		/** @var ModelCollection $domains */
+		$domains = Domain::getByLimitedDomains();
+		?>
+		<div class="input-group">
+			<label for="username">Username</label>
+			<div class="input">
+				<input type="text" name="username" placeholder="Username" value="<?php echo isset($_POST['username']) ? strip_tags($_POST['username']) : ''; ?>" autofocus required/>
+			</div>
+		</div>
 
-	<div class="input-group">
-		<label for="domain">Domain</label>
-		<div class="input">
-			<select name="domain" required>
-				<option value="">-- Select a domain --</option>
-			<?php foreach($domains as $domain): /** @var Domain $domain */ ?>
-				<option value="<?php echo $domain->getDomain(); ?>" <?php echo ((isset($_POST['domain']) && $_POST['domain'] === $domain->getDomain()) || (isset($user) && $user->getDomain() == $domain->getDomain())) ? 'selected' : ''; ?>>
-					<?php echo $domain->getDomain(); ?>
-				</option>
-			<?php endforeach; ?>
-			</select>
+		<div class="input-group">
+			<label for="domain">Domain</label>
+			<div class="input">
+				<select name="domain" required>
+					<option value="">-- Select a domain --</option>
+					<?php foreach($domains as $domain): /** @var Domain $domain */ ?>
+						<option value="<?php echo $domain->getDomain(); ?>" <?php echo ((isset($_POST['domain']) && $_POST['domain'] === $domain->getDomain()) || ($mode === "create" && $domains->count() === 1)) ? 'selected' : ''; ?>>
+							<?php echo $domain->getDomain(); ?>
+						</option>
+					<?php endforeach; ?>
+				</select>
+			</div>
 		</div>
-	</div>
-<?php endif; ?>
+	<?php endif; ?>
 
 	<div class="input-group">
 		<label for="password">Password</label>
@@ -194,16 +216,16 @@ $domains = Domain::findAll();
 		</div>
 	</div>
 
-<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
-	<div class="input-group">
-		<label>Mailbox limit</label>
-		<div class="input-info">The default limit is <?php echo $mailboxLimitDefault; ?> MB. Limit set to 0 means no limit in size.</div>
-		<div class="input input-labeled input-labeled-right">
-			<input name="mailbox_limit" type="number" value="<?php echo isset($_POST['mailbox_limit']) ? strip_tags($_POST['mailbox_limit']) : ((isset($user) && defined('DBC_USERS_MAILBOXLIMIT')) ? $user->getMailboxLimit() : $mailboxLimitDefault); ?>" placeholder="Mailbox limit in MB" min="0" required/>
-			<span class="input-label">MB</span>
+	<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+		<div class="input-group">
+			<label>Mailbox limit</label>
+			<div class="input-info">The default limit is <?php echo $mailboxLimitDefault; ?> MB. Limit set to 0 means no limit in size.</div>
+			<div class="input input-labeled input-labeled-right">
+				<input name="mailbox_limit" type="number" value="<?php echo isset($_POST['mailbox_limit']) ? strip_tags($_POST['mailbox_limit']) : ((isset($user) && defined('DBC_USERS_MAILBOXLIMIT')) ? $user->getMailboxLimit() : $mailboxLimitDefault); ?>" placeholder="Mailbox limit in MB" min="0" required/>
+				<span class="input-label">MB</span>
+			</div>
 		</div>
-	</div>
-<?php endif; ?>
+	<?php endif; ?>
 
 	<div class="buttons">
 		<button type="submit" class="button button-primary">Save settings</button>

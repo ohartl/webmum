@@ -11,8 +11,12 @@ $id = $_GET['id'];
 $user = User::find($id);
 
 if(is_null($user)){
-	// User does not exist, redirect to overview
+	// User doesn't exist, redirect to overview
 	redirect("admin/listusers");
+}
+
+if(!$user->isInLimitedDomains()){
+	redirect("admin/listusers/?missing-permission=1");
 }
 
 // Delete user
@@ -25,7 +29,7 @@ if(isset($_POST['confirm'])){
 
 			$user->delete();
 
-			// Delete user successfull, redirect to overview
+			// Delete user successful, redirect to overview
 			redirect("admin/listusers/?deleted=1");
 		}
 		else{
@@ -47,19 +51,21 @@ if(isset($_POST['confirm'])){
 	<a class="button" href="<?php echo url('admin/listusers'); ?>">&#10092; Back to user list</a>
 </div>
 
-<form class="form" action="" method="post">
+<form class="form" action="" method="post" autocomplete="off">
 	<div class="input-group">
 		<label>The user's mailbox will be deleted from the database only!</label>
 		<div class="input-info">The mailbox in the filesystem won't be affected.</div>
 	</div>
 
 	<div class="input-group">
-		<label>Do you realy want to delete this user?</label>
+		<label for="confirm">Do you realy want to delete this user?</label>
 		<div class="input">
-			<select name="confirm" autofocus required>
-				<option value="no">No!</option>
-				<option value="yes">Yes!</option>
-			</select>
+			<label>
+				<select name="confirm" autofocus required>
+					<option value="no">No!</option>
+					<option value="yes">Yes!</option>
+				</select>
+			</label>
 		</div>
 	</div>
 
