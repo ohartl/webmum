@@ -315,10 +315,9 @@ body {
 
 #footer {
 	position: relative;
-	height: 20px;
 	width: 100%;
 	background-color: white;
-	padding: 20px;
+	padding: 15px 20px;
 	box-sizing: border-box;
 	color: grey;
 }
