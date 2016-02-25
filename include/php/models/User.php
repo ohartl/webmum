@@ -26,6 +26,12 @@ class User extends AbstractModel
 
 
 	/**
+	 * @var ModelCollection|AbstractRedirect[]
+	 */
+	protected $redirects = null;
+
+
+	/**
 	 * @inheritdoc
 	 */
 	protected function setupDbMapping($childMapping = array())
@@ -244,6 +250,40 @@ class User extends AbstractModel
 		}
 
 		return $this->conflictingRedirect;
+	}
+
+
+	/**
+	 * @return ModelCollection|AbstractRedirect[]
+	 */
+	public function getRedirects()
+	{
+		if(is_null($this->redirects)){
+			$this->redirects = AbstractRedirect::findMultiWhere(
+				array(DBC_ALIASES_DESTINATION, 'LIKE', '%'.$this->getEmail().'%')
+			);
+		}
+
+		return $this->redirects;
+	}
+
+
+	/**
+	 * @return ModelCollection|AbstractRedirect[]
+	 */
+	public function getAnonymizedRedirects()
+	{
+		$redirects = $this->getRedirects();
+
+		foreach($redirects as $redirect){
+			$emails = $redirect->getDestination();
+
+			if(is_array($emails) && count($emails) > 1){
+				$redirect->setDestination(array($this->getEmail(), '&hellip;'));
+			}
+		}
+
+		return $redirects;
 	}
 
 

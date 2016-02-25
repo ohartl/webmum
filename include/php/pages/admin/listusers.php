@@ -37,16 +37,17 @@ $users = User::getByLimitedDomains();
 <?php if($users->count() > 0): ?>
 	<table class="table">
 		<thead>
-		<tr>
-			<th>Username</th>
-			<th>Domain</th>
-		<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
-			<th>Mailbox Limit</th>
-		<?php endif; ?>
-			<th>Role</th>
-			<th></th>
-			<th></th>
-		<tr>
+			<tr>
+				<th>Username</th>
+				<th>Domain</th>
+			<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+				<th>Mailbox Limit</th>
+			<?php endif; ?>
+				<th>Redirect count</th>
+				<th>Role</th>
+				<th></th>
+				<th></th>
+			<tr>
 		</thead>
 		<tbody>
 		<?php foreach($users as $user): /** @var User $user */ ?>
@@ -61,6 +62,7 @@ $users = User::getByLimitedDomains();
 				<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
 					<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>
 				<?php endif; ?>
+				<td><?php echo $user->getRedirects()->count(); ?></td>
 				<td><?php echo ($user->getRole() === User::ROLE_ADMIN) ? 'Admin' : 'User'; ?></td>
 				<td>
 					<a href="<?php echo url('admin/edituser/?id='.$user->getId()); ?>">[Edit]</a>

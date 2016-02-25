@@ -1,18 +1,7 @@
 <?php
 
-$ownEmail = Auth::getUser()->getEmail();
+$redirects = Auth::getUser()->getAnonymizedRedirects();
 
-$redirects = AbstractRedirect::findMultiWhere(
-	array(DBC_ALIASES_DESTINATION, 'LIKE', '%'.$ownEmail.'%')
-);
-
-function anonymizeEmails($emails, $ownEmail){
-	if(is_string($emails) || count($emails) === 1){
-		return $ownEmail;
-	}
-
-	return array($ownEmail, '&hellip;');
-}
 ?>
 
 	<h1>Redirects to your mailbox</h1>
@@ -35,7 +24,7 @@ function anonymizeEmails($emails, $ownEmail){
 		<?php foreach($redirects as $redirect): /** @var AbstractRedirect $redirect */ ?>
 			<tr>
 				<td><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
-				<td><?php echo formatEmails(anonymizeEmails($redirect->getDestination(), $ownEmail), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+				<td><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
 			</tr>
 		<?php endforeach; ?>
 		</tbody>
