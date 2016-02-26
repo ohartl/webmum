@@ -7,7 +7,7 @@ $redirects = Auth::getUser()->getAnonymizedRedirects();
 	<h1>Redirects to your mailbox</h1>
 
 	<div class="buttons">
-		<a class="button" href="<?php echo url('private'); ?>">&#10092; Back to personal dashboard</a>
+		<a class="button" href="<?php echo Router::url('private'); ?>">&#10092; Back to personal dashboard</a>
 	</div>
 
 <?php output_messages(); ?>

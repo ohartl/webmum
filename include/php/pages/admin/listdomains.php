@@ -25,7 +25,7 @@ $domains = Domain::findAll();
 
 <?php if(!Auth::getUser()->isDomainLimited()): ?>
 	<div class="buttons">
-		<a class="button" href="<?php echo url('admin/createdomain'); ?>">Create new domain</a>
+		<a class="button" href="<?php echo Router::url('admin/createdomain'); ?>">Create new domain</a>
 	</div>
 <?php endif; ?>
 
@@ -48,7 +48,7 @@ $domains = Domain::findAll();
 				<td><?php echo $domain->countUsers(); ?></td>
 				<td><?php echo $domain->countRedirects(); ?></td>
 				<td>
-					<a href="<?php echo url('admin/deletedomain/?id='.$domain->getId()); ?>">[Delete]</a>
+					<a href="<?php echo Router::url('admin/deletedomain/?id='.$domain->getId()); ?>">[Delete]</a>
 				</td>
 			</tr>
 		<?php endforeach; ?>

@@ -11,11 +11,11 @@ if(isset($_GET['id'])){
 
 	if(is_null($redirect)){
 		// Redirect doesn't exist, redirect to overview
-		redirect("admin/listredirects");
+		Router::redirect("admin/listredirects");
 	}
 
 	if(!$redirect->isInLimitedDomains()){
-		redirect("admin/listredirects/?missing-permission=1");
+		Router::redirect("admin/listredirects/?missing-permission=1");
 	}
 }
 
@@ -157,7 +157,7 @@ if(isset($_POST['savemode'])){
 					}
 
 					// Edit successfull, redirect to overview
-					redirect("admin/listredirects/?edited=1");
+					Router::redirect("admin/listredirects/?edited=1");
 				}
 			}
 			else{
@@ -205,7 +205,7 @@ if(isset($_POST['savemode'])){
 					}
 
 					// Redirect created, redirect to overview
-					redirect("admin/listredirects/?created=1");
+					Router::redirect("admin/listredirects/?created=1");
 				}
 			}
 			else{
@@ -228,7 +228,7 @@ $domains = Domain::getByLimitedDomains();
 	<h1><?php echo ($mode === "create") ? 'Create' : 'Edit'; ?> Redirect</h1>
 
 	<div class="buttons">
-		<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
+		<a class="button" href="<?php echo Router::url('admin/listredirects'); ?>">&#10092; Back to redirects list</a>
 	</div>
 
 <div class="notification">

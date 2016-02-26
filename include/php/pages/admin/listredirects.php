@@ -21,7 +21,7 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 
 <?php if(!(Auth::getUser()->isDomainLimited() && count(Domain::getByLimitedDomains()) === 0)): ?>
 	<div class="buttons">
-		<a class="button" href="<?php echo url('admin/editredirect'); ?>">Create new redirect</a>
+		<a class="button" href="<?php echo Router::url('admin/editredirect'); ?>">Create new redirect</a>
 	</div>
 <?php else: ?>
 	<div class="notification notification-warning">
@@ -52,10 +52,10 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 				</td>
 				<td><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
 				<td>
-					<a href="<?php echo url('admin/editredirect/?id='.$redirect->getId()); ?>">[Edit]</a>
+					<a href="<?php echo Router::url('admin/editredirect/?id='.$redirect->getId()); ?>">[Edit]</a>
 				</td>
 				<td>
-					<a href="<?php echo url('admin/deleteredirect/?id='.$redirect->getId()); ?>">[Delete]</a>
+					<a href="<?php echo Router::url('admin/deleteredirect/?id='.$redirect->getId()); ?>">[Delete]</a>
 				</td>
 			</tr>
 		<?php endforeach; ?>

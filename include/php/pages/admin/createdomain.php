@@ -20,7 +20,7 @@ if(isset($_POST['domain'])){
 			);
 
 			// Created domain successfull, redirect to overview
-			redirect("admin/listdomains/?created=1");
+			Router::redirect("admin/listdomains/?created=1");
 		}
 		else{
 			add_message("fail", "Domain already exists in database.");
@@ -38,7 +38,7 @@ if(isset($_POST['domain'])){
 <?php output_messages(); ?>
 
 <div class="buttons">
-	<a class="button" href="<?php echo url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
+	<a class="button" href="<?php echo Router::url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
 </div>
 
 <form class="form" action="" method="post" autocomplete="off">

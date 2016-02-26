@@ -2,7 +2,7 @@
 
 if(!isset($_GET['id'])){
 	// Redirect id not set, redirect to overview
-	redirect("admin/listredirects");
+	Router::redirect("admin/listredirects");
 }
 
 $id = $_GET['id'];
@@ -12,11 +12,11 @@ $user = User::find($id);
 
 if(is_null($user)){
 	// User doesn't exist, redirect to overview
-	redirect("admin/listusers");
+	Router::redirect("admin/listusers");
 }
 
 if(!$user->isInLimitedDomains()){
-	redirect("admin/listusers/?missing-permission=1");
+	Router::redirect("admin/listusers/?missing-permission=1");
 }
 
 // Delete user
@@ -30,16 +30,16 @@ if(isset($_POST['confirm'])){
 			$user->delete();
 
 			// Delete user successful, redirect to overview
-			redirect("admin/listusers/?deleted=1");
+			Router::redirect("admin/listusers/?deleted=1");
 		}
 		else{
 			// Admin tried to delete himself, redirect to overview
-			redirect("admin/listusers/?adm_del=1");
+			Router::redirect("admin/listusers/?adm_del=1");
 		}
 	}
 	else{
 		// Choose to not delete user, redirect to overview
-		redirect("admin/listusers");
+		Router::redirect("admin/listusers");
 	}
 }
 
@@ -48,7 +48,7 @@ if(isset($_POST['confirm'])){
 <h1>Delete user "<?php echo $user->getEmail() ?>"?</h1>
 
 <div class="buttons">
-	<a class="button" href="<?php echo url('admin/listusers'); ?>">&#10092; Back to user list</a>
+	<a class="button" href="<?php echo Router::url('admin/listusers'); ?>">&#10092; Back to user list</a>
 </div>
 
 <form class="form" action="" method="post" autocomplete="off">

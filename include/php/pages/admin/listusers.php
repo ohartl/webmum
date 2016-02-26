@@ -24,7 +24,7 @@ $users = User::getByLimitedDomains();
 
 <?php if(!(Auth::getUser()->isDomainLimited() && count(Domain::getByLimitedDomains()) === 0)): ?>
 	<div class="buttons">
-		<a class="button button-small" href="<?php echo url('admin/edituser'); ?>">Create new user</a>
+		<a class="button button-small" href="<?php echo Router::url('admin/edituser'); ?>">Create new user</a>
 	</div>
 <?php else: ?>
 	<div class="notification notification-warning">
@@ -65,10 +65,10 @@ $users = User::getByLimitedDomains();
 				<td><?php echo $user->getRedirects()->count(); ?></td>
 				<td><?php echo ($user->getRole() === User::ROLE_ADMIN) ? 'Admin' : 'User'; ?></td>
 				<td>
-					<a href="<?php echo url('admin/edituser/?id='.$user->getId()); ?>">[Edit]</a>
+					<a href="<?php echo Router::url('admin/edituser/?id='.$user->getId()); ?>">[Edit]</a>
 				</td>
 				<td>
-					<a href="<?php echo url('admin/deleteuser/?id='.$user->getId()); ?>">[Delete]</a>
+					<a href="<?php echo Router::url('admin/deleteuser/?id='.$user->getId()); ?>">[Delete]</a>
 				</td>
 			</tr>
 		<?php endforeach; ?>

@@ -216,4 +216,29 @@ class Router
 
 		return ob_get_clean();
 	}
+
+
+	/**
+	 * Generate full url
+	 *
+	 * @param string $url
+	 *
+	 * @return string
+	 */
+	public static function url($url)
+	{
+		return sprintf('%s/%s', rtrim(FRONTEND_BASE_PATH, '/'), trim($url, '/'));
+	}
+
+
+	/**
+	 * Redirect user to an url
+	 *
+	 * @param string $url
+	 */
+	public static function redirect($url)
+	{
+		header("Location: ".static::url($url));
+		exit;
+	}
 }

@@ -1,6 +1,6 @@
 <?php
 if(Auth::isLoggedIn()){
-	redirect("private");
+	Router::redirect("private");
 }
 ?>
 
@@ -12,6 +12,6 @@ if(Auth::isLoggedIn()){
 </p>
 
 <div class="buttons buttons-horizontal">
-	<a class="button" href="<?php echo url('login'); ?>">Log in</a>
+	<a class="button" href="<?php echo Router::url('login'); ?>">Log in</a>
 </div>
 

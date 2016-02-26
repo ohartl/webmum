@@ -2,7 +2,7 @@
 
 if(!isset($_GET['id'])){
 	// Redirect id not set, redirect to overview
-	redirect("admin/listredirects");
+	Router::redirect("admin/listredirects");
 }
 
 $id = $_GET['id'];
@@ -12,11 +12,11 @@ $redirect = AbstractRedirect::findMulti($id);
 
 if(is_null($redirect)){
 	// Redirect doesn't exist, redirect to overview
-	redirect("admin/listredirects");
+	Router::redirect("admin/listredirects");
 }
 
 if(!$redirect->isInLimitedDomains()){
-	redirect("admin/listredirects/?missing-permission=1");
+	Router::redirect("admin/listredirects/?missing-permission=1");
 }
 
 if(isset($_POST['confirm'])){
@@ -40,11 +40,11 @@ if(isset($_POST['confirm'])){
 		}
 
 		// Delete redirect successfull, redirect to overview
-		redirect("admin/listredirects/?deleted=1");
+		Router::redirect("admin/listredirects/?deleted=1");
 	}
 	else{
 		// Choose to not delete redirect, redirect to overview
-		redirect("admin/listredirects");
+		Router::redirect("admin/listredirects");
 	}
 }
 
@@ -54,7 +54,7 @@ else{
 	<h1>Delete redirection?</h1>
 
 	<div class="buttons">
-		<a class="button" href="<?php echo url('admin/listredirects'); ?>">&#10092; Back to redirect list</a>
+		<a class="button" href="<?php echo Router::url('admin/listredirects'); ?>">&#10092; Back to redirect list</a>
 	</div>
 
 	<form class="form" action="" method="post" autocomplete="off">

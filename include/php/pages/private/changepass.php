@@ -16,7 +16,7 @@ if(isset($_POST['password']) && isset($_POST['password_repeat'])){
 <h1>Change password</h1>
 
 <div class="buttons">
-	<a class="button" href="<?php echo url('private'); ?>">&#10092; Back to personal dashboard</a>
+	<a class="button" href="<?php echo Router::url('private'); ?>">&#10092; Back to personal dashboard</a>
 </div>
 
 <?php output_messages(); ?>

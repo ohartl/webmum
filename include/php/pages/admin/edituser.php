@@ -24,7 +24,7 @@ if(!is_null($saveMode)){
 
 		if(!isset($_POST['id'])){
 			// User id not set, redirect to overview
-			redirect("admin/listusers");
+			Router::redirect("admin/listusers");
 		}
 
 		$inputId = $_POST['id'];
@@ -34,11 +34,11 @@ if(!is_null($saveMode)){
 
 		if(is_null($userToEdit)){
 			// User doesn't exist, redirect to overview
-			redirect("admin/listusers");
+			Router::redirect("admin/listusers");
 		}
 
 		if(!$userToEdit->isInLimitedDomains()){
-			redirect("admin/listusers/?missing-permission=1");
+			Router::redirect("admin/listusers/?missing-permission=1");
 		}
 
 		if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
@@ -62,7 +62,7 @@ if(!is_null($saveMode)){
 
 		if(!$passwordError){
 			// Edit user successfull, redirect to overview
-			redirect("admin/listusers/?edited=1");
+			Router::redirect("admin/listusers/?edited=1");
 		}
 	}
 
@@ -85,7 +85,7 @@ if(!is_null($saveMode)){
 			if(!is_null($selectedDomain)){
 
 				if(!$selectedDomain->isInLimitedDomains()){
-					redirect("admin/listusers/?missing-permission=1");
+					Router::redirect("admin/listusers/?missing-permission=1");
 				}
 
 				/** @var User $user */
@@ -116,7 +116,7 @@ if(!is_null($saveMode)){
 						$user = User::createAndSave($data);
 
 						// Redirect user to user list
-						redirect("admin/listusers/?created=1");
+						Router::redirect("admin/listusers/?created=1");
 					}
 					catch(Exception $passwordInvalidException){
 						add_message("fail", $passwordInvalidException->getMessage());
@@ -149,11 +149,11 @@ if(isset($_GET['id'])){
 
 	if(is_null($user)){
 		// User doesn't exist, redirect to overview
-		redirect("admin/listusers");
+		Router::redirect("admin/listusers");
 	}
 
 	if(!$user->isInLimitedDomains()){
-		redirect("admin/listusers/?missing-permission=1");
+		Router::redirect("admin/listusers/?missing-permission=1");
 	}
 }
 
@@ -162,7 +162,7 @@ if(isset($_GET['id'])){
 <h1><?php echo ($mode === "create") ? "Create User" : "Edit user \"{$user->getEmail()}\""; ?></h1>
 
 <div class="buttons">
-	<a class="button" href="<?php echo url('admin/listusers'); ?>">&#10092; Back to user list</a>
+	<a class="button" href="<?php echo Router::url('admin/listusers'); ?>">&#10092; Back to user list</a>
 </div>
 
 <form class="form" action="" method="post" autocomplete="off">

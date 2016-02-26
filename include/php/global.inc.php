@@ -70,30 +70,6 @@ function writeLog($text)
 
 
 /**
- * Generate full url
- *
- * @param string $url
- *
- * @return string
- */
-function url($url)
-{
-	return sprintf('%s/%s', rtrim(FRONTEND_BASE_PATH, '/'), trim($url, '/'));
-}
-
-/**
- * Redirect user to an url
- *
- * @param string $url
- */
-function redirect($url)
-{
-	header("Location: ".url($url));
-	exit;
-}
-
-
-/**
  * Split comma, semicolon or newline separated list of emails to string
  *
  * @param string $input

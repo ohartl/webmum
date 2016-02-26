@@ -2,7 +2,7 @@
 
 // If user is already logged in, redirect to start.
 if(Auth::isLoggedIn()){
-	redirect("private");
+	Router::redirect("private");
 }
 
 if(isset($_POST['email']) && isset($_POST['password'])){
@@ -12,7 +12,7 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 	else {
 		// Start login
 		if(Auth::login($_POST['email'], $_POST['password'])){
-			redirect("private");
+			Router::redirect("private");
 		}
 		// If login isn't successful
 		else{

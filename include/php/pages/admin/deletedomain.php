@@ -6,7 +6,7 @@ if(Auth::getUser()->isDomainLimited()){
 
 if(!isset($_GET['id'])){
 	// Domain id not set, redirect to overview
-	redirect("admin/listdomains");
+	Router::redirect("admin/listdomains");
 }
 
 $id = $_GET['id'];
@@ -16,11 +16,11 @@ $domain = Domain::find($id);
 
 if(is_null($domain)){
 	// Domain doesn't exist, redirect to overview
-	redirect("admin/listdomains");
+	Router::redirect("admin/listdomains");
 }
 
 if(!$domain->isInLimitedDomains()){
-	redirect("admin/listdomains/?missing-permission=1");
+	Router::redirect("admin/listdomains/?missing-permission=1");
 }
 
 // Delete domain
@@ -51,17 +51,17 @@ if(isset($_POST['confirm'])){
 			$domain->delete();
 
 			// Delete domain successfull, redirect to overview
-			redirect("admin/listdomains/?deleted=1");
+			Router::redirect("admin/listdomains/?deleted=1");
 		}
 		else{
 			// Cannot delete domain with admin emails, redirect to overview
-			redirect("admin/listdomains/?adm_del=1");
+			Router::redirect("admin/listdomains/?adm_del=1");
 		}
 	}
 	
 	else{
 		// Choose to not delete domain, redirect to overview
-		redirect("admin/listdomains");
+		Router::redirect("admin/listdomains");
 	}
 }
 ?>
@@ -69,7 +69,7 @@ if(isset($_POST['confirm'])){
 <h1>Delete domain "<?php echo $domain->getDomain() ?>"?</h1>
 
 <div class="buttons">
-	<a class="button" href="<?php echo url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
+	<a class="button" href="<?php echo Router::url('admin/listdomains'); ?>">&#10092; Back to domain list</a>
 </div>
 
 <form class="form" action="" method="post" autocomplete="off">

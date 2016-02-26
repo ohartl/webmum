@@ -9,7 +9,7 @@ Router::addGet('/', 'include/php/pages/start.php');
 Router::addMixed('/login', 'include/php/pages/login.php');
 Router::addGet('/logout', function(){
 	Auth::logout();
-	redirect('/');
+	Router::redirect('/');
 	return;
 });
 
