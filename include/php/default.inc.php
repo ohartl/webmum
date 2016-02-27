@@ -6,10 +6,10 @@
  */
 spl_autoload_register(function($class){
 	if(file_exists('include/php/models/'.$class.'.php')){
-		include 'include/php/models/'.$class.'.php';
+		include_once 'include/php/models/'.$class.'.php';
 	}
 	elseif(file_exists('include/php/classes/'.$class.'.php')){
-		include 'include/php/classes/'.$class.'.php';
+		include_once 'include/php/classes/'.$class.'.php';
 	}
 });
 
