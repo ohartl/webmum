@@ -1,14 +1,5 @@
 <?php
 
-/**
- * @param string $errorMessage
- * @param null|string $sql
- */
-function dbError($errorMessage, $sql = null)
-{
-	die('There was an error running the query ['.$errorMessage.']'.(!is_null($sql)?' with statement "'.$sql.'"':''));
-}
-
 
 /**
  * Add message to logfile

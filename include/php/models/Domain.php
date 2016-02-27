@@ -65,13 +65,7 @@ class Domain extends AbstractModel
 	 */
 	public function countUsers()
 	{
-		global $db;
-
-		if(!$result = $db->query("SELECT COUNT(`".DBC_USERS_ID."`) FROM `".DBT_USERS."` WHERE `".DBC_USERS_DOMAIN."` = '{$this->getDomain()}'")){
-			dbError($db->error);
-		}
-
-		return $result->fetch_array(MYSQLI_NUM)[0];
+		return User::countWhere(array(DBC_USERS_DOMAIN, $this->getDomain()));
 	}
 
 
@@ -80,13 +74,7 @@ class Domain extends AbstractModel
 	 */
 	public function countRedirects()
 	{
-		global $db;
-
-		if(!$result = $db->query("SELECT COUNT(`".DBC_ALIASES_ID."`) FROM `".DBT_ALIASES."` WHERE `".DBC_ALIASES_SOURCE."` LIKE '%@{$this->getDomain()}%'")){
-			dbError($db->error);
-		}
-
-		return $result->fetch_array(MYSQLI_NUM)[0];
+		return AbstractRedirect::countWhere(array(DBC_ALIASES_SOURCE, 'LIKE', "%@{$this->getDomain()}%"));
 	}
 
 }

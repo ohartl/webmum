@@ -157,14 +157,11 @@ class User extends AbstractModel
 	 */
 	public static function getMailboxLimitDefault()
 	{
-		global $db;
-
 		if(defined('DBC_USERS_MAILBOXLIMIT')){
 
 			$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") FROM `".static::$table."` LIMIT 1";
-			if(!$result = $db->query($sql)){
-				dbError($db->error, $sql);
-			}
+
+			$result = Database::getInstance()->query($sql);
 
 			if($result->num_rows === 1){
 				$row = $result->fetch_array();
@@ -227,7 +224,7 @@ class User extends AbstractModel
 		global $adminDomainLimits;
 
 		if($this->isDomainLimited()){
-			if (!is_array($adminDomainLimits[$this->getEmail()])) {
+			if(!is_array($adminDomainLimits[$this->getEmail()])){
 				throw new InvalidArgumentException('Config value of admin domain limits for email "'.$this->getEmail().'" needs to be of type array.');
 			}
 

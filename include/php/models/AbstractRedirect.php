@@ -194,7 +194,7 @@ abstract class AbstractRedirect extends AbstractModel
 		$domains = array();
 		foreach($sources as $source){
 			$emailParts = explode('@', $source);
-			if(count($emailParts) === 2) {
+			if(count($emailParts) === 2){
 				$domains[] = $emailParts[1];
 			}
 		}
@@ -296,7 +296,7 @@ UNION
 	public static function findMultiAll($orderBy = array(DBC_ALIASES_SOURCE))
 	{
 		$sql = static::generateRedirectBaseQuery()
-			.static::sqlHelperOrderBy($orderBy);
+			.Database::helperOrderBy($orderBy);
 
 		return static::findAllRaw($sql);
 	}
@@ -305,9 +305,9 @@ UNION
 	public static function findMultiWhere($conditions = array(), $conditionConnector = 'AND', $orderBy = null, $limit = 0)
 	{
 		$sql = static::generateRedirectBaseQuery()
-			.static::sqlHelperWhere($conditions, $conditionConnector)
-			.static::sqlHelperOrderBy($orderBy)
-			.static::sqlHelperLimit($limit);
+			.Database::helperWhere($conditions, $conditionConnector)
+			.Database::helperOrderBy($orderBy)
+			.Database::helperLimit($limit);
 
 		if($limit === 1){
 			return static::findRaw($sql);

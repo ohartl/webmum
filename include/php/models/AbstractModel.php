@@ -202,7 +202,7 @@ abstract class AbstractModel
 	{
 		$rows = array();
 
-		while($row = $result->fetch_assoc()) {
+		while($row = $result->fetch_assoc()){
 			$rows[] = $row;
 		}
 
@@ -259,229 +259,6 @@ abstract class AbstractModel
 
 
 	/**
-	 * @param array $attributes
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperAttributeList($attributes)
-	{
-		$sql = "%s";
-		$values = array();
-
-		$keywords = array('AS', 'ASC', 'DESC');
-
-		foreach($attributes as $val){
-			if(!is_array($val)){
-				// raw
-				$values[] = $val;
-				continue;
-			}
-
-			switch(count($val)){
-				case 1:
-					$values[] = "`{$val[0]}`";
-					break;
-				case 2:
-					if(in_array(strtoupper($val[1]), $keywords)){
-						$values[] = "`{$val[0]}` {$val[1]}";
-					}
-					else{
-						$values[] = "`{$val[0]}`.`{$val[1]}`";
-					}
-					break;
-				case 3:
-					if(in_array(strtoupper($val[1]), $keywords)){
-						$values[] = "`{$val[0]}` {$val[1]} `{$val[2]}`";
-					}
-					elseif(in_array(strtoupper($val[2]), $keywords)){
-						$values[] = "`{$val[0]}`.`{$val[1]}` {$val[2]}";
-					}
-					break;
-				case 4:
-					if(in_array(strtoupper($val[1]), $keywords)){
-						$values[] = "`{$val[0]}` {$val[1]} `{$val[2]}`.`{$val[3]}`";
-					}
-					elseif(in_array(strtoupper($val[2]), $keywords)){
-						$values[] = "`{$val[0]}`.`{$val[1]}` {$val[2]} `{$val[3]}`";
-					}
-					else{
-						$values[] = "`{$val[0]}`.`{$val[1]}` `{$val[2]}`.`{$val[3]}`";
-					}
-					break;
-				case 5:
-					if(in_array(strtoupper($val[2]), $keywords)){
-						$values[] = "`{$val[0]}`.`{$val[1]}` {$val[2]} `{$val[3]}`.`{$val[4]}`";
-					}
-					break;
-			}
-		}
-
-		return sprintf($sql, implode(', ', $values));
-	}
-
-
-	/**
-	 * @param mixed $value
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperValue($value)
-	{
-		global $db;
-		if(is_null($value) || (is_string($value) && strtoupper($value) === 'NULL')){
-			return "NULL";
-		}
-		elseif(is_array($value)){
-			return static::sqlHelperValueList($value);
-		}
-
-		return "'{$db->escape_string($value)}'";
-	}
-
-
-	/**
-	 * @param array $values
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperValueList($values)
-	{
-		$sql = "(%s)";
-		$sqlValues = array();
-
-		foreach($values as $val){
-			$sqlValues[] = static::sqlHelperValue($val);
-		}
-
-		return sprintf($sql, implode(', ', $sqlValues));
-	}
-
-
-	/**
-	 * @param array $conditions
-	 *     array('attr', '=', '3') => "`attr` = '3'"
-	 *     array(
-	 *         array('`attr` = '3') (raw SQL) => `attr` = '3'
-	 *         array('attr', 3) => `attr` = '3'
-	 *         array('attr', '=', '3') => `attr` = '3'
-	 *         array('attr', '<=', 3) => `attr` <= '3'
-	 *         array('attr', 'LIKE', '%asd') => `attr` LIKE '%asd'
-	 *         array('attr', 'IS', null) => `attr` IS NULL
-	 *         array('attr', 'IS NOT', null) => `attr` IS NOT NULL
-	 *     )
-	 * @param string $conditionConnector AND, OR
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperConditionList($conditions, $conditionConnector = 'AND')
-	{
-		$values = array();
-
-		// detect non nested array
-		if(count($conditions) > 0 && !is_array($conditions[0])){
-			$conditions = array($conditions);
-		}
-
-		$conditionConnector = strtoupper($conditionConnector);
-		if(in_array($conditionConnector, array('AND', 'OR'))){
-			$conditionConnector = " ".$conditionConnector;
-		}
-
-		$sql = "`%s` %s %s";
-
-		foreach($conditions as $val){
-			switch(count($val)){
-				case 1:
-					// raw
-					$values[] = $val;
-					break;
-				case 2:
-					$v = static::sqlHelperValue($val[1]);
-					$values[] = sprintf($sql, $val[0], "=", $v);
-					break;
-				case 3:
-					$v = static::sqlHelperValue($val[2]);
-					$values[] = sprintf($sql, $val[0], strtoupper($val[1]), $v);
-					break;
-			}
-		}
-
-		return implode($conditionConnector." ", $values);
-	}
-
-
-	/**
-	 * @param array $conditions
-	 * @param string $conditionConnector AND, OR
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperWhere($conditions, $conditionConnector = 'AND')
-	{
-		if(count($conditions) > 0){
-			$sql = " WHERE %s";
-
-			return sprintf($sql, static::sqlHelperConditionList($conditions, $conditionConnector));
-		}
-
-		return "";
-	}
-
-	/**
-	 * @param array|null $orderBy Examples below:
-	 *        null => ""
-	 *        array() => ""
-	 *        array('attr1' => 'asc', 'attr2' => 'desc') => " ORDER BY `attr1` ASC, `attr2` DESC "
-	 *        array('attr1') => " ORDER BY `attr1` ASC "
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperOrderBy($orderBy = null)
-	{
-		if(!is_null($orderBy) && count($orderBy) > 0){
-			$sql = " ORDER BY %s";
-
-			$values = array();
-			foreach($orderBy as $key => $val){
-				if(is_int($key)){
-					$values[] = array($val);
-				}
-				else{
-					$values[] = array($key, strtoupper($val));
-				}
-			}
-
-			return sprintf($sql, static::sqlHelperAttributeList($values));
-		}
-
-		return "";
-	}
-
-
-	/**
-	 * @param int|array $limit
-	 *        0 => ""
-	 *        3 => " LIMIT 3 "
-	 *        array(3, 4) => " LIMIT 3,4 "
-	 *
-	 * @return string
-	 */
-	protected static function sqlHelperLimit($limit = 0)
-	{
-		$sql = " LIMIT %s";
-
-		if(is_string($limit) || (is_int($limit) && $limit > 0)){
-			return sprintf($sql, $limit);
-		}
-		elseif(is_array($limit) && count($limit) == 2){
-			return sprintf($sql, $limit[0].",".$limit[1]);
-		}
-
-		return "";
-	}
-
-
-	/**
 	 * Find all models by raw sql
 	 *
 	 * @param $sql
@@ -491,11 +268,7 @@ abstract class AbstractModel
 	 */
 	public static function findAllRaw($sql, $useSpecificModel = null)
 	{
-		global $db;
-
-		if(!$result = $db->query($sql)){
-			dbError($db->error, $sql);
-		}
+		$result = Database::getInstance()->query($sql);
 
 		if(is_null($useSpecificModel)){
 			return static::createMultipleFromDbResult($result);
@@ -518,11 +291,7 @@ abstract class AbstractModel
 	 */
 	public static function findRaw($sql, $useSpecificModel = null)
 	{
-		global $db;
-
-		if(!$result = $db->query($sql)){
-			dbError($db->error, $sql);
-		}
+		$result = Database::getInstance()->query($sql);
 
 		if(is_null($useSpecificModel)){
 			return static::createFromDbResult($result);
@@ -538,49 +307,43 @@ abstract class AbstractModel
 	/**
 	 * Find all models
 	 *
-	 * @param array|null $orderBy see sqlHelperOrderBy
+	 * @param array|null $orderBy see helperOrderBy
 	 *
 	 * @return ModelCollection|static[]
 	 */
 	public static function findAll($orderBy = null)
 	{
-		$sql = "SELECT * FROM `".static::$table."`"
-			.static::sqlHelperOrderBy($orderBy);
-
-		return static::findAllRaw($sql);
+		return static::findWhere(array(), 'AND', $orderBy);
 	}
 
 
 	/**
 	 * Find models by a condition
 	 *
-	 * @param array $conditions see sqlHelperConditionArray
-	 * @param string $conditionConnector see sqlHelperConditionArray
+	 * @param array $conditions see helperConditionArray
+	 * @param string $conditionConnector see helperConditionArray
 	 * @param array|null $orderBy
-	 * @param int $limit see sqlHelperLimit
+	 * @param int $limit see helperLimit
 	 *
 	 * @return ModelCollection|static[]|AbstractModel|null
 	 */
 	public static function findWhere($conditions = array(), $conditionConnector = 'AND', $orderBy = null, $limit = 0)
 	{
-		$sql = "SELECT * FROM `".static::$table."`"
-			.static::sqlHelperWhere($conditions, $conditionConnector)
-			.static::sqlHelperOrderBy($orderBy)
-			.static::sqlHelperLimit($limit);
+		$result = Database::getInstance()->select(static::$table, $conditions, $conditionConnector, $orderBy, $limit);
 
 		if($limit === 1){
-			return static::findRaw($sql);
+			return static::createFromDbResult($result);
 		}
 
-		return static::findAllRaw($sql);
+		return static::createMultipleFromDbResult($result);
 	}
 
 
 	/**
 	 * Find first model matching a condition
 	 *
-	 * @param array $conditions see sqlHelperConditionArray
-	 * @param string $conditionConnector see sqlHelperConditionArray
+	 * @param array $conditions see helperConditionArray
+	 * @param string $conditionConnector see helperConditionArray
 	 * @param array|null $orderBy
 	 *
 	 * @return AbstractModel|null
@@ -606,66 +369,28 @@ abstract class AbstractModel
 
 	/**
 	 * Save model data to database
-	 *
-	 * @return bool
 	 */
 	public function save()
 	{
-		global $db;
-
 		$data = $this->preSave($this->data);
 
-		if(is_null($this->getId())){
-			// insert
-
-			$attributes = array();
-			$values = array();
-
-			foreach($this->attributeDbAttributeMapping as $attribute => $sqlAttribute){
-				if($sqlAttribute === static::$idAttribute){
-					continue;
-				}
-
-				$attributes[] = array($sqlAttribute);
-				$values[] = $data[$attribute];
+		$values = array();
+		foreach($this->attributeDbAttributeMapping as $attribute => $sqlAttribute){
+			if($sqlAttribute === static::$idAttribute){
+				continue;
 			}
 
-			$sql = "INSERT INTO `".static::$table."`"
-				." (".static::sqlHelperAttributeList($attributes).")"
-				." VALUES ".static::sqlHelperValueList($values);
+			$values[$sqlAttribute] = $data[$attribute];
+		}
+
+		if(is_null($this->getId())){
+			$insertId = Database::getInstance()->insert(static::$table, $values);
+
+			$this->setId(intval($insertId));
 		}
 		else{
-			// update
-
-			$values = array();
-			foreach($this->attributeDbAttributeMapping as $attribute => $sqlAttribute){
-				if($sqlAttribute === static::$idAttribute){
-					continue;
-				}
-
-				$values[] = array($sqlAttribute, '=', $data[$attribute]);
-			}
-
-			$sql = "UPDATE `".static::$table."`"
-				." SET ".static::sqlHelperConditionList($values, ',')
-				.static::sqlHelperWhere(array(static::$idAttribute, $this->getId()));
+			Database::getInstance()->update(static::$table, $values, array(static::$idAttribute, $this->getId()));
 		}
-
-
-		if($stmt = $db->prepare($sql)){
-			if($stmt->execute()){
-				if(is_null($this->getId())){
-					$this->setId(intval($db->insert_id));
-				}
-
-				return true;
-			}
-			else{
-				dbError($db->error, $sql);
-			}
-		}
-
-		return false;
 	}
 
 	/**
@@ -675,23 +400,39 @@ abstract class AbstractModel
 	 */
 	public function delete()
 	{
-		global $db;
-
 		if(!is_null($this->getId())){
-			$sql = "DELETE FROM `".static::$table."`"
-				.static::sqlHelperWhere(array(static::$idAttribute, $this->getId()));
 
-			if($stmt = $db->prepare($sql)){
-				if($stmt->execute()){
-					return true;
-				}
-				else{
-					dbError($db->error, $sql);
-				}
-			}
+			Database::getInstance()->delete(static::$table, static::$idAttribute, $this->getId());
+
+			return true;
 		}
 
 		return false;
+	}
+
+
+	/**
+	 * Count models by a condition
+	 *
+	 * @param array $conditions see helperConditionArray
+	 * @param string $conditionConnector see helperConditionArray
+	 *
+	 * @return int
+	 */
+	public static function countWhere($conditions = array(), $conditionConnector = 'AND')
+	{
+		return Database::getInstance()->count(static::$table, static::$idAttribute, $conditions, $conditionConnector);
+	}
+
+
+	/**
+	 * Count all models
+	 *
+	 * @return int
+	 */
+	public static function count()
+	{
+		return static::countWhere();
 	}
 
 }
