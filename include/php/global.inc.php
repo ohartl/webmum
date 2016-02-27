@@ -11,44 +11,6 @@ function dbError($errorMessage, $sql = null)
 
 
 /**
- * Holds all messages
- * @var array
- */
-$MESSAGES = array();
-
-
-/**
- * Add a new message
- * @param string $type Supported types: success, fail, info
- * @param string $message
- */
-function add_message($type, $message)
-{
-	global $MESSAGES;
-	$newmessage = array();
-	$newmessage['type'] = $type;
-	$newmessage['message'] = $message;
-
-	$MESSAGES[] = $newmessage;
-}
-
-/**
- * Print all messages
- */
-function output_messages()
-{
-	global $MESSAGES;
-	if(count($MESSAGES) > 0) {
-		echo '<div class="messages">';
-		foreach($MESSAGES as $message){
-			echo '<div class="notification notification-'.$message['type'].'">'.$message['message'].'</div>';
-		}
-		echo '</div>';
-	}
-}
-
-
-/**
  * Add message to logfile
  *
  * @param string $text

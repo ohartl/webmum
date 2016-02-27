@@ -53,7 +53,7 @@ if(!is_null($saveMode)){
 				$userToEdit->changePassword($inputPassword, $inputPasswordRepeated);
 			}
 			catch(Exception $passwordInvalidException){
-				add_message("fail", $passwordInvalidException->getMessage());
+				Message::fail($passwordInvalidException->getMessage());
 				$passwordError = true;
 			}
 		}
@@ -119,21 +119,21 @@ if(!is_null($saveMode)){
 						Router::redirect("admin/listusers/?created=1");
 					}
 					catch(Exception $passwordInvalidException){
-						add_message("fail", $passwordInvalidException->getMessage());
+						Message::fail($passwordInvalidException->getMessage());
 					}
 				}
 				else{
-					add_message("fail", "User already exists in database.");
+					Message::fail("User already exists in database.");
 				}
 			}
 			else{
-				add_message("fail", "The selected domain doesn't exist.");
+				Message::fail("The selected domain doesn't exist.");
 			}
 		}
 		else{
 			var_dump($_POST);
 			// Fields missing
-			add_message("fail", "Not all fields were filled out.");
+			Message::fail("Not all fields were filled out.");
 		}
 	}
 }
@@ -171,7 +171,7 @@ if(isset($_GET['id'])){
 		<input type="hidden" name="id" value="<?php echo $user->getId(); ?>"/>
 	<?php endif; ?>
 
-	<?php output_messages(); ?>
+	<?php echo Message::render(); ?>
 
 	<?php if($mode === "edit"): ?>
 		<div class="input-group">

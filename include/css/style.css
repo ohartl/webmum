@@ -286,31 +286,34 @@ body {
 		}
 
 
-	#content .notification {
-		height: auto;
-		width: 100%;
-		margin: 15px 0;
-		text-align: center;
-		border: 1px solid;
-		border-radius: 3px;
-		padding: 15px 10px;
-		box-sizing: border-box;
+	#content .notifications {
 	}
 
-	#content .notification.notification-fail {
-		background-color: #fcacac;
-		border-color: red;
-	}
-
-		#content .notification.notification-warning {
-			background-color: #fcf897;
-			border-color: #ffe600;
+		#content .notification {
+			height: auto;
+			width: 100%;
+			margin: 15px 0;
+			text-align: center;
+			border: 1px solid;
+			border-radius: 3px;
+			padding: 15px 10px;
+			box-sizing: border-box;
 		}
 
-		#content .notification.notification-success {
-			background-color: rgba(182, 255, 183, 1);
-			border-color: green;
-		}
+			#content .notification.notification-fail {
+				background-color: #fcacac;
+				border-color: red;
+			}
+
+			#content .notification.notification-warning {
+				background-color: #fcf897;
+				border-color: #ffe600;
+			}
+
+			#content .notification.notification-success {
+				background-color: rgba(182, 255, 183, 1);
+				border-color: green;
+			}
 
 
 #footer {

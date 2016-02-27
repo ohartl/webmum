@@ -4,10 +4,10 @@ if(isset($_POST['password']) && isset($_POST['password_repeat'])){
 	try {
 		Auth::getUser()->changePassword($_POST['password'], $_POST['password_repeat']);
 
-		add_message("success", "Password changed successfully!");
+		Message::success("Password changed successfully!");
 	}
 	catch(Exception $passwordInvalidException){
-		add_message("fail", $passwordInvalidException->getMessage());
+		Message::fail($passwordInvalidException->getMessage());
 	}
 }
 
@@ -19,7 +19,7 @@ if(isset($_POST['password']) && isset($_POST['password_repeat'])){
 	<a class="button" href="<?php echo Router::url('private'); ?>">&#10092; Back to personal dashboard</a>
 </div>
 
-<?php output_messages(); ?>
+<?php echo Message::render(); ?>
 
 <form class="form" action="" method="post" autocomplete="off">
 	<div class="input-group">

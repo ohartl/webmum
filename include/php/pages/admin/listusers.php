@@ -1,19 +1,19 @@
 <?php
 
 if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
-	add_message("success", "User deleted successfully.");
+	Message::success("User deleted successfully.");
 }
 else if(isset($_GET['created']) && $_GET['created'] == "1"){
-	add_message("success", "User created successfully.");
+	Message::success("User created successfully.");
 }
 else if(isset($_GET['edited']) && $_GET['edited'] == "1"){
-	add_message("success", "User edited successfully.");
+	Message::success("User edited successfully.");
 }
 else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
-	add_message("fail", "Admin user cannot be deleted.");
+	Message::fail("Admin user cannot be deleted.");
 }
 else if(isset($_GET['missing-permission']) && $_GET['missing-permission'] == "1"){
-	add_message("fail", "You don't have the permission to edit/delete users of that domain.");
+	Message::fail("You don't have the permission to edit/delete users of that domain.");
 }
 
 $users = User::getByLimitedDomains();
@@ -32,7 +32,7 @@ $users = User::getByLimitedDomains();
 	</div>
 <?php endif; ?>
 
-<?php output_messages(); ?>
+<?php echo Message::render(); ?>
 
 <?php if($users->count() > 0): ?>
 	<table class="table">

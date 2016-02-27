@@ -65,7 +65,7 @@ if(isset($_POST['savemode'])){
 
 
 	if(count($emailErrors) > 0){
-		add_message("fail", implode("<br>", $emailErrors));
+		Message::fail(implode("<br>", $emailErrors));
 	}
 	else{
 		if(count($emailErrors) === 0 && $savemode === "edit" && !is_null($redirect)){
@@ -111,7 +111,7 @@ if(isset($_POST['savemode'])){
 						}
 					}
 
-					add_message("fail", implode("<br>", $errorMessages));
+					Message::fail(implode("<br>", $errorMessages));
 				}
 				else{
 					// multi source handling
@@ -161,7 +161,7 @@ if(isset($_POST['savemode'])){
 				}
 			}
 			else{
-				add_message("fail", "Redirect couldn't be edited. Fill out all fields.");
+				Message::fail("Redirect couldn't be edited. Fill out all fields.");
 			}
 		}
 
@@ -179,7 +179,7 @@ if(isset($_POST['savemode'])){
 						$errorMessages[] = "Source address \"{$existingRedirect->getSource()}\" is already redirected to some destination.";
 					}
 
-					add_message("fail", implode("<br>", $errorMessages));
+					Message::fail(implode("<br>", $errorMessages));
 				}
 				else{
 					$inputDestination = emailsToString($inputDestinations);
@@ -209,7 +209,7 @@ if(isset($_POST['savemode'])){
 				}
 			}
 			else{
-				add_message("fail", "Redirect couldn't be created. Fill out all fields.");
+				Message::fail("Redirect couldn't be created. Fill out all fields.");
 			}
 		}
 	}
@@ -236,7 +236,7 @@ $domains = Domain::getByLimitedDomains();
 	So make sure you don't accidentally override a mailbox with a redirect.
 </div>
 
-<?php output_messages(); ?>
+<?php echo Message::render(); ?>
 
 <?php if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED') && Auth::getUser()->isDomainLimited() && $domains->count() === 0): ?>
 	<div class="notification notification-fail">
