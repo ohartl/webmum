@@ -86,7 +86,7 @@ class Auth
 		$email = strtolower($email);
 
 		$emailInParts = explode("@", $email);
-		if(count($emailInParts) !== 2) {
+		if(count($emailInParts) !== 2){
 			return false;
 		}
 		$username = $emailInParts[0];
@@ -123,7 +123,11 @@ class Auth
 	{
 		unset($_SESSION[static::SESSION_IDENTIFIER]);
 
-		session_destroy();
+		static::$loggedInUser = null;
+
+		if(session_status() === PHP_SESSION_ACTIVE){
+			session_destroy();
+		}
 	}
 
 
@@ -136,11 +140,11 @@ class Auth
 	 */
 	public static function hasPermission($requiredRole)
 	{
-		if(static::isLoggedIn()) {
+		if(static::isLoggedIn()){
 			$user = static::getUser();
 
 			return $user->getRole() === $requiredRole
-				|| $user->getRole() === User::ROLE_ADMIN;
+			|| $user->getRole() === User::ROLE_ADMIN;
 		}
 
 		return false;
@@ -154,9 +158,9 @@ class Auth
 	 * @param string $passwordRepeated
 	 *
 	 * @throws Exception Codes explained below
-	 * 		2: One password field is empty
-	 * 		3: Passwords aren't equal
-	 * 		4: Passwort is too snort
+	 *        2: One password field is empty
+	 *        3: Passwords aren't equal
+	 *        4: Passwort is too snort
 	 */
 	public static function validateNewPassword($password, $passwordRepeated)
 	{
@@ -164,20 +168,18 @@ class Auth
 		if(empty($password)){
 			throw new Exception("First password field was'nt filled out.", 2);
 		}
-		elseif(empty($passwordRepeated)){
+		if(empty($passwordRepeated)){
 			throw new Exception("Repeat password field was'nt filled out.", 2);
 		}
-		else {
-			// Check if password are equal
-			if($password !== $passwordRepeated){
-				throw new Exception("The repeated password must be equal to the first one.", 3);
-			}
-			else {
-				// Check if password length is okay
-				if(strlen($password) < MIN_PASS_LENGTH){
-					throw new Exception("Passwords must be at least ".MIN_PASS_LENGTH." characters long.", 4);
-				}
-			}
+
+		// Check if password are equal
+		if($password !== $passwordRepeated){
+			throw new Exception("The repeated password must be equal to the first one.", 3);
+		}
+
+		// Check if password length is okay
+		if(strlen($password) < MIN_PASS_LENGTH){
+			throw new Exception("Passwords must be at least ".MIN_PASS_LENGTH." characters long.", 4);
 		}
 	}
 
@@ -199,17 +201,17 @@ class Auth
 	 */
 	private static function getPasswordSchemaPrefix()
 	{
-		switch(PASS_HASH_SCHEMA){
-			case "SHA-256":
-				return '$5$rounds=5000$';
+		$map = array(
+			'SHA-256' => '$5$rounds=5000$',
+			'BLOWFISH' => '$2a$09$',
+			'SHA-512' => '$6$rounds=5000$',
+		);
 
-			case "BLOWFISH":
-				return '$2a$09$';
-
-			case "SHA-512":
-			default:
-				return '$6$rounds=5000$';
+		if(isset($map[PASS_HASH_SCHEMA])){
+			return $map[PASS_HASH_SCHEMA];
 		}
+
+		return $map['SHA-512'];
 	}
 
 

@@ -1,8 +1,4 @@
 <?php
-// Start session as the very first thing
-session_start();
-session_regenerate_id();
-
 
 /**
  * Loading system
