@@ -16,11 +16,40 @@ class Message
 
 
 	/**
+	 * @var Message
+	 */
+	protected static $instance;
+
+
+	/**
 	 * Holds all messages
 	 *
 	 * @var array
 	 */
-	protected static $messages = array();
+	protected $messages = array();
+
+
+	private function __construct()
+	{
+	}
+
+
+	private function __clone()
+	{
+	}
+
+
+	/**
+	 * @return Message
+	 */
+	public static function getInstance()
+	{
+		if(is_null(static::$instance)){
+			static::$instance = new static();
+		}
+
+		return static::$instance;
+	}
 
 
 	/**
@@ -29,13 +58,13 @@ class Message
 	 * @param string $type Supported types: success, fail, info
 	 * @param string $text
 	 */
-	public static function add($type, $text)
+	public function add($type, $text)
 	{
 		if(!in_array($type, array(static::TYPE_FAIL, static::TYPE_ERROR, static::TYPE_WARNING, static::TYPE_SUCCESS))){
 			throw new InvalidArgumentException;
 		}
 
-		static::$messages[] = array(
+		$this->messages[] = array(
 			'type' => $type,
 			'message' => $text,
 		);
@@ -47,9 +76,9 @@ class Message
 	 *
 	 * @param string $text
 	 */
-	public static function fail($text)
+	public function fail($text)
 	{
-		static::add(static::TYPE_FAIL, $text);
+		$this->add(static::TYPE_FAIL, $text);
 	}
 
 
@@ -58,9 +87,9 @@ class Message
 	 *
 	 * @param string $text
 	 */
-	public static function error($text)
+	public function error($text)
 	{
-		static::add(static::TYPE_ERROR, $text);
+		$this->add(static::TYPE_ERROR, $text);
 	}
 
 
@@ -69,9 +98,9 @@ class Message
 	 *
 	 * @param string $text
 	 */
-	public static function warning($text)
+	public function warning($text)
 	{
-		static::add(static::TYPE_WARNING, $text);
+		$this->add(static::TYPE_WARNING, $text);
 	}
 
 
@@ -80,9 +109,9 @@ class Message
 	 *
 	 * @param string $text
 	 */
-	public static function success($text)
+	public function success($text)
 	{
-		static::add(static::TYPE_SUCCESS, $text);
+		$this->add(static::TYPE_SUCCESS, $text);
 	}
 
 
@@ -93,17 +122,19 @@ class Message
 	 *
 	 * @return string
 	 */
-	public static function render($type = null)
+	public function render($type = null)
 	{
 		$out = '';
 
-		if(count(static::$messages) > 0){
+		if(count($this->messages) > 0){
 			$out .= '<div class="notifications">';
-			foreach(static::$messages as $message){
+
+			foreach($this->messages as $message){
 				if(is_null($type) || $type == $message['type']){
 					$out .= '<div class="notification notification-'.$message['type'].'">'.$message['message'].'</div>';
 				}
 			}
+
 			$out .= '</div>';
 		}
 

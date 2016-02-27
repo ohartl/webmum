@@ -23,11 +23,11 @@ if(isset($_POST['domain'])){
 			Router::redirect("admin/listdomains/?created=1");
 		}
 		else{
-			Message::fail("Domain already exists in database.");
+			Message::getInstance()->fail("Domain already exists in database.");
 		}
 	}
 	else{
-		Message::fail("Empty domain couldn't be created.");
+		Message::getInstance()->fail("Empty domain couldn't be created.");
 	}
 }
 
@@ -35,7 +35,7 @@ if(isset($_POST['domain'])){
 
 <h1>Create new domain</h1>
 
-<?php echo Message::render(); ?>
+<?php echo Message::getInstance()->render(); ?>
 
 <div class="buttons">
 	<a class="button" href="<?php echo Router::url('admin/listdomains'); ?>">&#10092; Back to domain list</a>

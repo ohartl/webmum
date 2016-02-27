@@ -1,16 +1,16 @@
 <?php
 
 if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
-	Message::success("Redirect deleted successfully.");
+	Message::getInstance()->success("Redirect deleted successfully.");
 }
 else if(isset($_GET['created']) && $_GET['created'] == "1"){
-	Message::success("Redirect created successfully.");
+	Message::getInstance()->success("Redirect created successfully.");
 }
 else if(isset($_GET['edited']) && $_GET['edited'] == "1"){
-	Message::success("Redirect edited successfully.");
+	Message::getInstance()->success("Redirect edited successfully.");
 }
 else if(isset($_GET['missing-permission']) && $_GET['missing-permission'] == "1"){
-	Message::fail("You don't have the permission to edit/delete redirects of that domain.");
+	Message::getInstance()->fail("You don't have the permission to edit/delete redirects of that domain.");
 }
 
 $redirects = AbstractRedirect::getMultiByLimitedDomains();
@@ -29,7 +29,7 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 	</div>
 <?php endif; ?>
 
-<?php echo Message::render(); ?>
+<?php echo Message::getInstance()->render(); ?>
 
 <?php if($redirects->count() > 0): ?>
 	<table class="table">

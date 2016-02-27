@@ -5,16 +5,16 @@ if(Auth::getUser()->isDomainLimited()){
 }
 
 if(isset($_GET['deleted']) && $_GET['deleted'] == "1"){
-	Message::success("Domain deleted successfully.");
+	Message::getInstance()->success("Domain deleted successfully.");
 }
 else if(isset($_GET['created']) && $_GET['created'] == "1"){
-	Message::success("Domain created successfully.");
+	Message::getInstance()->success("Domain created successfully.");
 }
 else if(isset($_GET['adm_del']) && $_GET['adm_del'] == "1"){
-	Message::fail("Domain couldn't be deleted because admin account would be affected.");
+	Message::getInstance()->fail("Domain couldn't be deleted because admin account would be affected.");
 }
 else if(isset($_GET['missing-permission']) && $_GET['missing-permission'] == "1"){
-	Message::fail("You don't have the permission to delete that domain.");
+	Message::getInstance()->fail("You don't have the permission to delete that domain.");
 }
 
 $domains = Domain::findAll();
@@ -29,7 +29,7 @@ $domains = Domain::findAll();
 	</div>
 <?php endif; ?>
 
-<?php echo Message::render(); ?>
+<?php echo Message::getInstance()->render(); ?>
 
 <?php if($domains->count() > 0): ?>
 	<table class="table">

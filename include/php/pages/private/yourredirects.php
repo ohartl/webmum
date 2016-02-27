@@ -10,7 +10,7 @@ $redirects = Auth::getUser()->getAnonymizedRedirects();
 		<a class="button" href="<?php echo Router::url('private'); ?>">&#10092; Back to personal dashboard</a>
 	</div>
 
-<?php echo Message::render(); ?>
+<?php echo Message::getInstance()->render(); ?>
 
 <?php if($redirects->count() > 0): ?>
 	<table class="table">

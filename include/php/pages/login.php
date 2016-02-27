@@ -7,7 +7,7 @@ if(Auth::isLoggedIn()){
 
 if(isset($_POST['email']) && isset($_POST['password'])){
 	if(empty($_POST['email']) || empty($_POST['password'])){
-		Message::fail('Please fill out both email and password fields.');
+		Message::getInstance()->fail('Please fill out both email and password fields.');
 	}
 	else {
 		// Start login
@@ -18,7 +18,7 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 		else{
 			//Log error message
 			writeLog("WebMUM login failed for IP ".$_SERVER['REMOTE_ADDR']);
-			Message::fail("Sorry, but we cannot log you in with this combination of email and password, there might be a typo.");
+			Message::getInstance()->fail("Sorry, but we cannot log you in with this combination of email and password, there might be a typo.");
 		}
 	}
 }
@@ -27,7 +27,7 @@ if(isset($_POST['email']) && isset($_POST['password'])){
 
 <h1>Login</h1>
 
-<?php echo Message::render(); ?>
+<?php echo Message::getInstance()->render(); ?>
 
 <form class="form" action="" method="post">
 	<div class="input-group">
