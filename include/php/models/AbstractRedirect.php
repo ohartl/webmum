@@ -66,11 +66,11 @@ abstract class AbstractRedirect extends AbstractModel
 		$source = stringToEmails($data[DBC_ALIASES_SOURCE]);
 		$destination = stringToEmails($data[DBC_ALIASES_DESTINATION]);
 
-		if(static::class === Alias::class || static::class === Redirect::class){
+		if(get_called_class() === 'Alias' || get_called_class() === 'Redirect'){
 			$source = $source[0];
 		}
 
-		if(static::class === Alias::class || static::class === MultiAlias::class){
+		if(get_called_class() === 'Alias' || get_called_class() === 'MultiAlias'){
 			$destination = $destination[0];
 		}
 
@@ -88,7 +88,7 @@ abstract class AbstractRedirect extends AbstractModel
 	 */
 	public static function create($data)
 	{
-		if(static::class !== AbstractRedirect::class){
+		if(get_called_class() !== 'AbstractRedirect'){
 			return parent::create($data);
 		}
 
