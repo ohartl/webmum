@@ -142,54 +142,23 @@ Configure WebMUM via the configuration file at `config/config.inc.php`.
 
 ### MySQL
 
-At first the database access has to be configured.
+At first the database access has to be configured under the config key `mysql`.
 
-```php
-define("MYSQL_HOST", "localhost");
-define("MYSQL_USER", "vmail");
-define("MYSQL_PASSWORD", "vmail");
-define("MYSQL_DATABASE", "vmail");
-```
-
-... then define the table names according to your own setup:
-
-```php
-// Table names
-define("DBT_USERS", "users");
-define("DBT_DOMAINS", "domains");
-define("DBT_ALIASES", "aliases");
-```
-
-... and finally the table column names:
-
-```php
-// Users table columns
-define("DBC_USERS_ID", "id");
-define("DBC_USERS_USERNAME", "username");
-define("DBC_USERS_DOMAIN", "domain");
-define("DBC_USERS_PASSWORD", "password");
-//define("DBC_USERS_MAILBOXLIMIT", "mailbox_limit");
-
-// Domains table columns
-define("DBC_DOMAINS_ID", "id");
-define("DBC_DOMAINS_DOMAIN", "domain");
-
-// Aliases table columns
-define("DBC_ALIASES_ID", "id");
-define("DBC_ALIASES_SOURCE", "source");
-define("DBC_ALIASES_DESTINATION", "destination");
-//define("DBC_ALIASES_MULTI_SOURCE", "multi_source");
-```
+Check if you've got the same database schema as configured in the config key `schema`.
 
 ### Mailbox limit (Optional)
 
-If you have a "mailbox_limit" column to limit the size of your users' mailboxes, just comment in the line
+If you want to use your "mailbox_limit" column to limit the size of your users' mailboxes, just enable mailbox limit in the options.
 
 ```php
-define("DBC_USERS_MAILBOXLIMIT", "mailbox_limit");
+'options' => array(
+    ...
+    'enable_mailbox_limits' => true,
+    ...
+),
 ```
 
-in your configuration. WebMUM will then show a new field "Mailbox limit" in the frontend.
+WebMUM will then show a new field "Mailbox limit" in the frontend.
 
 
 ### Multiple source redirect support (Optional)
@@ -199,13 +168,17 @@ WebMum will, if you enabled the multiple source redirect support, do some magic 
 To make this work another column in the database table is required, which holds an identifier for the list of source adresses, so they can be edited like normal redirects.
 
 By default you can only redirect a single address to a single or multiple destinations.
-If you want to enable support for redirecting multiple source adresses to a destionation, just comment in the line
+If you want to enable support for redirecting multiple source addresses to a destination, just enable it in the options:
 
 ```php
-define("DBC_ALIASES_MULTI_SOURCE", "multi_source");
+'options' => array(
+    ...
+    'enable_multi_source_redirects' => true,
+    ...
+),
 ```
 
-in your configuration. And add the following column to your database table for aliases / redirects:
+And add the following column to your database table for aliases / redirects:
 
 ```sql
 ALTER TABLE `aliases` ADD COLUMN `multi_source` VARCHAR(32) NULL DEFAULT NULL;
@@ -217,34 +190,42 @@ WebMUM will then show a larger field for source addresses in the frontend and yo
 ### Admin domain limits (Optional)
 
 If you share your mailserver with others, host their domains and they should be able to manage their domains, but not all domains on that mailserver then this is the right option for you. 
-You have to add that user to the `$admins` array in your configuration and enable admin domain limits be uncommenting the following line:
+You have to add that user to the `admins` array in your configuration and enable admin domain limits in the options:
 
 ```php
-define("ADMIN_DOMAIN_LIMITS_ENABLED", true); // (Optional)
+'options' => array(
+    ...
+    'enable_admin_domain_limits' => true,
+    ...
+),
 ```
 
-also you have to make an entry in the `$adminDomainLimits` array, for example `peter@his.tld` should be able to manage his domains `his.tld` and `his-company.tld` then configure the following:
+also you have to make an entry in the `admin_domain_limits` array, for example `peter@his.tld` should be able to manage his domains `his.tld` and `his-company.tld` then configure the following:
 
 ```php
-$adminDomainLimits = array(
-    "peter@his.tld" => array("his.tld", "his-company.tld"),
+'admin_domain_limits' => array(
+    'peter@his.tld' => array('his.tld', 'his-company.tld'),
 );
 ```
 
-Admins that have been listed in `$adminDomainLimits` don't have access to the "Manage domains" pages, otherwise they could delete domains they are managing, but maybe someone else owns.
+Admins that have been listed in `admin_domain_limits` don't have access to the "Manage domains" pages, otherwise they could delete domains they are managing, but maybe someone else owns.
 
 ### Paths
 
-The `FRONTEND_BASE_PATH` is the URL your WebMUM installation is accessible from outside, this also includes subfolders if you installed it in a subfolder for that specific domain.
+The `base_url` is the URL your WebMUM installation is accessible from outside, this also includes subfolders if you installed it in a subfolder for that specific domain.
 
 ```php
-define("FRONTEND_BASE_PATH", "http://mydomain.tld/webmum/");
+...
+'base_url' => 'http://localhost/webmum',
+...
 ```
 
 In the example above, WebMUM is located in a subfolder named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `FRONTEND_BASE_PATH` to something like this:
 
 ```php
-define("FRONTEND_BASE_PATH", "http://webmum.mydomain.tld/");
+...
+'base_url' => 'http://webmum.mydomain.tld',
+...
 ```
 
 
@@ -253,7 +234,9 @@ define("FRONTEND_BASE_PATH", "http://webmum.mydomain.tld/");
 Only users with one of the specified email addresses will have access to the administrator's dashboard and will be able to create, edit and delete users, domains and redirects.
 
 ```php
-$admins = array("admin@domain.tld");
+'admins' = array(
+    'admin@domain.tld',
+);
 ```
 
 Admin email accounts must exist in the virtual user database on your own server. (=> an e-mail account on a foreign server won't give you access!). You can then login into the admin dashboard with that e-mail address and the corresponding password.
@@ -261,21 +244,32 @@ Admin email accounts must exist in the virtual user database on your own server.
 ### Minimal required password length
 
 ```php
-define("MIN_PASS_LENGTH", 8);
+'password' => array(
+    ...
+    'min_length' => 8,
+    ...
+),
 ```
 
 ### Logfile
 
 When logging is enabled, WebMUM will write messages into a file "webmum.log" in a specified directory (e.g. when a login attempt fails).
 
-To enable logging, comment in the lines
+Enable logging by setting it to enabled in the options:
 
 ```php
-# define("WRITE_LOG", true);
-# define("WRITE_LOG_PATH","/var/www/webmum/log/");
+'options' => array(
+    ...
+    'enable_logging' => true,
+    ...
+),
 ```
 
-... and make sure that PHP has permissions to write the log file to the directory defined in WRITE_LOG_PATH.
+... and set a log path where the PHP user has permission to write the log file:
+
+```php
+'log_path' => '/var/www/webmum/log/',
+```
 
 "Login-failed-messages" have the following scheme:
 
@@ -292,12 +286,14 @@ If you want to use **Fail2Ban** with WebMUM, the filter has to be:
 failregex = ^(.*)\: WebMUM login failed for IP <HOST>$
 ```
 
-### General options
-
-To **restrict source adresses to managed domains only**, which is totally optional but recommended, just uncomment the following line
+### Validate that source addresses of redirects must be from the managed domains only
 
 ```php
-define("VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED", true);
+'options' => array(
+    ...
+    'enable_validate_aliases_source_domain' => true,
+    ...
+),
 ```
 
 
@@ -308,8 +304,11 @@ Choose delimiter beteween multiple email adresses: comma, semicolon or new line 
 **Tip:** new line is helpfull for long lists of addresses.
 
 ```php
-define("FRONTEND_EMAIL_SEPARATOR_TEXT", ', '); // possible values: ', ' (default), '; ', PHP_EOL (newline)
-define("FRONTEND_EMAIL_SEPARATOR_FORM", ','); // possible values: ',' (default), ';', PHP_EOL (newline)
+'frontend_options' => array(
+    // Separator for email lists
+    'email_separator_text' => ', ', // possible values: ', ' (default), '; ', PHP_EOL (newline)
+    'email_separator_form' => ',', // possible values: ',' (default), ';', PHP_EOL (newline)
+),
 ```
 
 The input for addresses can be separated by `,`, `;`, `:`, `|`, `newline` and combinations since all of them will result in a valid list of adresses in database, magic.
@@ -334,12 +333,16 @@ Please check if your config.inc.php fits the current requirements by comparing y
 
 ## FAQ
 
-### Which password scheme / encryption does WebMUM use?
+### Which password hash algorithm does WebMUM use?
 
-By default WebMUM uses `SHA-512` encryption for passwords. You can also between the alternatives `SHA-256` or `BLOWFISH` in the config.
+By default WebMUM uses the `SHA-512` hash algorithm for passwords. You can also choose between the alternatives `SHA-256` or `BLOWFISH` in the config.
 
 ```php
-define("PASS_HASH_SCHEMA", "SHA-512");
+'password' => array(
+    ...
+    'hash_algorithm' => 'SHA-512', // Supported algorithms: SHA-512, SHA-256, BLOWFISH
+    ...
+),
 ```
 
 ### "login/ cannot be found"
