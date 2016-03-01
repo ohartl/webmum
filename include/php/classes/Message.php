@@ -1,11 +1,5 @@
 <?php
 
-/**
- * Created by PhpStorm.
- * User: oliver
- * Date: 26.02.2016
- * Time: 22:47
- */
 class Message
 {
 
