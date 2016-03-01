@@ -2,7 +2,7 @@
 
 WebMUM is a web frontend based on PHP which helps you to manage e-mail server via MySQL. This software is licensed under the MIT license.
 
-Lead and started by [ThomasLeister](https://github.com/ThomasLeister), a passioned [blogger](https://thomas-leister.de/) speacialised topics like linux, open-source, servers etc., this project is developed together with [ohartl](https://github.com/ohartl) and the [contributes](https://github.com/ThomasLeister/webmum/graphs/contributors).
+Lead and started by [ThomasLeister](https://github.com/ThomasLeister), a passionate [blogger](https://thomas-leister.de/) specialized topics like linux, open-source, servers etc., this project is developed together with [ohartl](https://github.com/ohartl) and the [contributes](https://github.com/ThomasLeister/webmum/graphs/contributors).
 
 Feel free to send in issues and pull requests, your support for this project is much appreciated!
 
@@ -164,8 +164,8 @@ WebMUM will then show a new field "Mailbox limit" in the frontend.
 ### Multiple source redirect support (Optional)
 
 As mailservers can only process a single source address for redirects the database table for aliases / redirects can only hold a single source address in a row.
-WebMum will, if you enabled the multiple source redirect support, do some magic so there is only a single address in a row even though multiple adresses where entered.
-To make this work another column in the database table is required, which holds an identifier for the list of source adresses, so they can be edited like normal redirects.
+WebMum will, if you enabled the multiple source redirect support, do some magic so there is only a single address in a row even though multiple addresses where entered.
+To make this work another column in the database table is required, which holds an identifier for the list of source addresses, so they can be edited like normal redirects.
 
 By default you can only redirect a single address to a single or multiple destinations.
 If you want to enable support for redirecting multiple source addresses to a destination, just enable it in the options:
@@ -212,13 +212,13 @@ Admins that have been listed in `admin_domain_limits` don't have access to the "
 
 ### Paths
 
-The `base_url` is the URL your WebMUM installation is accessible from outside, this also includes subfolders if you installed it in a subfolder for that specific domain.
+The `base_url` is the URL your WebMUM installation is accessible from outside, this also includes subdirectories if you installed it in a subdirectory for that specific domain.
 
 ```php
 'base_url' => 'http://localhost/webmum',
 ```
 
-In the example above, WebMUM is located in a subfolder named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `FRONTEND_BASE_PATH` to something like this:
+In the example above, WebMUM is located in a subdirectory named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `FRONTEND_BASE_PATH` to something like this:
 
 ```php
 'base_url' => 'http://webmum.mydomain.tld',
@@ -295,9 +295,9 @@ failregex = ^(.*)\: WebMUM login failed for IP <HOST>$
 
 ### Frontend options
 
-Choose delimiter beteween multiple email adresses: comma, semicolon or new line separated.
+Choose delimiter between multiple email addresses: comma, semicolon or new line separated.
 
-**Tip:** new line is helpfull for long lists of addresses.
+**Tip:** new line is helpful for long lists of addresses.
 
 ```php
 'frontend_options' => array(
@@ -307,7 +307,7 @@ Choose delimiter beteween multiple email adresses: comma, semicolon or new line 
 ),
 ```
 
-The input for addresses can be separated by `,`, `;`, `:`, `|`, `newline` and combinations since all of them will result in a valid list of adresses in database, magic.
+The input for addresses can be separated by `,`, `;`, `:`, `|`, `newline` and combinations since all of them will result in a valid list of addresses in database, magic.
 
 
 ## Update / Upgrade WebMUM
