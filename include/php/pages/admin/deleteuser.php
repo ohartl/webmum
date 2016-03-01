@@ -25,7 +25,7 @@ if(isset($_POST['confirm'])){
 
 	if($confirm === "yes"){
 		// Check if admin is affected
-		if(!in_array($user->getEmail(), $admins)){
+		if(!in_array($user->getEmail(), Config::get('admins', array()))){
 
 			$user->delete();
 

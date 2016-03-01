@@ -31,7 +31,7 @@ if(isset($_POST['confirm'])){
 
 		// Check if admin domain is affected
 		$isAdminDomain = false;
-		foreach($admins as $admin){
+		foreach(Config::get('admins', array()) as $admin){
 			$parts = explode("@", $admin);
 			if(count($parts) === 2 && $parts[2] === $domain->getDomain()){
 				$isAdminDomain = true;
@@ -41,7 +41,7 @@ if(isset($_POST['confirm'])){
 
 		if(!$isAdminDomain){
 
-			$users = User::findWhere(array(DBC_USERS_DOMAIN, $domain->getDomain()));
+			$users = User::findWhere(array(User::attr('domain'), $domain->getDomain()));
 
 			/** @var User $user */
 			foreach($users as $user){

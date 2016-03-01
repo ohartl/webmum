@@ -36,7 +36,7 @@ if(isset($_POST['savemode'])){
 	}
 
 	// validate source emails are on domains
-	if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED')){
+	if(Config::get('options.enable_validate_aliases_source_domain', true)){
 		$domains = Domain::getByLimitedDomains();
 
 		foreach($inputSources as $email){
@@ -72,14 +72,14 @@ if(isset($_POST['savemode'])){
 
 			if(count($inputSources) > 0 && count($inputDestinations) > 0){
 
-				if(defined('DBC_ALIASES_MULTI_SOURCE') && $redirect instanceof AbstractMultiRedirect){
+				if(Config::get('options.enable_multi_source_redirects', false) && $redirect instanceof AbstractMultiRedirect){
 					$existingRedirectsToEdit = AbstractRedirect::findWhere(
-						array(DBC_ALIASES_MULTI_SOURCE, $redirect->getMultiHash())
+						array(AbstractRedirect::attr('multi_hash'), $redirect->getMultiHash())
 					);
 				}
 				else{
 					$existingRedirectsToEdit = AbstractRedirect::findWhere(
-						array(DBC_ALIASES_ID, $redirect->getId())
+						array(AbstractRedirect::attr('id'), $redirect->getId())
 					);
 				}
 
@@ -94,7 +94,7 @@ if(isset($_POST['savemode'])){
 				if(count($emailsToCheck) > 0){
 					$existingRedirectsOther = AbstractRedirect::findWhere(
 						array(
-							array(DBC_ALIASES_SOURCE, 'IN', $emailsToCheck)
+							array(AbstractRedirect::attr('source'), 'IN', $emailsToCheck)
 						)
 					);
 				}
@@ -140,11 +140,11 @@ if(isset($_POST['savemode'])){
 						}
 						else{
 							$data = array(
-								DBC_ALIASES_SOURCE => $sourceAddress,
-								DBC_ALIASES_DESTINATION => emailsToString($inputDestinations),
+								AbstractRedirect::attr('source') => $sourceAddress,
+								AbstractRedirect::attr('destination') => emailsToString($inputDestinations),
 							);
-							if(defined('DBC_ALIASES_MULTI_SOURCE')){
-								$data[DBC_ALIASES_MULTI_SOURCE] = $hash;
+							if(Config::get('options.enable_multi_source_redirects', false)){
+								$data[AbstractRedirect::attr('multi_hash')] = $hash;
 							}
 
 							AbstractRedirect::createAndSave($data);
@@ -169,7 +169,7 @@ if(isset($_POST['savemode'])){
 			if(count($inputSources) > 0 && count($inputDestinations) > 0){
 
 				$existingRedirects = AbstractRedirect::findWhere(
-					array(DBC_ALIASES_SOURCE, 'IN', $inputSources)
+					array(AbstractRedirect::attr('source'), 'IN', $inputSources)
 				);
 
 				if($existingRedirects->count() > 0){
@@ -184,7 +184,7 @@ if(isset($_POST['savemode'])){
 				else{
 					$inputDestination = emailsToString($inputDestinations);
 
-					if(defined('DBC_ALIASES_MULTI_SOURCE') && count($inputSources) > 1){
+					if(AbstractRedirect::attr('multiSource') !== false && count($inputSources) > 1){
 						$hash = md5(emailsToString($inputSources));
 					}
 					else{
@@ -193,12 +193,12 @@ if(isset($_POST['savemode'])){
 
 					foreach($inputSources as $inputSource){
 						$data = array(
-							DBC_ALIASES_SOURCE => $inputSource,
-							DBC_ALIASES_DESTINATION => $inputDestination,
+							AbstractRedirect::attr('source') => $inputSource,
+							AbstractRedirect::attr('destination') => $inputDestination,
 						);
 
-						if(defined('DBC_ALIASES_MULTI_SOURCE')){
-							$data[DBC_ALIASES_MULTI_SOURCE] = $hash;
+						if(Config::get('options.enable_multi_source_redirects', false)){
+							$data[AbstractRedirect::attr('multi_hash')] = $hash;
 						}
 
 						$a = AbstractRedirect::createAndSave($data);
@@ -238,7 +238,7 @@ $domains = Domain::getByLimitedDomains();
 
 <?php echo Message::getInstance()->render(); ?>
 
-<?php if(defined('VALIDATE_ALIASES_SOURCE_DOMAIN_ENABLED') && Auth::getUser()->isDomainLimited() && $domains->count() === 0): ?>
+<?php if(Config::get('options.enable_validate_aliases_source_domain', true) && Auth::getUser()->isDomainLimited() && $domains->count() === 0): ?>
 	<div class="notification notification-fail">
 		You are listed for limited access to domains, but it seems there are no domains listed you can access.
 	</div>
@@ -270,10 +270,10 @@ $domains = Domain::getByLimitedDomains();
 				<?php endif; ?>
 			</div>
 			<div class="input">
-				<?php if(defined('DBC_ALIASES_MULTI_SOURCE')): ?>
-					<textarea name="source" placeholder="Source" required autofocus><?php echo formatEmails(isset($_POST['source']) ? strip_tags($_POST['source']) : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
+				<?php if(Config::get('options.enable_multi_source_redirects', false)): ?>
+					<textarea name="source" placeholder="Source" required autofocus><?php echo formatEmailsForm(isset($_POST['source']) ? $_POST['source'] : (is_null($redirect) ? '' : $redirect->getSource())); ?></textarea>
 				<?php else: ?>
-					<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo strip_tags(formatEmails(isset($_POST['source']) ? $_POST['source'] : (is_null($redirect) ? '' : $redirect->getSource()), FRONTEND_EMAIL_SEPARATOR_FORM)); ?>"/>
+					<input type="text" name="source" placeholder="Source (single address)" required autofocus value="<?php echo formatEmailsForm(isset($_POST['source']) ? $_POST['source'] : (is_null($redirect) ? '' : $redirect->getSource())); ?>"/>
 				<?php endif; ?>
 			</div>
 		</div>
@@ -281,7 +281,7 @@ $domains = Domain::getByLimitedDomains();
 		<div class="input-group">
 			<label for="destination">Destination</label>
 			<div class="input">
-				<textarea name="destination" placeholder="Destination" required><?php echo formatEmails(isset($_POST['destination']) ? strip_tags($_POST['destination']) : (is_null($redirect) ? '' : $redirect->getDestination()), FRONTEND_EMAIL_SEPARATOR_FORM); ?></textarea>
+				<textarea name="destination" placeholder="Destination" required><?php echo formatEmailsForm(isset($_POST['destination']) ? $_POST['destination'] : (is_null($redirect) ? '' : $redirect->getDestination())); ?></textarea>
 			</div>
 		</div>
 

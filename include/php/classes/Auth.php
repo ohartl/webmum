@@ -95,8 +95,8 @@ class Auth
 		/** @var User $user */
 		$user = User::findWhereFirst(
 			array(
-				array(DBC_USERS_USERNAME, $username),
-				array(DBC_USERS_DOMAIN, $domain),
+				array(User::attr('username'), $username),
+				array(User::attr('domain'), $domain),
 			)
 		);
 
@@ -178,8 +178,10 @@ class Auth
 		}
 
 		// Check if password length is okay
-		if(strlen($password) < MIN_PASS_LENGTH){
-			throw new Exception("Passwords must be at least ".MIN_PASS_LENGTH." characters long.", 4);
+		if(Config::has('password.min_length')
+			&& strlen($password) < Config::get('password.min_length')
+		){
+			throw new Exception("Passwords must be at least ".Config::get('password.min_length')." characters long.", 4);
 		}
 	}
 
@@ -207,11 +209,13 @@ class Auth
 			'SHA-512' => '$6$rounds=5000$',
 		);
 
-		if(isset($map[PASS_HASH_SCHEMA])){
-			return $map[PASS_HASH_SCHEMA];
+		$key = Config::get('password.hash_algorithm', 'SHA-512');
+
+		if(!isset($map[$key])){
+			$key = 'SHA-512';
 		}
 
-		return $map['SHA-512'];
+		return $map[$key];
 	}
 
 

@@ -161,7 +161,7 @@ class Router
 	 */
 	public static function getCurrentUrlPath($removeGetParameters = true)
 	{
-		$baseUrl = parse_url(FRONTEND_BASE_PATH);
+		$baseUrl = parse_url(Config::get('base_url'));
 		$basePath = isset($baseUrl['path']) ? rtrim($baseUrl['path'], '/') : '';
 
 		$url = $_SERVER['REQUEST_URI'];
@@ -227,7 +227,7 @@ class Router
 	 */
 	public static function url($url)
 	{
-		return sprintf('%s/%s', rtrim(FRONTEND_BASE_PATH, '/'), trim($url, '/'));
+		return sprintf('%s/%s', rtrim(Config::get('base_url'), '/'), trim($url, '/'));
 	}
 
 

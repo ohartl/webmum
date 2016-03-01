@@ -40,7 +40,7 @@ $users = User::getByLimitedDomains();
 			<tr>
 				<th>Username</th>
 				<th>Domain</th>
-			<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+			<?php if(Config::get('options.enable_mailbox_limits', false)): ?>
 				<th>Mailbox Limit</th>
 			<?php endif; ?>
 				<th>Redirect count</th>
@@ -59,7 +59,7 @@ $users = User::getByLimitedDomains();
 					<?php echo $user->getUsername(); ?>
 				</td>
 				<td><?php echo $user->getDomain(); ?></td>
-				<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+				<?php if(Config::get('options.enable_mailbox_limits', false)): ?>
 					<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>
 				<?php endif; ?>
 				<td><?php echo $user->getRedirects()->count(); ?></td>

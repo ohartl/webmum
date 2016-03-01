@@ -9,13 +9,13 @@ if(isset($_POST['domain'])){
 
 	if(!empty($inputDomain)){
 
-		$existingDomain = Domain::findWhere(array(DBC_DOMAINS_DOMAIN, $inputDomain));
+		$existingDomain = Domain::findWhere(array(Domain::attr('domain'), $inputDomain));
 
 		if(!is_null($existingDomain)){
 
 			Domain::createAndSave(
 				array(
-					DBC_DOMAINS_DOMAIN => $inputDomain,
+					Domain::attr('domain') => $inputDomain,
 				)
 			);
 

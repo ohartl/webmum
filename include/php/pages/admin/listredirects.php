@@ -48,9 +48,9 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 					<?php if($redirect->getConflictingUsers()->count() > 0): ?>
 						<strong><?php echo $redirect->getConflictingUsers()->count() === 1 ? 'The marked redirect overrides a mailbox.' : 'The marked redirects override mailboxes.'; ?></strong><br>
 					<?php endif; ?>
-					<?php echo formatEmails($redirect->getConflictingMarkedSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?>
+					<?php echo formatEmailsText($redirect->getConflictingMarkedSource()); ?>
 				</td>
-				<td><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+				<td><?php echo formatEmailsText($redirect->getDestination()); ?></td>
 				<td>
 					<a href="<?php echo Router::url('admin/editredirect/?id='.$redirect->getId()); ?>">[Edit]</a>
 				</td>

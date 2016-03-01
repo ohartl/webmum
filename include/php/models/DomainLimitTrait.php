@@ -9,7 +9,7 @@ trait DomainLimitTrait
 	 */
 	public function isInLimitedDomains($limitedBy = null)
 	{
-		if(!defined('ADMIN_DOMAIN_LIMITS_ENABLED')) {
+		if(!Config::get('options.enable_admin_domain_limits', false)) {
 			return true;
 		}
 		if(is_null($limitedBy)){
@@ -17,7 +17,7 @@ trait DomainLimitTrait
 		}
 		elseif($limitedBy instanceof User) {
 			/** @var User $limitedBy */
-			return $limitedBy->isDomainLimited() && static::isInLimitedDomains($limitedBy->getDomainLimits());
+			return !$limitedBy->isDomainLimited() || static::isInLimitedDomains($limitedBy->getDomainLimits());
 		}
 
 		if(!is_array($limitedBy)){
@@ -51,6 +51,7 @@ trait DomainLimitTrait
 	{
 		return $collection->searchAll(function($model) use ($limitedBy){
 			/** @var static $model */
+			//var_dump($model->isInLimitedDomains($limitedBy), $model->getDomain());
 			return $model->isInLimitedDomains($limitedBy);
 		});
 	}

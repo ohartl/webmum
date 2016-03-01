@@ -24,26 +24,30 @@ abstract class AbstractModel
 	 *
 	 * @var array
 	 */
-	protected $attributeDbAttributeMapping = array();
+	protected static $attributeDbAttributeMapping = null;
 
 
 	/**
-	 * Setup db attribute mapping
-	 *
-	 * @param array $childMapping
-	 *
-	 * @return array
-	 *
-	 * @throws Exception
+	 * Initialize Model
 	 */
-	protected function setupDbMapping($childMapping = array())
+	abstract protected static function initModel();
+
+
+	/**
+	 * Get mapped db attribute
+	 *
+	 * @param string $name
+	 * @return string
+	 */
+	public static function attr($name)
 	{
-		return array_replace(
-			array(
-				'id' => static::$idAttribute,
-			),
-			$childMapping
-		);
+		static::initModel();
+
+		if(isset(static::$attributeDbAttributeMapping[$name])){
+			return static::$attributeDbAttributeMapping[$name];
+		}
+
+		return false;
 	}
 
 
@@ -75,7 +79,7 @@ abstract class AbstractModel
 	 */
 	protected function __construct($data)
 	{
-		$this->attributeDbAttributeMapping = $this->setupDbMapping();
+		static::initModel();
 
 		if(isset($data[static::$idAttribute])){
 			$id = is_numeric($data[static::$idAttribute]) && strpos($data[static::$idAttribute], ',') === false
@@ -143,7 +147,9 @@ abstract class AbstractModel
 	{
 		$model = static::create($data);
 
-		if(!is_null($model) && $model->save()){
+		if(!is_null($model)){
+			$model->save();
+
 			return $model;
 		}
 
@@ -305,19 +311,6 @@ abstract class AbstractModel
 
 
 	/**
-	 * Find all models
-	 *
-	 * @param array|null $orderBy see helperOrderBy
-	 *
-	 * @return ModelCollection|static[]
-	 */
-	public static function findAll($orderBy = null)
-	{
-		return static::findWhere(array(), 'AND', $orderBy);
-	}
-
-
-	/**
 	 * Find models by a condition
 	 *
 	 * @param array $conditions see helperConditionArray
@@ -329,6 +322,8 @@ abstract class AbstractModel
 	 */
 	public static function findWhere($conditions = array(), $conditionConnector = 'AND', $orderBy = null, $limit = 0)
 	{
+		static::initModel();
+
 		$result = Database::getInstance()->select(static::$table, $conditions, $conditionConnector, $orderBy, $limit);
 
 		if($limit === 1){
@@ -336,6 +331,19 @@ abstract class AbstractModel
 		}
 
 		return static::createMultipleFromDbResult($result);
+	}
+
+
+	/**
+	 * Find all models
+	 *
+	 * @param array|null $orderBy see helperOrderBy
+	 *
+	 * @return ModelCollection|static[]
+	 */
+	public static function findAll($orderBy = null)
+	{
+		return static::findWhere(array(), 'AND', $orderBy);
 	}
 
 
@@ -363,6 +371,8 @@ abstract class AbstractModel
 	 */
 	public static function find($id)
 	{
+		static::initModel();
+
 		return static::findWhereFirst(array(static::$idAttribute, $id));
 	}
 
@@ -375,7 +385,7 @@ abstract class AbstractModel
 		$data = $this->preSave($this->data);
 
 		$values = array();
-		foreach($this->attributeDbAttributeMapping as $attribute => $sqlAttribute){
+		foreach(static::$attributeDbAttributeMapping as $attribute => $sqlAttribute){
 			if($sqlAttribute === static::$idAttribute){
 				continue;
 			}
@@ -421,6 +431,8 @@ abstract class AbstractModel
 	 */
 	public static function countWhere($conditions = array(), $conditionConnector = 'AND')
 	{
+		static::initModel();
+
 		return Database::getInstance()->count(static::$table, static::$idAttribute, $conditions, $conditionConnector);
 	}
 

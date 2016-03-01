@@ -4,30 +4,45 @@ class Domain extends AbstractModel
 {
 	use DomainLimitTrait;
 
+
 	/**
-	 * @inheritdoc
+	 * Db table for find methods
+	 *
+	 * @var string
 	 */
-	public static $table = DBT_DOMAINS;
+	public static $table;
+
+
+	/**
+	 * Db id attribute for find methods
+	 *
+	 * @var string
+	 */
+	public static $idAttribute;
+
+
+	/**
+	 * Mapping model attributes and database attributes for saving
+	 *
+	 * @var array
+	 */
+	protected static $attributeDbAttributeMapping = null;
+
 
 	/**
 	 * @inheritdoc
 	 */
-	public static $idAttribute = DBC_DOMAINS_ID;
-
-
-	/**
-	 * @inheritdoc
-	 */
-	protected function setupDbMapping($childMapping = array())
+	protected static function initModel()
 	{
-		return array_replace(
-			parent::setupDbMapping(
-				array(
-					'domain' => DBC_DOMAINS_DOMAIN,
-				)
-			),
-			$childMapping
-		);
+		if(is_null(static::$attributeDbAttributeMapping)){
+			static::$table = Config::get('schema.tables.domains', 'domains');
+			static::$idAttribute = Config::get('schema.attributes.domains.id', 'id');
+
+			static::$attributeDbAttributeMapping = array(
+				'id' => Config::get('schema.attributes.domains.id', 'id'),
+				'domain' => Config::get('schema.attributes.domains.domain', 'domain'),
+			);
+		}
 	}
 
 
@@ -38,7 +53,7 @@ class Domain extends AbstractModel
 	{
 		parent::__construct($data);
 
-		$this->setDomain($data[DBC_DOMAINS_DOMAIN]);
+		$this->setDomain($data[static::attr('domain')]);
 	}
 
 
@@ -65,7 +80,9 @@ class Domain extends AbstractModel
 	 */
 	public function countUsers()
 	{
-		return User::countWhere(array(DBC_USERS_DOMAIN, $this->getDomain()));
+		return User::countWhere(
+			array(User::attr('domain'), $this->getDomain())
+		);
 	}
 
 
@@ -74,7 +91,9 @@ class Domain extends AbstractModel
 	 */
 	public function countRedirects()
 	{
-		return AbstractRedirect::countWhere(array(DBC_ALIASES_SOURCE, 'LIKE', "%@{$this->getDomain()}%"));
+		return AbstractRedirect::countWhere(
+			array(AbstractRedirect::attr('source'), 'LIKE', "%@{$this->getDomain()}%")
+		);
 	}
 
 }

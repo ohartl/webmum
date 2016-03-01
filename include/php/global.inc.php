@@ -8,15 +8,15 @@
  */
 function writeLog($text)
 {
-	if(defined('WRITE_LOG') && defined('WRITE_LOG_PATH')){
-		$logdestination = realpath(WRITE_LOG_PATH).DIRECTORY_SEPARATOR."webmum.log";
-		if(is_writable(WRITE_LOG_PATH)){
+	if(Config::get('options.enable_logging', false) && Config::has('log_path')){
+		$logdestination = realpath(Config::get('log_path')).DIRECTORY_SEPARATOR."webmum.log";
+		if(is_writable(Config::get('log_path'))){
 			$logfile = fopen($logdestination, "a") or die("Unable to create or open logfile \"".$logdestination."\" in root directory!");
 			fwrite($logfile, date('M d H:i:s').": ".$text."\n");
 			fclose($logfile);
 		}
 		else{
-			die("Directory \"".WRITE_LOG_PATH."\" isn't writable");
+			die("Directory \"".Config::get('log_path')."\" isn't writable");
 		}
 	}
 }
@@ -103,3 +103,21 @@ function formatEmails($input, $glue)
 }
 
 
+function formatEmailsText($input)
+{
+	return formatEmails(
+		$input,
+		str_replace(PHP_EOL, '<br>', Config::get('frontend_options.email_separator_text', ', '))
+	);
+}
+
+
+function formatEmailsForm($input)
+{
+	return strip_tags(
+		formatEmails(
+			$input,
+			Config::get('frontend_options.email_separator_form', ',')
+		)
+	);
+}

@@ -28,7 +28,7 @@ if(isset($_POST['confirm'])){
 
 			// Get single source rows of multi source redirect/alias instead
 			$hash = $redirect->getMultiHash();
-			$singleRedirects = AbstractRedirect::findWhere(array(DBC_ALIASES_MULTI_SOURCE, $hash));
+			$singleRedirects = AbstractRedirect::findWhere(array(AbstractRedirect::attr('multi_hash'), $hash));
 
 			/** @var AbstractRedirect $redirectToDelete */
 			foreach($singleRedirects as $redirectToDelete){
@@ -60,12 +60,12 @@ else{
 	<form class="form" action="" method="post" autocomplete="off">
 		<div class="input-group">
 			<label>Source</label>
-			<div class="input-info"><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
+			<div class="input-info"><?php echo formatEmailsText($redirect->getSource()); ?></div>
 		</div>
 
 		<div class="input-group">
 			<label>Destination</label>
-			<div class="input-info"><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></div>
+			<div class="input-info"><?php echo formatEmailsText($redirect->getDestination()); ?></div>
 		</div>
 
 		<div class="input-group">

@@ -23,8 +23,8 @@ $redirects = Auth::getUser()->getAnonymizedRedirects();
 		<tbody>
 		<?php foreach($redirects as $redirect): /** @var AbstractRedirect $redirect */ ?>
 			<tr>
-				<td><?php echo formatEmails($redirect->getSource(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
-				<td><?php echo formatEmails($redirect->getDestination(), str_replace(PHP_EOL, '<br>', FRONTEND_EMAIL_SEPARATOR_TEXT)); ?></td>
+				<td><?php echo formatEmailsText($redirect->getSource()); ?></td>
+				<td><?php echo formatEmailsText($redirect->getDestination()); ?></td>
 			</tr>
 		<?php endforeach; ?>
 		</tbody>

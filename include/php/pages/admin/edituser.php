@@ -12,7 +12,7 @@ if(!is_null($saveMode)){
 	$inputPasswordRepeated = isset($_POST['password_repeat']) ? $_POST['password_repeat'] : null;
 
 	$inputMailboxLimit = null;
-	if(defined('DBC_USERS_MAILBOXLIMIT')){
+	if(Config::get('options.enable_mailbox_limits', false)){
 		$inputMailboxLimit = isset($_POST['mailbox_limit']) ? intval($_POST['mailbox_limit']) : $mailboxLimitDefault;
 		if(!$inputMailboxLimit === 0 && empty($inputMailboxLimit)){
 			$inputMailboxLimit = $mailboxLimitDefault;
@@ -41,7 +41,7 @@ if(!is_null($saveMode)){
 			Router::redirect("admin/listusers/?missing-permission=1");
 		}
 
-		if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
+		if(Config::get('options.enable_mailbox_limits', false) && !is_null($inputMailboxLimit)){
 			$userToEdit->setMailboxLimit($inputMailboxLimit);
 		}
 
@@ -79,7 +79,7 @@ if(!is_null($saveMode)){
 
 			/** @var Domain $selectedDomain */
 			$selectedDomain = Domain::findWhereFirst(
-				array(DBC_DOMAINS_DOMAIN, $inputDomain)
+				array(Domain::attr('domain'), $inputDomain)
 			);
 
 			if(!is_null($selectedDomain)){
@@ -91,8 +91,8 @@ if(!is_null($saveMode)){
 				/** @var User $user */
 				$user = User::findWhereFirst(
 					array(
-						array(DBC_USERS_USERNAME, $inputUsername),
-						array(DBC_USERS_DOMAIN, $selectedDomain->getDomain()),
+						array(User::attr('username'), $inputUsername),
+						array(User::attr('domain'), $selectedDomain->getDomain()),
 					)
 				);
 
@@ -103,13 +103,13 @@ if(!is_null($saveMode)){
 						Auth::validateNewPassword($inputPassword, $inputPasswordRepeated);
 
 						$data = array(
-							DBC_USERS_USERNAME => $inputUsername,
-							DBC_USERS_DOMAIN => $selectedDomain->getDomain(),
-							DBC_USERS_PASSWORD => Auth::generatePasswordHash($inputPassword)
+							User::attr('username') => $inputUsername,
+							User::attr('domain') => $selectedDomain->getDomain(),
+							User::attr('password_hash') => Auth::generatePasswordHash($inputPassword)
 						);
 
-						if(defined('DBC_USERS_MAILBOXLIMIT') && !is_null($inputMailboxLimit)){
-							$data[DBC_USERS_MAILBOXLIMIT] = $inputMailboxLimit;
+						if(Config::get('options.enable_mailbox_limits', false) && !is_null($inputMailboxLimit)){
+							$data[User::attr('mailbox_limit')] = $inputMailboxLimit;
 						}
 
 						/** @var User $user */
@@ -206,22 +206,24 @@ if(isset($_GET['id'])){
 
 	<div class="input-group">
 		<label for="password">Password</label>
-		<div class="input-info">The new password must be at least <?php echo MIN_PASS_LENGTH; ?> characters long.</div>
+		<?php if(Config::has('password.min_length')): ?>
+			<div class="input-info">The new password must be at least <?php echo Config::get('password.min_length'); ?> characters long.</div>
+		<?php endif; ?>
 		<div class="input input-action">
-			<input type="password" name="password" placeholder="New password" <?php echo ($mode === "create") ? 'required' : ''; ?> minlength="<?php echo MIN_PASS_LENGTH; ?>"/>
+			<input type="password" name="password" placeholder="New password" <?php echo ($mode === "create") ? 'required' : ''; ?> minlength="<?php echo Config::get('password.min_length', 0); ?>"/>
 			<button type="button" class="button" onclick="pass=generatePassword();this.form.password.value=pass;this.form.password_repeat.value=pass;this.form.password.type='text';this.form.password_repeat.type='text'">Generate password</button>
 		</div>
 		<div class="input">
-			<input type="password" name="password_repeat" placeholder="Repeat password" <?php echo ($mode === "create") ? 'required' : ''; ?> minlength="<?php echo MIN_PASS_LENGTH; ?>"/>
+			<input type="password" name="password_repeat" placeholder="Repeat password" <?php echo ($mode === "create") ? 'required' : ''; ?> minlength="<?php echo Config::get('password.min_length', 0); ?>"/>
 		</div>
 	</div>
 
-	<?php if(defined('DBC_USERS_MAILBOXLIMIT')): ?>
+	<?php if(Config::get('options.enable_mailbox_limits', false)): ?>
 		<div class="input-group">
 			<label>Mailbox limit</label>
 			<div class="input-info">The default limit is <?php echo $mailboxLimitDefault; ?> MB. Limit set to 0 means no limit in size.</div>
 			<div class="input input-labeled input-labeled-right">
-				<input name="mailbox_limit" type="number" value="<?php echo isset($_POST['mailbox_limit']) ? strip_tags($_POST['mailbox_limit']) : ((isset($user) && defined('DBC_USERS_MAILBOXLIMIT')) ? $user->getMailboxLimit() : $mailboxLimitDefault); ?>" placeholder="Mailbox limit in MB" min="0" required/>
+				<input name="mailbox_limit" type="number" value="<?php echo isset($_POST['mailbox_limit']) ? strip_tags($_POST['mailbox_limit']) : ((isset($user) && Config::get('options.enable_mailbox_limits', false)) ? $user->getMailboxLimit() : $mailboxLimitDefault); ?>" placeholder="Mailbox limit in MB" min="0" required/>
 				<span class="input-label">MB</span>
 			</div>
 		</div>

@@ -4,15 +4,29 @@ abstract class AbstractRedirect extends AbstractModel
 {
 	use DomainLimitTrait;
 
-	/**
-	 * @inheritdoc
-	 */
-	public static $table = DBT_ALIASES;
 
 	/**
-	 * @inheritdoc
+	 * Db table for find methods
+	 *
+	 * @var string
 	 */
-	public static $idAttribute = DBC_ALIASES_ID;
+	public static $table;
+
+
+	/**
+	 * Db id attribute for find methods
+	 *
+	 * @var string
+	 */
+	public static $idAttribute;
+
+
+	/**
+	 * Mapping model attributes and database attributes for saving
+	 *
+	 * @var array
+	 */
+	protected static $attributeDbAttributeMapping = null;
 
 
 	/**
@@ -24,21 +38,19 @@ abstract class AbstractRedirect extends AbstractModel
 	/**
 	 * @inheritdoc
 	 */
-	protected function setupDbMapping($childMapping = array())
+	protected static function initModel()
 	{
-		$thisMapping = array(
-			'source' => DBC_ALIASES_SOURCE,
-			'destination' => DBC_ALIASES_DESTINATION,
-		);
+		if(is_null(static::$attributeDbAttributeMapping)){
+			static::$table = Config::get('schema.tables.aliases', 'aliases');
+			static::$idAttribute = Config::get('schema.attributes.aliases.id', 'id');
 
-		if(defined('DBC_ALIASES_MULTI_SOURCE')){
-			$thisMapping['multiHash'] = DBC_ALIASES_MULTI_SOURCE;
+			static::$attributeDbAttributeMapping = array(
+				'id' => Config::get('schema.attributes.aliases.id', 'id'),
+				'source' => Config::get('schema.attributes.aliases.source', 'source'),
+				'destination' => Config::get('schema.attributes.aliases.destination', 'destination'),
+				'multi_hash' => Config::get('schema.attributes.aliases.multi_source', 'multi_source'),
+			);
 		}
-
-		return array_replace(
-			parent::setupDbMapping($thisMapping),
-			$childMapping
-		);
 	}
 
 
@@ -63,8 +75,8 @@ abstract class AbstractRedirect extends AbstractModel
 	{
 		parent::__construct($data);
 
-		$source = stringToEmails($data[DBC_ALIASES_SOURCE]);
-		$destination = stringToEmails($data[DBC_ALIASES_DESTINATION]);
+		$source = stringToEmails($data[static::attr('source')]);
+		$destination = stringToEmails($data[static::attr('destination')]);
 
 		if(get_called_class() === 'Alias' || get_called_class() === 'Redirect'){
 			$source = $source[0];
@@ -77,8 +89,8 @@ abstract class AbstractRedirect extends AbstractModel
 		$this->setSource($source);
 		$this->setDestination($destination);
 
-		if(defined('DBC_ALIASES_MULTI_SOURCE')){
-			$this->setMultiHash($data[DBC_ALIASES_MULTI_SOURCE]);
+		if(Config::get('options.enable_multi_source_redirects', false)){
+			$this->setMultiHash($data[static::attr('multi_hash')]);
 		}
 	}
 
@@ -92,13 +104,13 @@ abstract class AbstractRedirect extends AbstractModel
 			return parent::create($data);
 		}
 
-		$hasMultipleSources = array_key_exists(DBC_ALIASES_SOURCE, $data)
-			&& strpos($data[DBC_ALIASES_SOURCE], ',') !== false;
+		$hasMultipleSources = array_key_exists(static::attr('source'), $data)
+			&& strpos($data[static::attr('source')], ',') !== false;
 
-		$hasMultipleDestinations = array_key_exists(DBC_ALIASES_DESTINATION, $data)
-			&& strpos($data[DBC_ALIASES_DESTINATION], ',') !== false;
+		$hasMultipleDestinations = array_key_exists(static::attr('destination'), $data)
+			&& strpos($data[static::attr('destination')], ',') !== false;
 
-		if(defined('DBC_ALIASES_MULTI_SOURCE') && $hasMultipleSources
+		if(Config::get('options.enable_multi_source_redirects', false) && $hasMultipleSources
 		){
 			if($hasMultipleDestinations){
 				return MultiRedirect::create($data);
@@ -168,7 +180,7 @@ abstract class AbstractRedirect extends AbstractModel
 	 */
 	public function getMultiHash()
 	{
-		return $this->getAttribute('multiHash');
+		return $this->getAttribute('multi_hash');
 	}
 
 
@@ -177,7 +189,7 @@ abstract class AbstractRedirect extends AbstractModel
 	 */
 	public function setMultiHash($value)
 	{
-		$this->setAttribute('multiHash', $value);
+		$this->setAttribute('multi_hash', $value);
 	}
 
 
@@ -256,8 +268,12 @@ abstract class AbstractRedirect extends AbstractModel
 	/**
 	 * @inheritdoc
 	 */
-	public static function findAll($orderBy = array(DBC_ALIASES_SOURCE))
+	public static function findAll($orderBy = null)
 	{
+		if(is_null($orderBy)){
+			$orderBy = array(static::attr('source'));
+		}
+
 		return parent::findAll($orderBy);
 	}
 
@@ -267,24 +283,24 @@ abstract class AbstractRedirect extends AbstractModel
 	 */
 	private static function generateRedirectBaseQuery()
 	{
-		if(defined('DBC_ALIASES_MULTI_SOURCE')){
+		if(Config::get('options.enable_multi_source_redirects', false)){
 			return "SELECT r.* FROM (
 	SELECT
 		GROUP_CONCAT(g.`".static::$idAttribute."` ORDER BY g.`".static::$idAttribute."` SEPARATOR ',') AS `".static::$idAttribute."`,
-		GROUP_CONCAT(g.`".DBC_ALIASES_SOURCE."` SEPARATOR ',') AS `".DBC_ALIASES_SOURCE."`,
-		g.`".DBC_ALIASES_DESTINATION."`,
-		g.`".DBC_ALIASES_MULTI_SOURCE."`
+		GROUP_CONCAT(g.`".static::attr('source')."` SEPARATOR ',') AS `".static::attr('source')."`,
+		g.`".static::attr('destination')."`,
+		g.`".static::attr('multi_hash')."`
 	FROM `".static::$table."` AS g
-	WHERE g.`".DBC_ALIASES_MULTI_SOURCE."` IS NOT NULL
-	GROUP BY g.`".DBC_ALIASES_MULTI_SOURCE."`
+	WHERE g.`".static::attr('multi_hash')."` IS NOT NULL
+	GROUP BY g.`".static::attr('multi_hash')."`
 UNION
 	SELECT
-		s.`".DBC_ALIASES_ID."`,
-		s.`".DBC_ALIASES_SOURCE."`,
-		s.`".DBC_ALIASES_DESTINATION."`,
-		s.`".DBC_ALIASES_MULTI_SOURCE."`
+		s.`".static::$idAttribute."`,
+		s.`".static::attr('source')."`,
+		s.`".static::attr('destination')."`,
+		s.`".static::attr('multi_hash')."`
 	FROM `".static::$table."` AS s
-	WHERE s.`".DBC_ALIASES_MULTI_SOURCE."` IS NULL
+	WHERE s.`".static::attr('multi_hash')."` IS NULL
 ) AS r";
 		}
 		else{
@@ -293,8 +309,14 @@ UNION
 	}
 
 
-	public static function findMultiAll($orderBy = array(DBC_ALIASES_SOURCE))
+	public static function findMultiAll($orderBy = null)
 	{
+		static::initModel();
+
+		if(is_null($orderBy)){
+			$orderBy = array(static::attr('source'));
+		}
+
 		$sql = static::generateRedirectBaseQuery()
 			.Database::helperOrderBy($orderBy);
 
@@ -325,6 +347,8 @@ UNION
 
 	public static function findMulti($id)
 	{
+		static::initModel();
+
 		return static::findMultiWhereFirst(array(static::$idAttribute, $id));
 	}
 

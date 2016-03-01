@@ -1,7 +1,7 @@
 <?php
 
 if(isset($_POST['password']) && isset($_POST['password_repeat'])){
-	try {
+	try{
 		Auth::getUser()->changePassword($_POST['password'], $_POST['password_repeat']);
 
 		Message::getInstance()->success("Password changed successfully!");
@@ -24,13 +24,15 @@ if(isset($_POST['password']) && isset($_POST['password_repeat'])){
 <form class="form" action="" method="post" autocomplete="off">
 	<div class="input-group">
 		<label for="password">Password</label>
-		<div class="input-info">Your new password must be at least <?php echo MIN_PASS_LENGTH; ?> characters long.</div>
+		<?php if(Config::has('password.min_length')): ?>
+			<div class="input-info">Your new password must be at least <?php echo Config::get('password.min_length'); ?> characters long.</div>
+		<?php endif; ?>
 		<div class="input input-action">
-			<input type="password" name="password" placeholder="New password" required minlength="<?php echo MIN_PASS_LENGTH; ?>" autofocus/>
+			<input type="password" name="password" placeholder="New password" required minlength="<?php echo Config::get('password.min_length', 0); ?>" autofocus/>
 			<button type="button" class="button" onclick="pass=generatePassword();this.form.password.value=pass;this.form.password_repeat.value=pass;this.form.password.type='text';this.form.password_repeat.type='text'">Generate password</button>
 		</div>
 		<div class="input">
-			<input type="password" name="password_repeat" placeholder="Repeat password" required minlength="<?php echo MIN_PASS_LENGTH; ?>"/>
+			<input type="password" name="password_repeat" placeholder="Repeat password" required minlength="<?php echo Config::get('password.min_length', 0); ?>"/>
 		</div>
 	</div>
 

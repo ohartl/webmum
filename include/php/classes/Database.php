@@ -70,9 +70,21 @@ class Database
 	 * @param string $password
 	 * @param string $database
 	 */
-	public static function init($host, $user, $password, $database)
+	public static function init($host, $user = null, $password = null, $database = null)
 	{
 		if(!static::isInitialized()){
+			if(is_array($host)){
+				if(isset($host['host']) && isset($host['user']) && isset($host['password']) && isset($host['database'])){
+					$user = $host['user'];
+					$password = $host['password'];
+					$database = $host['database'];
+					$host = $host['host'];
+				}
+				else{
+					throw new InvalidArgumentException;
+				}
+			}
+
 			static::setInstance(
 				new static($host, $user, $password, $database)
 			);

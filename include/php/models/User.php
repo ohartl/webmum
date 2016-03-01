@@ -4,15 +4,29 @@ class User extends AbstractModel
 {
 	use DomainLimitTrait;
 
-	/**
-	 * @inheritdoc
-	 */
-	public static $table = DBT_USERS;
 
 	/**
-	 * @inheritdoc
+	 * Db table for find methods
+	 *
+	 * @var string
 	 */
-	public static $idAttribute = DBC_USERS_ID;
+	public static $table;
+
+
+	/**
+	 * Db id attribute for find methods
+	 *
+	 * @var string
+	 */
+	public static $idAttribute;
+
+
+	/**
+	 * Mapping model attributes and database attributes for saving
+	 *
+	 * @var array
+	 */
+	protected static $attributeDbAttributeMapping = null;
 
 
 	const ROLE_USER = 'user';
@@ -34,22 +48,20 @@ class User extends AbstractModel
 	/**
 	 * @inheritdoc
 	 */
-	protected function setupDbMapping($childMapping = array())
+	protected static function initModel()
 	{
-		$thisMappings = array(
-			'username' => DBC_USERS_USERNAME,
-			'domain' => DBC_USERS_DOMAIN,
-			'password_hash' => DBC_USERS_PASSWORD,
-		);
+		if(is_null(static::$attributeDbAttributeMapping)){
+			static::$table = Config::get('schema.tables.users', 'users');
+			static::$idAttribute = Config::get('schema.attributes.users.id', 'id');
 
-		if(defined('DBC_USERS_MAILBOXLIMIT')){
-			$thisMappings['mailboxLimit'] = DBC_USERS_MAILBOXLIMIT;
+			static::$attributeDbAttributeMapping = array(
+				'id' => Config::get('schema.attributes.users.id', 'id'),
+				'username' => Config::get('schema.attributes.users.username', 'username'),
+				'domain' => Config::get('schema.attributes.users.domain', 'domain'),
+				'password_hash' => Config::get('schema.attributes.users.password', 'password'),
+				'mailbox_limit' => Config::get('schema.attributes.users.mailbox_limit'),
+			);
 		}
-
-		return array_replace(
-			parent::setupDbMapping($thisMappings),
-			$childMapping
-		);
 	}
 
 
@@ -60,10 +72,13 @@ class User extends AbstractModel
 	{
 		parent::__construct($data);
 
-		$this->setUsername($data[DBC_USERS_USERNAME]);
-		$this->setDomain($data[DBC_USERS_DOMAIN]);
-		$this->setPasswordHash($data[DBC_USERS_PASSWORD]);
-		$this->setMailboxLimit(defined('DBC_USERS_MAILBOXLIMIT') ? intval($data[DBC_USERS_MAILBOXLIMIT]) : 0);
+		$this->setUsername($data[static::attr('username')]);
+		$this->setDomain($data[static::attr('domain')]);
+		$this->setPasswordHash($data[static::attr('password_hash')]);
+		$this->setMailboxLimit(Config::get('options.enable_mailbox_limits', false)
+			? intval($data[static::attr('mailbox_limit')])
+			: 0
+		);
 
 		$this->setAttribute('role', static::getRoleByEmail($this->getEmail()));
 	}
@@ -137,7 +152,7 @@ class User extends AbstractModel
 	 */
 	public function getMailboxLimit()
 	{
-		return $this->getAttribute('mailboxLimit');
+		return $this->getAttribute('mailbox_limit');
 	}
 
 
@@ -146,7 +161,7 @@ class User extends AbstractModel
 	 */
 	public function setMailboxLimit($value)
 	{
-		$this->setAttribute('mailboxLimit', $value);
+		$this->setAttribute('mailbox_limit', $value);
 	}
 
 
@@ -157,9 +172,11 @@ class User extends AbstractModel
 	 */
 	public static function getMailboxLimitDefault()
 	{
-		if(defined('DBC_USERS_MAILBOXLIMIT')){
+		static::initModel();
 
-			$sql = "SELECT DEFAULT(".DBC_USERS_MAILBOXLIMIT.") FROM `".static::$table."` LIMIT 1";
+		if(Config::get('options.enable_mailbox_limits', false)){
+
+			$sql = "SELECT DEFAULT(".static::attr('mailbox_limit').") FROM `".static::$table."` LIMIT 1";
 
 			$result = Database::getInstance()->query($sql);
 
@@ -190,9 +207,7 @@ class User extends AbstractModel
 	 */
 	private static function getRoleByEmail($email)
 	{
-		global $admins;
-
-		if(in_array($email, $admins)){
+		if(in_array($email, Config::get('admins', array()))){
 			return static::ROLE_ADMIN;
 		}
 
@@ -207,10 +222,10 @@ class User extends AbstractModel
 	 */
 	public function isDomainLimited()
 	{
-		global $adminDomainLimits;
+		$adminDomainLimits = Config::get('admin_domain_limits', array());
 
-		return defined('ADMIN_DOMAIN_LIMITS_ENABLED')
-		&& isset($adminDomainLimits) && isset($adminDomainLimits[$this->getEmail()]);
+		return Config::get('options.enable_admin_domain_limits', false)
+		&& is_array($adminDomainLimits) && isset($adminDomainLimits[$this->getEmail()]);
 	}
 
 
@@ -221,9 +236,9 @@ class User extends AbstractModel
 	 */
 	public function getDomainLimits()
 	{
-		global $adminDomainLimits;
-
 		if($this->isDomainLimited()){
+			$adminDomainLimits = Config::get('admin_domain_limits', array());
+
 			if(!is_array($adminDomainLimits[$this->getEmail()])){
 				throw new InvalidArgumentException('Config value of admin domain limits for email "'.$this->getEmail().'" needs to be of type array.');
 			}
@@ -242,7 +257,7 @@ class User extends AbstractModel
 	{
 		if(is_null($this->conflictingRedirect)){
 			$this->conflictingRedirect = AbstractRedirect::findWhereFirst(
-				array(DBC_ALIASES_SOURCE, $this->getEmail())
+				array(AbstractRedirect::attr('source'), $this->getEmail())
 			);
 		}
 
@@ -257,7 +272,7 @@ class User extends AbstractModel
 	{
 		if(is_null($this->redirects)){
 			$this->redirects = AbstractRedirect::findMultiWhere(
-				array(DBC_ALIASES_DESTINATION, 'LIKE', '%'.$this->getEmail().'%')
+				array(AbstractRedirect::attr('destination'), 'LIKE', '%'.$this->getEmail().'%')
 			);
 		}
 
@@ -306,8 +321,12 @@ class User extends AbstractModel
 	/**
 	 * @inheritdoc
 	 */
-	public static function findAll($orderBy = array(DBC_USERS_DOMAIN, DBC_USERS_USERNAME))
+	public static function findAll($orderBy = null)
 	{
+		if(is_null($orderBy)){
+			$orderBy = array(static::attr('domain'), static::attr('username'));
+		}
+
 		return parent::findAll($orderBy);
 	}
 
@@ -315,7 +334,7 @@ class User extends AbstractModel
 	/**
 	 * @param string $email
 	 *
-	 * @return static|null
+	 * @return User|null
 	 */
 	public static function findByEmail($email)
 	{
@@ -328,8 +347,8 @@ class User extends AbstractModel
 
 		return static::findWhereFirst(
 			array(
-				array('username', $username),
-				array('domain', $domain)
+				array(static::attr('username'), $username),
+				array(static::attr('domain'), $domain)
 			)
 		);
 	}

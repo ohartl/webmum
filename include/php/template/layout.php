@@ -3,10 +3,9 @@
 <head>
 	<title>WebMUM</title>
 	<link rel=stylesheet href="<?php echo Router::url('include/css/style.css'); ?>" type="text/css" media=screen>
-<?php if(defined('MIN_PASS_LENGTH')): ?>
 	<script type="text/javascript">
 		function generatePassword() {
-			var length = <?php echo MIN_PASS_LENGTH + 1; ?>,
+			var length = <?php echo Config::get('password.min_length', 8) + 1; ?>,
 				charset = "abcdefghijklnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!#",
 				retVal = "";
 			for (var i = 0, n = charset.length; i < length; ++i) {
@@ -15,7 +14,6 @@
 			return retVal;
 		}
 	</script>
-<?php endif; ?>
 </head>
 
 <body>
