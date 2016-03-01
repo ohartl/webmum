@@ -52,6 +52,10 @@ server {
         deny all;
         return 403;
     }
+    location ^~ /webmum/config {
+        deny all;
+        return 403;
+    }
 }
 ```
 
@@ -78,6 +82,10 @@ server {
 
     # protect the codebase by denying direct access
     location ^~ /include/php {
+        deny all;
+        return 403;
+    }
+    location ^~ /config {
         deny all;
         return 403;
     }
