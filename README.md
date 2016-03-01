@@ -215,17 +215,13 @@ Admins that have been listed in `admin_domain_limits` don't have access to the "
 The `base_url` is the URL your WebMUM installation is accessible from outside, this also includes subfolders if you installed it in a subfolder for that specific domain.
 
 ```php
-...
 'base_url' => 'http://localhost/webmum',
-...
 ```
 
 In the example above, WebMUM is located in a subfolder named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `FRONTEND_BASE_PATH` to something like this:
 
 ```php
-...
 'base_url' => 'http://webmum.mydomain.tld',
-...
 ```
 
 
