@@ -13,8 +13,8 @@ before_install:
   - mysql -u root -e "CREATE USER 'vmail'@'localhost' IDENTIFIED BY 'vmail';"
   - mysql -u root -e "CREATE DATABASE IF NOT EXISTS vmail;"
   - mysql -u root -e "GRANT ALL PRIVILEGES ON vmail.* TO 'vmail'@'localhost'"
-  - mysql -u root -e "CREATE TABLE vmail.domains (id int(10) unsigned NOT NULL AUTO_INCREMENT, domain varchar(128) NOT NULL, PRIMARY KEY (domain), UNIQUE KEY id (id)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;"
+  - mysql -u root -e "CREATE TABLE vmail.domains (id int(10) unsigned NOT NULL AUTO_INCREMENT, domain varchar(128) NOT NULL, PRIMARY KEY (domain), UNIQUE KEY id (id)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
   - mysql -u root -e "CREATE TABLE vmail.users (id int(10) unsigned NOT NULL AUTO_INCREMENT, username varchar(128) NOT NULL DEFAULT '', domain varchar(128) NOT NULL DEFAULT '', password varchar(128) NOT NULL DEFAULT '', mailbox_limit int(10) NOT NULL DEFAULT '128', PRIMARY KEY (username,domain), UNIQUE KEY id (id)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
-  - mysql -u root -e "CREATE TABLE vmail.aliases (id int(10) unsigned NOT NULL AUTO_INCREMENT, source varchar(128) NOT NULL, destination text NOT NULL, multi_source varchar(32) DEFAULT NULL, PRIMARY KEY (source), UNIQUE KEY id (id)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=latin1;"
+  - mysql -u root -e "CREATE TABLE vmail.aliases (id int(10) unsigned NOT NULL AUTO_INCREMENT, source varchar(128) NOT NULL, destination text NOT NULL, multi_source varchar(32) DEFAULT NULL, PRIMARY KEY (source), UNIQUE KEY id (id)) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;"
 notifications:
   email: false
