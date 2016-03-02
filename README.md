@@ -1,6 +1,6 @@
 # WebMUM - Web Mailserver User Manager
 
-[![Build Status](https://travis-ci.org/ThomasLeister/webmum.svg?branch=master)](https://travis-ci.org/ThomasLeister/webmum)
+[![Build Status](https://travis-ci.org/ThomasLeister/webmum.svg)](https://travis-ci.org/ThomasLeister/webmum)
 
 WebMUM is a web frontend based on PHP which helps you to manage e-mail server via MySQL. This software is licensed under the MIT license.
 
