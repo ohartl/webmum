@@ -23,11 +23,17 @@ class Message
 	protected $messages = array();
 
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function __construct()
 	{
 	}
 
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function __clone()
 	{
 	}
