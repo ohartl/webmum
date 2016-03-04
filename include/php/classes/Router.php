@@ -16,8 +16,8 @@ class Router
 	 * @var array
 	 */
 	private static $errorPages = array(
-		404 => 'include/php/pages/404.php',
-		403 => 'include/php/pages/not-allowed.php'
+		404 => 'include/php/template/error/not-found.php',
+		403 => 'include/php/template/error/not-allowed.php'
 	);
 
 
@@ -225,9 +225,16 @@ class Router
 	 *
 	 * @return string
 	 */
-	public static function url($url)
+	public static function url($url = '')
 	{
-		return sprintf('%s/%s', rtrim(Config::get('base_url'), '/'), trim($url, '/'));
+		return rtrim(
+			sprintf(
+				'%s/%s',
+				rtrim(Config::get('base_url'), '/'),
+				trim($url, '/')
+			),
+			'/'
+		);
 	}
 
 
