@@ -41,6 +41,8 @@ class Message
 
 	/**
 	 * @return Message
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function getInstance()
 	{

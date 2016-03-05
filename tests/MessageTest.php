@@ -6,12 +6,6 @@
 class MessageTest extends PHPUnit_Framework_TestCase
 {
 
-	public function testSingleton()
-	{
-		$this->assertInstanceOf('Message', Message::getInstance());
-	}
-
-
 	public function testAdd()
 	{
 		Message::getInstance()->add(Message::TYPE_SUCCESS, 'lorem');
