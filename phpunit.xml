@@ -1,7 +1,4 @@
 <phpunit bootstrap="include/php/default.inc.php">
-    <php>
-        <env name="TEST_CONFIG" value="tests/config/"/>
-    </php>
     <testsuites>
         <testsuite name="webmum">
             <directory>tests</directory>

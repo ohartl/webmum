@@ -21,12 +21,45 @@ class Router
 	);
 
 
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function __construct()
 	{
 	}
 
+
+	/**
+	 * @codeCoverageIgnore
+	 */
 	private function __clone()
 	{
+	}
+
+
+	/**
+	 * @param array $routes
+	 */
+	public static function init($routes)
+	{
+		static::$routes = $routes;
+	}
+
+
+	/**
+	 * @param string $method
+	 *
+	 * @return bool
+	 */
+	protected static function isValidMethod($method)
+	{
+		return in_array(
+			$method,
+			array(
+				static::METHOD_GET,
+				static::METHOD_POST
+			)
+		);
 	}
 
 
@@ -35,6 +68,8 @@ class Router
 	 * @param string $pattern
 	 * @param callable|array|string $routeConfig
 	 * @param array $permission
+	 *
+	 * @throws Exception
 	 */
 	public static function addRoute($methods, $pattern, $routeConfig, $permission = null)
 	{
@@ -50,6 +85,10 @@ class Router
 
 		foreach($methods as $method){
 			$method = strtoupper($method);
+
+			if(!static::isValidMethod($method)){
+				throw new Exception('Unsupported HTTP method "'.$method.'".');
+			}
 
 			if(!isset(static::$routes[$method])){
 				static::$routes[$method] = array();
@@ -98,24 +137,28 @@ class Router
 	 * @param string $method
 	 *
 	 * @return string
+	 *
+	 * @throws Exception
 	 */
 	public static function execute($url, $method = self::METHOD_GET)
 	{
 		$method = strtoupper($method);
 
-		if(!in_array($method, array(static::METHOD_GET, static::METHOD_POST)) && !isset(self::$routes[$method])){
-			return 'Unsupported HTTP method.';
+		if(!static::isValidMethod($method) && !isset(self::$routes[$method])){
+			throw new Exception('Unsupported HTTP method "'.$method.'".');
 		}
 
-		foreach(self::$routes[$method] as $route){
-			if(rtrim($route['pattern'], '/') === rtrim($url, '/')){
-				if(!is_null($route['permission'])){
-					if(!Auth::isLoggedIn() || !Auth::hasPermission($route['permission'])){
-						return static::loadAndBufferOutput(static::$errorPages[403]);
+		if(isset(self::$routes[$method])){
+			foreach(self::$routes[$method] as $route){
+				if(rtrim($route['pattern'], '/') === rtrim($url, '/')){
+					if(!is_null($route['permission'])){
+						if(!Auth::isLoggedIn() || !Auth::hasPermission($route['permission'])){
+							return static::loadAndBufferOutput(static::$errorPages[403]);
+						}
 					}
-				}
 
-				return static::resolveRouteConfig($route['config']);
+					return static::resolveRouteConfig($route['config']);
+				}
 			}
 		}
 
@@ -136,7 +179,10 @@ class Router
 
 	/**
 	 * @param int $errorNumber
+	 *
 	 * @return string|null
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function displayError($errorNumber)
 	{
@@ -242,6 +288,8 @@ class Router
 	 * Redirect user to an url
 	 *
 	 * @param string $url
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function redirect($url)
 	{
