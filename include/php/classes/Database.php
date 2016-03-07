@@ -57,6 +57,8 @@ class Database
 
 	/**
 	 * @param Database $instance
+	 *
+	 * @codeCoverageIgnore
 	 */
 	protected static function setInstance($instance)
 	{
@@ -69,6 +71,8 @@ class Database
 	 * @param string $user
 	 * @param string $password
 	 * @param string $database
+	 *
+	 * @codeCoverageIgnore
 	 */
 	public static function init($host, $user = null, $password = null, $database = null)
 	{
