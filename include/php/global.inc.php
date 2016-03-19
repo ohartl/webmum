@@ -46,7 +46,7 @@ function stringToEmails($input)
 		}
 	}
 
-	return array_values(
+	$emails = array_values(
 		array_unique(
 			array_map(
 				'formatEmail',
@@ -54,6 +54,10 @@ function stringToEmails($input)
 			)
 		)
 	);
+
+	asort($emails);
+
+	return $emails;
 }
 
 /**
