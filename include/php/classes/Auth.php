@@ -226,7 +226,16 @@ class Auth
 	 */
 	public static function generatePasswordHash($password)
 	{
-		$salt = base64_encode(rand(1, 1000000) + microtime());
+		if(function_exists('mt_rand')){
+			mt_srand(time());
+			$num = mt_rand(1, 100000);
+		}
+		else{
+			srand(time());
+			$num = rand(1, 100000);
+		}
+
+		$salt = base64_encode($num);
 		$schemaPrefix = static::getPasswordSchemaPrefix();
 
 		$hash = crypt($password, $schemaPrefix.$salt.'$');
