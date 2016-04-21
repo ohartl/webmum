@@ -1,6 +1,8 @@
 WebMUM - Web Mailserver User Manager
 ======
 
+***WebMUM is not compatible with the [new Mailserver-HowTo](https://thomas-leister.de/allgemein/sicherer-mailserver-dovecot-postfix-virtuellen-benutzern-mysql-ubuntu-server-xenial/)!***
+
 WebMUM is a web frontend based on PHP which helps you to manage mail accounts via MySQL. This software is licensed under the MIT license. 
 
 
