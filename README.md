@@ -2,6 +2,8 @@
 
 [![Build Status](https://travis-ci.org/ThomasLeister/webmum.svg)](https://travis-ci.org/ThomasLeister/webmum)
 
+***WebMUM is not compatible with the [new Mailserver-HowTo](https://thomas-leister.de/allgemein/sicherer-mailserver-dovecot-postfix-virtuellen-benutzern-mysql-ubuntu-server-xenial/)!***
+
 WebMUM is a web frontend based on PHP which helps you to manage e-mail server via MySQL. This software is licensed under the MIT license.
 
 Lead and started by [ThomasLeister](https://github.com/ThomasLeister), a passionate [blogger](https://thomas-leister.de/) specialized topics like linux, open-source, servers etc., this project is developed together with [ohartl](https://github.com/ohartl) and the [contributes](https://github.com/ThomasLeister/webmum/graphs/contributors).
