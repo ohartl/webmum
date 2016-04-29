@@ -183,13 +183,7 @@ if(isset($_POST['savemode'])){
 				}
 				else{
 					$inputDestination = emailsToString($inputDestinations);
-
-					if(AbstractRedirect::attr('multiSource') !== false && count($inputSources) > 1){
-						$hash = md5(emailsToString($inputSources));
-					}
-					else{
-						$hash = null;
-					}
+					$hash = (count($inputSources) === 1) ? null : md5(emailsToString($inputSources));
 
 					foreach($inputSources as $inputSource){
 						$data = array(
