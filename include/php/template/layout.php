@@ -44,8 +44,11 @@
 	</div>
 
 	<div id="footer">
-		Software by Thomas Leister and contributors<br/> WebMUM on GitHub:
-		<a href="https://git.io/v2fQg">https://github.com/ThomasLeister/webmum</a> | License: MIT
+		<ul>
+			<li>Powered by WebMUM (<a target="_blank" href="https://git.io/vwXhh">https://github.com/ohartl/webmum</a>).</li>
+			<li>Developed by Oliver Hartl, Thomas Leister and contributors.</li>
+			<li>License: MIT</li>
+		</ul>
 	</div>
 </body>
 </html>

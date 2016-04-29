@@ -325,7 +325,24 @@ body {
 	color: grey;
 }
 
+#footer ul {
+	list-style: none;
+}
+
+#footer li {
+	display: inline-block;
+}
+
+#footer li:not(:last-child):after {
+	content: '|';
+	color: #444444;
+	padding: 0 6px;
+}
+
 #footer a {
-	text-decoration: none;
-	color: grey;
+	color: #888888;
+}
+
+#footer a:hover {
+	color: #666666;
 }
