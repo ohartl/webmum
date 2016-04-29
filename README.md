@@ -1,17 +1,20 @@
-WebMUM - Web Mailserver User Manager
-======
+# WebMUM - Web Mailserver User Manager
 
-***WebMUM is not compatible with the [new Mailserver-HowTo](https://thomas-leister.de/allgemein/sicherer-mailserver-dovecot-postfix-virtuellen-benutzern-mysql-ubuntu-server-xenial/)!***
+***WebMUM is not compatible with the [new Mailserver-HowTo](https://thomas-leister.de/allgemein/sicherer-mailserver-dovecot-postfix-virtuellen-benutzern-mysql-ubuntu-server-xenial/)!,*** but we will try to implement the changes for the release of version 1.0.0.
 
-WebMUM is a web frontend based on PHP which helps you to manage mail accounts via MySQL. This software is licensed under the MIT license. 
+WebMUM is a web frontend based on PHP which helps you to manage e-mail server via MySQL. This software is licensed under the MIT license.
 
+This project is currently developed and managed by [ohartl](https://github.com/ohartl) and together with the [contributes](https://github.com/ohartl/webmum/graphs/contributors).
+Founder of this project is [ThomasLeister](https://github.com/ThomasLeister), a passionate [blogger](https://thomas-leister.de/) specialized topics like linux, open-source, servers etc.
+
+Feel free to send in issues and pull requests, your support for this project is much appreciated!
 
 ## Installation
 
 Clone the WebMUM Repository to your webserver's virtual host root directory:
 
 ```php
-git clone https://github.com/ThomasLeister/webmum
+git clone https://github.com/ohartl/webmum
 ```
 	
 Now configure your webserver. URL rewriting to index.php is required.
@@ -290,7 +293,7 @@ The input for addresses can be separated by `,`, `;`, `:`, `|`, `newline` and co
 
 ## Update / Upgrade WebMUM
 
-If you cloned WebMUM into your filesystem via `git clone https://github.com/ThomasLeister/webmum`:
+If you cloned WebMUM into your filesystem via `git clone https://github.com/ohartl/webmum`:
 
 ```bash
 git stash
