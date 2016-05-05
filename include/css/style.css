@@ -247,6 +247,10 @@ body {
 		border: none;
 	}
 
+	#content .table-compact {
+		margin: 5px 0;
+	}
+
 		#content .table thead th {
 			line-height: 38px;
 			padding: 2px 15px 0;
