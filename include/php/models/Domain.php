@@ -92,7 +92,11 @@ class Domain extends AbstractModel
 	public function countRedirects()
 	{
 		return AbstractRedirect::countWhere(
-			array(AbstractRedirect::attr('source'), 'LIKE', "%@{$this->getDomain()}%")
+			array(
+				array(AbstractRedirect::attr('source'), 'LIKE', "%@{$this->getDomain()}"),
+				array(AbstractRedirect::attr('destination'), 'LIKE', "%@{$this->getDomain()}")
+			),
+			'OR'
 		);
 	}
 
