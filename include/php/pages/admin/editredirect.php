@@ -30,7 +30,7 @@ if(isset($_POST['savemode'])){
 
 	// basic email validation isn't working 100% correct though
 	foreach(array_merge($inputSources, $inputDestinations) as $email){
-		if(!filter_var($email, FILTER_VALIDATE_EMAIL)){
+		if(strpos($email, '@') === false){
 			$emailErrors[$email] = "Address \"{$email}\" isn't a valid email address.";
 		}
 	}
