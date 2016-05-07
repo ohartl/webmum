@@ -2,7 +2,7 @@
 <html>
 <head>
 	<title>WebMUM</title>
-	<link rel=stylesheet href="<?php echo Router::url('include/css/style.css'); ?>" type="text/css" media=screen>
+	<link rel=stylesheet href="<?php echo Router::url('include/css/webmum.style.css?v=1.00'); ?>" type="text/css" media=screen>
 	<script type="text/javascript">
 		function generatePassword() {
 			var length = <?php echo Config::get('password.min_length', 8) + 1; ?>,
