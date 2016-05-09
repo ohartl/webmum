@@ -30,7 +30,10 @@ abstract class AbstractModel
 	/**
 	 * Initialize Model
 	 */
-	abstract protected static function initModel();
+	protected static function initModel()
+	{
+
+	}
 
 
 	/**
