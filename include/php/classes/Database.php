@@ -27,15 +27,26 @@ class Database
 	protected $lastQuery;
 
 
+	/**
+	 * @param string $host
+	 * @param string $user
+	 * @param string $password
+	 * @param string $database
+	 *
+	 * @throws Exception
+	 */
 	protected function __construct($host, $user, $password, $database)
 	{
 		if(!static::isInitialized()){
 			$this->config = $database;
 
-			$this->db = new mysqli($host, $user, $password, $database);
-			if($this->db->connect_errno > 0){
-				$this->db = null;
-				die('Unable to connect to database ['.$this->db->connect_error.']');
+			try{
+				mysqli_report(MYSQLI_REPORT_ERROR | MYSQLI_REPORT_STRICT);
+
+				$this->db = new mysqli($host, $user, $password, $database);
+			}
+			catch(mysqli_sql_exception $e){
+				throw new Exception('Unable to connect to database', 0, $e);
 			}
 		}
 	}
@@ -48,9 +59,15 @@ class Database
 
 	/**
 	 * @return Database
+	 *
+	 * @throws Exception
 	 */
 	public static function getInstance()
 	{
+		if(!static::isInitialized()){
+			throw new Exception('Database must be initialized before using it (see Database::init).');
+		}
+
 		return static::$instance;
 	}
 
@@ -106,45 +123,13 @@ class Database
 
 
 	/**
-	 *
-	 */
-	public static function mustBeInitialized()
-	{
-		if(!static::isInitialized()){
-			die('Database has not been initialized.');
-		}
-	}
-
-
-	/**
-	 * Die with error and executed sql query
-	 *
-	 * @param string $errorMessage
-	 * @param string|null $sql
-	 */
-	public function dieOnDatabaseError($errorMessage, $sql = null)
-	{
-		die('There was an error running the query ['.$errorMessage.']'.(!is_null($sql) ? ' with statement "'.$sql.'"' : ''));
-	}
-
-
-	/**
-	 * Die if query not successful
-	 */
-	public function mustBeSuccessful()
-	{
-		if($this->db->errno !== 0){
-			$this->dieOnDatabaseError($this->db->error, $this->lastQuery);
-		}
-	}
-
-
-	/**
 	 * Execute query
 	 *
 	 * @param string $query
 	 *
 	 * @return bool|mysqli_result
+	 *
+	 * @throws DatabaseException
 	 */
 	public function query($query)
 	{
@@ -152,7 +137,15 @@ class Database
 
 		$result = $this->db->query($query);
 
-		$this->mustBeSuccessful();
+		if($this->db->errno !== 0){
+			$ex = new DatabaseException('There was an error running the query ['.$this->db->error.']');
+
+			if(!is_null($this->lastQuery)){
+				$ex->setQuery($this->lastQuery);
+			}
+
+			throw $ex;
+		}
 
 		return $result;
 	}
