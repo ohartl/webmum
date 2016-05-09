@@ -114,7 +114,12 @@ function formatEmails($input, $glue)
 	return emailsToString($input, $glue);
 }
 
-
+/**
+ * Format email addresses for text output (not in an input field)
+ *
+ * @param string|array $input
+ * @return string
+ */
 function formatEmailsText($input)
 {
 	return formatEmails(
@@ -124,6 +129,12 @@ function formatEmailsText($input)
 }
 
 
+/**
+ * Format email addresses for form output (in an input field)
+ *
+ * @param string|array $input
+ * @return string
+ */
 function formatEmailsForm($input)
 {
 	return strip_tags(
@@ -132,4 +143,24 @@ function formatEmailsForm($input)
 			Config::get('frontend_options.email_separator_form', ',')
 		)
 	);
+}
+
+/**
+ * @param string $textPattern
+ * @param int|mixed $value
+ * @return string
+ */
+function textValue($textPattern, $value)
+{
+	$text = str_replace(
+		array('_', ':val:', ':value:'),
+		$value,
+		$textPattern
+	);
+
+	if(is_numeric($value) && $value > 1){
+		$text .= 's';
+	}
+
+	return $text;
 }
