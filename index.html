@@ -1,0 +1,372 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+    <link href='https://fonts.googleapis.com/css?family=Architects+Daughter' rel='stylesheet' type='text/css'>
+    <link rel="stylesheet" type="text/css" href="stylesheets/stylesheet.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/github-light.css" media="screen">
+    <link rel="stylesheet" type="text/css" href="stylesheets/print.css" media="print">
+
+    <!--[if lt IE 9]>
+    <script src="//html5shiv.googlecode.com/svn/trunk/html5.js"></script>
+    <![endif]-->
+
+    <title>Webmum by ohartl</title>
+  </head>
+
+  <body>
+    <header>
+      <div class="inner">
+        <h1>Webmum</h1>
+        <h2>Web Mailsystem User Manager</h2>
+        <a href="https://github.com/ohartl/webmum" class="button"><small>View project on</small> GitHub</a>
+      </div>
+    </header>
+
+    <div id="content-wrapper">
+      <div class="inner clearfix">
+        <section id="main-content">
+          <h1>
+<a id="webmum---web-mailserver-user-manager" class="anchor" href="#webmum---web-mailserver-user-manager" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WebMUM - Web Mailserver User Manager</h1>
+
+<p><a href="https://travis-ci.org/ohartl/webmum"><img src="https://travis-ci.org/ohartl/webmum.svg" alt="Build Status"></a></p>
+
+<p><strong><em>WebMUM is not compatible with the <a href="https://thomas-leister.de/allgemein/sicherer-mailserver-dovecot-postfix-virtuellen-benutzern-mysql-ubuntu-server-xenial/">new Mailserver-HowTo</a>!,</em></strong> but we will try to implement the changes for the release of version 1.0.0.</p>
+
+<p>WebMUM is a web frontend based on PHP which helps you to manage e-mail server via MySQL. This software is licensed under the MIT license.</p>
+
+<p>This project is currently developed and managed by <a href="https://github.com/ohartl">ohartl</a> and together with the <a href="https://github.com/ohartl/webmum/graphs/contributors">contributes</a>.
+Founder of this project is <a href="https://github.com/ThomasLeister">ThomasLeister</a>, a passionate <a href="https://thomas-leister.de/">blogger</a> specialized topics like linux, open-source, servers etc.</p>
+
+<p>Feel free to send in issues and pull requests, your support for this project is much appreciated!</p>
+
+<h2>
+<a id="installation" class="anchor" href="#installation" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Installation</h2>
+
+<p>Clone the WebMUM Repository to your webserver's virtual host root directory:</p>
+
+<div class="highlight highlight-source-shell"><pre>git clone https://github.com/ohartl/webmum</pre></div>
+
+<p>A update / upgrade guide can be found <a href="#update--upgrade-webmum">here</a>.</p>
+
+<h3>
+<a id="webserver" class="anchor" href="#webserver" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Webserver</h3>
+
+<p>Now configure your webserver. URL rewriting to index.php is required.</p>
+
+<h4>
+<a id="nginx" class="anchor" href="#nginx" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Nginx</h4>
+
+<p>Nginx config examples following, but you still need to change domain and path in config as explained <a href="#paths">here</a>.</p>
+
+<p>With subdirectory <code>webmum/</code> in URL (e.g. <code>http://mydomain.tld/webmum/</code>):</p>
+
+<div class="highlight highlight-source-nginx"><pre><span class="pl-k">server</span> {
+    <span class="pl-k">listen</span>       <span class="pl-s">80</span>;
+    <span class="pl-k">server_name</span>  mydomain.tld;
+
+    <span class="pl-k">root</span> /var/www;
+    <span class="pl-k">index</span> index.html index.php;
+
+    <span class="pl-k">location</span> ~ <span class="pl-sr">\.php$ </span>{
+        <span class="pl-k">fastcgi_pass</span>   127.0.0.1:9000;
+        <span class="pl-k">fastcgi_index</span>  index.php;
+        <span class="pl-k">fastcgi_param</span>  SCRIPT_FILENAME  <span class="pl-smi">$document_root$fastcgi_script_name</span>;
+        <span class="pl-k">include</span>        fastcgi_params;
+    }
+
+    <span class="pl-k">location</span> <span class="pl-en">/webmum </span>{
+        <span class="pl-k">try_files</span> <span class="pl-smi">$uri</span> <span class="pl-smi">$uri</span>/ /webmum/index.php?<span class="pl-smi">$args</span>;
+    }
+
+    <span class="pl-c"># protect the codebase by denying direct access</span>
+    <span class="pl-k">location</span> ^~ <span class="pl-sr">/webmum/include/php </span>{
+        <span class="pl-k">deny</span><span class="pl-c1"> all</span>;
+        <span class="pl-c1">return</span> <span class="pl-s">403</span>;
+    }
+    <span class="pl-k">location</span> ^~ <span class="pl-sr">/webmum/config </span>{
+        <span class="pl-k">deny</span><span class="pl-c1"> all</span>;
+        <span class="pl-c1">return</span> <span class="pl-s">403</span>;
+    }
+}</pre></div>
+
+<p>Without subdirectory in URL (e.g. <code>http://webmum.mydomain.tld/</code>):</p>
+
+<div class="highlight highlight-source-nginx"><pre><span class="pl-k">server</span> {
+    <span class="pl-k">listen</span>       <span class="pl-s">80</span>;
+    <span class="pl-k">server_name</span>  webmum.mydomain.tld;
+
+    <span class="pl-k">root</span> /var/www/webmum;
+    <span class="pl-k">index</span> index.html index.php;
+
+    <span class="pl-k">location</span> ~ <span class="pl-sr">\.php$ </span>{
+        <span class="pl-k">fastcgi_pass</span>   127.0.0.1:9000;
+        <span class="pl-k">fastcgi_index</span>  index.php;
+        <span class="pl-k">fastcgi_param</span>  SCRIPT_FILENAME  <span class="pl-smi">$document_root$fastcgi_script_name</span>;
+        <span class="pl-k">include</span>        fastcgi_params;
+    }
+
+    <span class="pl-k">location</span> <span class="pl-en">/ </span>{
+        <span class="pl-k">try_files</span> <span class="pl-smi">$uri</span> <span class="pl-smi">$uri</span>/ /index.php?<span class="pl-smi">$args</span>;
+    }
+
+    <span class="pl-c"># protect the codebase by denying direct access</span>
+    <span class="pl-k">location</span> ^~ <span class="pl-sr">/include/php </span>{
+        <span class="pl-k">deny</span><span class="pl-c1"> all</span>;
+        <span class="pl-c1">return</span> <span class="pl-s">403</span>;
+    }
+    <span class="pl-k">location</span> ^~ <span class="pl-sr">/config </span>{
+        <span class="pl-k">deny</span><span class="pl-c1"> all</span>;
+        <span class="pl-c1">return</span> <span class="pl-s">403</span>;
+    }
+}</pre></div>
+
+<h4>
+<a id="apache" class="anchor" href="#apache" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Apache</h4>
+
+<p>Apache config examples following, but you still need to change domain and path in config as explained <a href="#paths">here</a>.</p>
+
+<p>Please note: mod_rewrite must be enabled for URL rewriting:</p>
+
+<div class="highlight highlight-source-shell"><pre>sudo a2enmod rewrite</pre></div>
+
+<p>With subdirectory <code>webmum/</code> in URL (e.g. <code>http://mydomain.tld/webmum/</code>):</p>
+
+<div class="highlight highlight-source-apache-config"><pre>&lt;<span class="pl-ent">VirtualHost</span> *:80&gt;
+    <span class="pl-c1">ServerName</span> domain.tld
+    <span class="pl-c1">DocumentRoot</span> /var/www/domain.tld
+
+    <span class="pl-c1">RewriteEngine</span> on
+    <span class="pl-c1">RewriteCond</span> <span class="pl-c1">%{REQUEST_FILENAME}</span> <span class="pl-s">!-d</span>
+    <span class="pl-c1">RewriteCond</span> <span class="pl-c1">%{REQUEST_FILENAME}</span> <span class="pl-s">!-f</span>
+    <span class="pl-c1">RewriteRule</span> <span class="pl-sr">^\/webmum/(.*)\.css$</span> <span class="pl-s">/webmum/$1.css</span> <span class="pl-sr">[L]</span>
+    <span class="pl-c1">RewriteRule</span> <span class="pl-sr">^\/webmum/(.*)$</span> <span class="pl-s">/webmum/index.php</span> <span class="pl-sr">[L,QSA]</span>
+&lt;/<span class="pl-ent">VirtualHost</span>&gt;</pre></div>
+
+<p>Without subdirectory in URL (e.g. <code>http://webmum.mydomain.tld/</code>):</p>
+
+<div class="highlight highlight-source-apache-config"><pre>&lt;<span class="pl-ent">VirtualHost</span> *:80&gt;
+    <span class="pl-c1">ServerName</span> webmum.domain.tld
+    <span class="pl-c1">DocumentRoot</span> /var/www/domain.tld/webmum
+
+    <span class="pl-c1">RewriteEngine</span> on
+    <span class="pl-c1">RewriteCond</span> <span class="pl-c1">%{REQUEST_FILENAME}</span> <span class="pl-s">!-d</span>
+    <span class="pl-c1">RewriteCond</span> <span class="pl-c1">%{REQUEST_FILENAME}</span> <span class="pl-s">!-f</span>
+    <span class="pl-c1">RewriteRule</span> <span class="pl-sr">(.*)\.css$</span> <span class="pl-s">$1.css</span> <span class="pl-sr">[L]</span>
+    <span class="pl-c1">RewriteRule</span> <span class="pl-sr">^(.*)$</span> <span class="pl-s">/index.php</span> <span class="pl-sr">[L,QSA]</span>
+&lt;/<span class="pl-ent">VirtualHost</span>&gt;</pre></div>
+
+<p>Access to the codebase is denied with a <code>.htaccess</code> file, that can be found in <code>/include/php</code>.</p>
+
+<h2>
+<a id="webmum-configuration" class="anchor" href="#webmum-configuration" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>WebMUM Configuration</h2>
+
+<p>Configure WebMUM via the configuration file at <code>config/config.inc.php</code>.</p>
+
+<h3>
+<a id="mysql" class="anchor" href="#mysql" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>MySQL</h3>
+
+<p>At first the database access has to be configured under the config key <code>mysql</code>.</p>
+
+<p>Check if you've got the same database schema as configured in the config key <code>schema</code>.</p>
+
+<h3>
+<a id="mailbox-limit-optional" class="anchor" href="#mailbox-limit-optional" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Mailbox limit (Optional)</h3>
+
+<p>If you want to use your "mailbox_limit" column to limit the size of your users' mailboxes, just enable mailbox limit in the options.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>enable_mailbox_limits<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">true</span>,</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<p>WebMUM will then show a new field "Mailbox limit" in the frontend.</p>
+
+<h3>
+<a id="multiple-source-redirect-support-optional" class="anchor" href="#multiple-source-redirect-support-optional" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Multiple source redirect support (Optional)</h3>
+
+<p>As mailservers can only process a single source address for redirects the database table for aliases / redirects can only hold a single source address in a row.
+WebMum will, if you enabled the multiple source redirect support, do some magic so there is only a single address in a row even though multiple addresses where entered.
+To make this work another column in the database table is required, which holds an identifier for the list of source addresses, so they can be edited like normal redirects.</p>
+
+<p>By default you can only redirect a single address to a single or multiple destinations.
+If you want to enable support for redirecting multiple source addresses to a destination, just enable it in the options:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>enable_multi_source_redirects<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">true</span>,</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<p>And add the following column to your database table for aliases / redirects:</p>
+
+<div class="highlight highlight-source-sql"><pre><span class="pl-k">ALTER</span> <span class="pl-k">TABLE</span> <span class="pl-s"><span class="pl-pds">`</span>aliases<span class="pl-pds">`</span></span> ADD COLUMN <span class="pl-s"><span class="pl-pds">`</span>multi_source<span class="pl-pds">`</span></span> <span class="pl-k">VARCHAR</span>(<span class="pl-c1">32</span>) <span class="pl-k">NULL</span> DEFAULT <span class="pl-k">NULL</span>;</pre></div>
+
+<p>WebMUM will then show a larger field for source addresses in the frontend and you can not list emails in source field.</p>
+
+<h3>
+<a id="admin-domain-limits-optional" class="anchor" href="#admin-domain-limits-optional" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Admin domain limits (Optional)</h3>
+
+<p>If you share your mailserver with others, host their domains and they should be able to manage their domains, but not all domains on that mailserver then this is the right option for you. 
+You have to add that user to the <code>admins</code> array in your configuration and enable admin domain limits in the options:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>enable_admin_domain_limits<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">true</span>,</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<p>also you have to make an entry in the <code>admin_domain_limits</code> array, for example <code>peter@his.tld</code> should be able to manage his domains <code>his.tld</code> and <code>his-company.tld</code> then configure the following:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>admin_domain_limits<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>peter@his.tld<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(<span class="pl-s"><span class="pl-pds">'</span>his.tld<span class="pl-pds">'</span></span>, <span class="pl-s"><span class="pl-pds">'</span>his-company.tld<span class="pl-pds">'</span></span>),</span>
+<span class="pl-s1">);</span></pre></div>
+
+<p>Admins that have been listed in <code>admin_domain_limits</code> don't have access to the "Manage domains" pages, otherwise they could delete domains they are managing, but maybe someone else owns.</p>
+
+<h3>
+<a id="paths" class="anchor" href="#paths" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Paths</h3>
+
+<p>The <code>base_url</code> is the URL your WebMUM installation is accessible from outside, this also includes subdirectories if you installed it in a subdirectory for that specific domain.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>base_url<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>http://localhost/webmum<span class="pl-pds">'</span></span>,</span></pre></div>
+
+<p>In the example above, WebMUM is located in a subdirectory named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the <code>FRONTEND_BASE_PATH</code> to something like this:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>base_url<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>http://webmum.mydomain.tld<span class="pl-pds">'</span></span>,</span></pre></div>
+
+<h3>
+<a id="admin-e-mail-address" class="anchor" href="#admin-e-mail-address" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Admin e-mail address</h3>
+
+<p>Only users with one of the specified email addresses will have access to the administrator's dashboard and will be able to create, edit and delete users, domains and redirects.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>admins<span class="pl-pds">'</span></span> <span class="pl-k">=</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>admin@domain.tld<span class="pl-pds">'</span></span>,</span>
+<span class="pl-s1">);</span></pre></div>
+
+<p>Admin email accounts must exist in the virtual user database on your own server. (=&gt; an e-mail account on a foreign server won't give you access!). You can then login into the admin dashboard with that e-mail address and the corresponding password.</p>
+
+<h3>
+<a id="minimal-required-password-length" class="anchor" href="#minimal-required-password-length" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Minimal required password length</h3>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>password<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>min_length<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">8</span>,</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<h3>
+<a id="logfile" class="anchor" href="#logfile" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Logfile</h3>
+
+<p>When logging is enabled, WebMUM will write messages into a file "webmum.log" in a specified directory (e.g. when a login attempt fails).</p>
+
+<p>Enable logging by setting it to enabled in the options:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>enable_logging<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">true</span>,</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<p>... and set a log path where the PHP user has permission to write the log file:</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>log_path<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>/var/www/webmum/log/<span class="pl-pds">'</span></span>,</span></pre></div>
+
+<p>"Login-failed-messages" have the following scheme:</p>
+
+<pre><code>Dec 19 13:00:19: WebMUM login failed for IP 127.0.0.1
+</code></pre>
+
+<h4>
+<a id="fail2ban-support" class="anchor" href="#fail2ban-support" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Fail2Ban support</h4>
+
+<p>If you want to use <strong>Fail2Ban</strong> with WebMUM, the filter has to be:</p>
+
+<pre><code>[Definition]
+failregex = ^(.*)\: WebMUM login failed for IP &lt;HOST&gt;$
+</code></pre>
+
+<h3>
+<a id="validate-that-source-addresses-of-redirects-must-be-from-the-managed-domains-only" class="anchor" href="#validate-that-source-addresses-of-redirects-must-be-from-the-managed-domains-only" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Validate that source addresses of redirects must be from the managed domains only</h3>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>enable_validate_aliases_source_domain<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">true</span>,</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<h3>
+<a id="frontend-options" class="anchor" href="#frontend-options" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Frontend options</h3>
+
+<p>Choose delimiter between multiple email addresses: comma, semicolon or new line separated.</p>
+
+<p><strong>Tip:</strong> new line is helpful for long lists of addresses.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>frontend_options<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-c">// Separator for email lists</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>email_separator_text<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>, <span class="pl-pds">'</span></span>, <span class="pl-c">// possible values: ', ' (default), '; ', PHP_EOL (newline)</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>email_separator_form<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>,<span class="pl-pds">'</span></span>, <span class="pl-c">// possible values: ',' (default), ';', PHP_EOL (newline)</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<p>The input for addresses can be separated by <code>,</code>, <code>;</code>, <code>:</code>, <code>|</code>, <code>newline</code> and combinations since all of them will result in a valid list of addresses in database, magic.</p>
+
+<h2>
+<a id="update--upgrade-webmum" class="anchor" href="#update--upgrade-webmum" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Update / Upgrade WebMUM</h2>
+
+<p>If you cloned WebMUM into your filesystem via <code>git clone https://github.com/ohartl/webmum</code>:</p>
+
+<div class="highlight highlight-source-shell"><pre>git stash
+git pull origin master
+git stash pop</pre></div>
+
+<p>... and you are ready to go. Git might complain about conflicting files - you will have to resolve the merge conflict manually then.</p>
+
+<p>If you downloaded WebMUM as a ZIP package, you have to update WebMUM manually.</p>
+
+<p><strong>After every update:</strong>
+Please check if your config.inc.php fits the current requirements by comparing your version of the file with the config.inc.php in the repository.</p>
+
+<h2>
+<a id="faq" class="anchor" href="#faq" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>FAQ</h2>
+
+<h3>
+<a id="which-password-hash-algorithm-does-webmum-use" class="anchor" href="#which-password-hash-algorithm-does-webmum-use" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>Which password hash algorithm does WebMUM use?</h3>
+
+<p>By default WebMUM uses the <code>SHA-512</code> hash algorithm for passwords. You can also choose between the alternatives <code>SHA-256</code> or <code>BLOWFISH</code> in the config.</p>
+
+<div class="highlight highlight-text-html-php"><pre><span class="pl-s1"><span class="pl-s"><span class="pl-pds">'</span>password<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-c1">array</span>(</span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">    <span class="pl-s"><span class="pl-pds">'</span>hash_algorithm<span class="pl-pds">'</span></span> <span class="pl-k">=&gt;</span> <span class="pl-s"><span class="pl-pds">'</span>SHA-512<span class="pl-pds">'</span></span>, <span class="pl-c">// Supported algorithms: SHA-512, SHA-256, BLOWFISH</span></span>
+<span class="pl-s1">    <span class="pl-k">...</span></span>
+<span class="pl-s1">),</span></pre></div>
+
+<h3>
+<a id="login-cannot-be-found" class="anchor" href="#login-cannot-be-found" aria-hidden="true"><span aria-hidden="true" class="octicon octicon-link"></span></a>"login/ cannot be found"</h3>
+
+<p>Webserver rewrites have to be enabled on your server, because WebMUM does not use real URLs for the frontend, but virtual URLs based on URL rewriting.
+When rewriting fails, you receive a 404 error message.</p>
+        </section>
+
+        <aside id="sidebar">
+          <a href="https://github.com/ohartl/webmum/zipball/master" class="button">
+            <small>Download</small>
+            .zip file
+          </a>
+          <a href="https://github.com/ohartl/webmum/tarball/master" class="button">
+            <small>Download</small>
+            .tar.gz file
+          </a>
+
+          <p class="repo-owner"><a href="https://github.com/ohartl/webmum"></a> is maintained by <a href="https://github.com/ohartl">ohartl</a>.</p>
+
+          <p>This page was generated by <a href="https://pages.github.com">GitHub Pages</a> using the Architect theme by <a href="https://twitter.com/jasonlong">Jason Long</a>.</p>
+        </aside>
+      </div>
+    </div>
+
+  
+  </body>
+</html>
