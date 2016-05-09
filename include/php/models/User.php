@@ -60,6 +60,7 @@ class User extends AbstractModel
 				'domain' => Config::get('schema.attributes.users.domain', 'domain'),
 				'password_hash' => Config::get('schema.attributes.users.password', 'password'),
 				'mailbox_limit' => Config::get('schema.attributes.users.mailbox_limit'),
+				'max_user_redirects' => Config::get('schema.attributes.users.max_user_redirects'),
 			);
 		}
 	}
@@ -77,6 +78,10 @@ class User extends AbstractModel
 		$this->setPasswordHash($data[static::attr('password_hash')]);
 		$this->setMailboxLimit(Config::get('options.enable_mailbox_limits', false)
 			? intval($data[static::attr('mailbox_limit')])
+			: 0
+		);
+		$this->setMaxUserRedirects(Config::get('options.enable_user_redirects', false)
+			? intval($data[static::attr('max_user_redirects')])
 			: 0
 		);
 
@@ -161,7 +166,60 @@ class User extends AbstractModel
 	 */
 	public function setMailboxLimit($value)
 	{
-		$this->setAttribute('mailbox_limit', $value);
+		$this->setAttribute('mailbox_limit', intval($value));
+	}
+
+
+	/**
+	 * @return int
+	 */
+	public function getMaxUserRedirects()
+	{
+		return $this->getAttribute('max_user_redirects');
+	}
+
+
+	/**
+	 * @param int $value
+	 */
+	public function setMaxUserRedirects($value)
+	{
+		$this->setAttribute('max_user_redirects', intval($value));
+	}
+
+
+	/**
+	 * @param string $attr
+	 * @param mixed $default
+	 *
+	 * @return mixed
+	 *
+	 * @throws Exception
+	 */
+	protected static function getAttributeDefaultValue($attr, $default)
+	{
+		static::initModel();
+
+		$sql = "SELECT DEFAULT(".static::attr($attr).") FROM `".static::$table."` LIMIT 1";
+
+		try {
+			$result = Database::getInstance()->query($sql);
+
+			if($result->num_rows === 1){
+				$row = $result->fetch_array();
+
+				return $row[0];
+			}
+		}
+		catch(Exception $e) {
+			if (strpos($e->getMessage(), 'doesn\'t have a default') !== false) {
+				throw new Exception('Database table "'.static::$table.'" is missing a default value for attribute "'.static::attr($attr).'".');
+			}
+
+			return $default;
+		}
+
+		return $default;
 	}
 
 
@@ -172,19 +230,23 @@ class User extends AbstractModel
 	 */
 	public static function getMailboxLimitDefault()
 	{
-		static::initModel();
-
 		if(Config::get('options.enable_mailbox_limits', false)){
+			return intval(static::getAttributeDefaultValue('mailbox_limit', 0));
+		}
 
-			$sql = "SELECT DEFAULT(".static::attr('mailbox_limit').") FROM `".static::$table."` LIMIT 1";
+		return 0;
+	}
 
-			$result = Database::getInstance()->query($sql);
 
-			if($result->num_rows === 1){
-				$row = $result->fetch_array();
-
-				return intval($row[0]);
-			}
+	/**
+	 * Get max user redirects default via database default value
+	 *
+	 * @return int
+	 */
+	public static function getMaxUserRedirectsDefault()
+	{
+		if(Config::get('options.enable_user_redirects', false)){
+			return intval(static::getAttributeDefaultValue('max_user_redirects', 0));
 		}
 
 		return 0;
@@ -251,6 +313,33 @@ class User extends AbstractModel
 
 
 	/**
+	 * @return bool
+	 */
+	public function isAllowedToCreateUserRedirects()
+	{
+		return $this->getMaxUserRedirects() >= 0;
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function canCreateUserRedirects()
+	{
+		if(!$this->isAllowedToCreateUserRedirects()
+			|| (
+				$this->getMaxUserRedirects() > 0
+				&& $this->getSelfCreatedRedirects()->count() >= $this->getMaxUserRedirects()
+			)
+		){
+			return false;
+		}
+
+		return true;
+	}
+
+
+	/**
 	 * @return AbstractRedirect
 	 */
 	public function getConflictingRedirect()
@@ -296,6 +385,22 @@ class User extends AbstractModel
 		}
 
 		return $redirects;
+	}
+
+
+	/**
+	 * @return ModelCollection|AbstractRedirect[]
+	 */
+	public function getSelfCreatedRedirects()
+	{
+		$redirects = $this->getRedirects();
+
+		return $redirects->searchAll(
+			function($redirect) {
+				/** @var AbstractRedirect $redirect */
+				return $redirect->isCreatedByUser();
+			}
+		);
 	}
 
 

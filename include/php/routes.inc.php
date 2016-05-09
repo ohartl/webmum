@@ -18,8 +18,11 @@ Router::addGet('/logout', function(){
  */
 Router::addGet('/private', 'include/php/pages/private/start.php', User::ROLE_USER);
 Router::addMixed('/private/changepass', 'include/php/pages/private/changepass.php', User::ROLE_USER);
-Router::addGet('/private/yourredirects', 'include/php/pages/private/yourredirects.php', User::ROLE_USER);
-
+Router::addGet('/private/redirects', 'include/php/pages/private/yourredirects.php', User::ROLE_USER);
+if(Config::get('options.enable_user_redirects', false)){
+	Router::addMixed('/private/redirect/create', 'include/php/pages/private/createredirect.php', User::ROLE_USER);
+	Router::addMixed('/private/redirect/delete', 'include/php/pages/private/deleteredirect.php', User::ROLE_USER);
+}
 
 /**
  * Admin area

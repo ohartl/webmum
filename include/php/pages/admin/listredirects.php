@@ -14,7 +14,6 @@ else if(isset($_GET['missing-permission']) && $_GET['missing-permission'] == "1"
 }
 
 $redirects = AbstractRedirect::getMultiByLimitedDomains();
-
 ?>
 
 	<h1>Redirects</h1>
@@ -37,6 +36,9 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 		<tr>
 			<th>Source</th>
 			<th>Destination</th>
+		<?php if(Config::get('options.enable_user_redirects', false)): ?>
+			<th>Created by user</th>
+		<?php endif; ?>
 			<th></th>
 			<th></th>
 		<tr>
@@ -51,6 +53,9 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 					<?php echo formatEmailsText($redirect->getConflictingMarkedSource()); ?>
 				</td>
 				<td><?php echo formatEmailsText($redirect->getDestination()); ?></td>
+			<?php if(Config::get('options.enable_user_redirects', false)): ?>
+				<td><?php echo $redirect->isCreatedByUser() ? 'Yes' : 'No'; ?></td>
+			<?php endif; ?>
 				<td>
 					<a href="<?php echo Router::url('admin/editredirect/?id='.$redirect->getId()); ?>">[Edit]</a>
 				</td>
@@ -61,9 +66,17 @@ $redirects = AbstractRedirect::getMultiByLimitedDomains();
 		<?php endforeach; ?>
 		</tbody>
 		<tfoot>
-		<tr>
-			<th><?php echo ($redirects->count() > 1) ? $redirects->count().' Redirects' : '1 Redirect'; ?></th>
-		</tr>
+			<tr>
+				<th><?php echo textValue('_ redirect', $redirects->count()); ?></th>
+			<?php if(Config::get('options.enable_user_redirects', false)):
+				$userRedirectsCount = AbstractRedirect::countWhere(
+					array(AbstractRedirect::attr('is_created_by_user'), 1)
+				);
+				?>
+				<th></th>
+				<th><?php echo textValue('_ user redirect', $userRedirectsCount); ?></th>
+			<?php endif; ?>
+			</tr>
 		</tfoot>
 	</table>
 <?php elseif(!(Auth::getUser()->isDomainLimited() && count(Domain::getByLimitedDomains()) === 0)): ?>

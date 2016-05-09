@@ -9,5 +9,5 @@
 </div>
 
 <div class="buttons buttons-horizontal button-large">
-	<a class="button" href="<?php echo Router::url('private/yourredirects'); ?>">Redirects to your mailbox</a>
+	<a class="button" href="<?php echo Router::url('private/redirects'); ?>">Redirects to your mailbox</a>
 </div>

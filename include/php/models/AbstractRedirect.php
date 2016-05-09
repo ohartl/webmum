@@ -49,6 +49,7 @@ abstract class AbstractRedirect extends AbstractModel
 				'source' => Config::get('schema.attributes.aliases.source', 'source'),
 				'destination' => Config::get('schema.attributes.aliases.destination', 'destination'),
 				'multi_hash' => Config::get('schema.attributes.aliases.multi_source', 'multi_source'),
+				'is_created_by_user' => Config::get('schema.attributes.aliases.is_created_by_user', 'is_created_by_user'),
 			);
 		}
 	}
@@ -63,6 +64,10 @@ abstract class AbstractRedirect extends AbstractModel
 
 		$data['source'] = emailsToString($data['source']);
 		$data['destination'] = emailsToString($data['destination']);
+
+		if(Config::get('options.enable_user_redirects', false)){
+			$data['is_created_by_user'] = $data['is_created_by_user'] ? 1 : 0;
+		}
 
 		return $data;
 	}
@@ -91,6 +96,10 @@ abstract class AbstractRedirect extends AbstractModel
 
 		if(Config::get('options.enable_multi_source_redirects', false)){
 			$this->setMultiHash($data[static::attr('multi_hash')]);
+		}
+
+		if(Config::get('options.enable_user_redirects', false)){
+			$this->setIsCreatedByUser($data[static::attr('is_created_by_user')]);
 		}
 	}
 
@@ -175,6 +184,7 @@ abstract class AbstractRedirect extends AbstractModel
 		}
 	}
 
+
 	/**
 	 * @return string
 	 */
@@ -190,6 +200,24 @@ abstract class AbstractRedirect extends AbstractModel
 	public function setMultiHash($value)
 	{
 		$this->setAttribute('multi_hash', $value);
+	}
+
+
+	/**
+	 * @return bool
+	 */
+	public function isCreatedByUser()
+	{
+		return $this->getAttribute('is_created_by_user');
+	}
+
+
+	/**n
+	 * @param bool $value
+	 */
+	public function setIsCreatedByUser($value)
+	{
+		$this->setAttribute('is_created_by_user', $value ? true : false);
 	}
 
 
@@ -290,6 +318,7 @@ abstract class AbstractRedirect extends AbstractModel
 		GROUP_CONCAT(g.`".static::attr('source')."` SEPARATOR ',') AS `".static::attr('source')."`,
 		g.`".static::attr('destination')."`,
 		g.`".static::attr('multi_hash')."`
+".(Config::get('options.enable_user_redirects', false) ? ", g.`".static::attr('is_created_by_user')."`" : "")."
 	FROM `".static::$table."` AS g
 	WHERE g.`".static::attr('multi_hash')."` IS NOT NULL
 	GROUP BY g.`".static::attr('multi_hash')."`
@@ -299,6 +328,7 @@ UNION
 		s.`".static::attr('source')."`,
 		s.`".static::attr('destination')."`,
 		s.`".static::attr('multi_hash')."`
+".(Config::get('options.enable_user_redirects', false) ? ", s.`".static::attr('is_created_by_user')."`" : "")."
 	FROM `".static::$table."` AS s
 	WHERE s.`".static::attr('multi_hash')."` IS NULL
 ) AS r";

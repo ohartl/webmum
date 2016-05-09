@@ -59,6 +59,7 @@ return array(
 				'domain' => 'domain',
 				'password' => 'password',
 				'mailbox_limit' => 'mailbox_limit', // (Optional see 'options.enable_mailbox_limits')
+				'max_user_redirects' => 'max_user_redirects', // (Optional see 'options.enable_user_redirects')
 			),
 
 			// Domains table columns
@@ -73,6 +74,7 @@ return array(
 				'source' => 'source',
 				'destination' => 'destination',
 				'multi_source' => 'multi_source', // (Optional see 'options.enable_multi_source_redirects')
+				'is_created_by_user' => 'is_created_by_user', // (Optional see 'options.enable_user_redirects')
 			),
 		),
 	),
@@ -87,7 +89,8 @@ return array(
 		/**
 		 * Enable mailbox limits. (Default false == off)
 		 *
-		 * Needs a new db attribute in users table with INT(10)
+		 * Needs a new db attribute in users table with INT(10).
+		 * (see 'schema.attributes.users.mailbox_limit')
 		 */
 
 		'enable_mailbox_limits' => false,
@@ -103,7 +106,8 @@ return array(
 		/**
 		 * Enable multi source redirects. (Default false == off)
 		 *
-		 * Needs a new db attribute in aliases table with VARCHAR(32)
+		 * Needs a new db attribute in aliases table with VARCHAR(32).
+		 * (see 'schema.attributes.aliases.multi_source')
 		 */
 
 		'enable_multi_source_redirects' => false,
@@ -112,17 +116,29 @@ return array(
 		/**
 		 * Enable limited admin domain access. (Default false == off)
 		 *
-		 * Limitations can be configured under 'admin_domain_limits'
+		 * Limitations can be configured under 'admin_domain_limits'.
 		 */
 
 		'enable_admin_domain_limits' => false,
 
 
 		/**
+		 * Enable users can create own redirects. (Default false == off)
+		 *
+		 * Needs two new db attributes in users table with INT(10) and aliases table with INT(1) + DEFAULT 0
+		 * (see 'schema.attributes.users.max_user_redirects' and 'schema.attributes.aliases.is_created_by_user')
+		 *
+		 * A maximum number of redirects per user can be configured.
+		 */
+
+		'enable_user_redirects' => false,
+
+
+		/**
 		 * Enable logging for failed login attempts. (Default false == off)
 		 *
-		 * You can mointor the logfile with fail2ban and ban attackers' IP-addresses.
-		 * Path to logfile can be configured under 'log_path'
+		 * You can monitor the logfile with fail2ban and ban attackers' IP-addresses.
+		 * Path to logfile can be configured under 'log_path'.
 		 */
 
 		'enable_logging' => false,
