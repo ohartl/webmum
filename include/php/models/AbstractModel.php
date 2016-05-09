@@ -234,12 +234,16 @@ abstract class AbstractModel
 	public function getAttribute($attribute)
 	{
 		if(isset($this->data[$attribute])){
-			if(is_array($this->data[$attribute])){
-				return array_map('strip_tags', $this->data[$attribute]);
+			$value = $this->data[$attribute];
+
+			if(is_array($value)){
+				return array_map('strip_tags', $value);
 			}
-			else{
-				return strip_tags($this->data[$attribute]);
+			elseif(is_string($value)){
+				return strip_tags($value);
 			}
+
+			return $value;
 		}
 
 		return null;
