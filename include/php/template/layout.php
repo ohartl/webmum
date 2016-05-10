@@ -8,6 +8,7 @@
 	<meta name="apple-mobile-web-app-capable" content="yes">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
 	<link rel=stylesheet href="<?php echo Router::url('include/css/webmum.style.css?v=1.00'); ?>" type="text/css" media=screen>
+	<script src="<?php echo Router::url('include/js/slideout.min.js?v=0.1.12'); ?>"></script>
 	<script type="text/javascript">
 		function generatePassword() {
 			var length = <?php echo Config::get('password.min_length', 8) + 1; ?>,
