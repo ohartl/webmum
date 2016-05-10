@@ -50,7 +50,7 @@
 
 	<div id="header" class="grid">
 		<nav class="unit no-gutters">
-			<div class="title">
+			<div class="pull-left title">
 				<a href="<?php echo Router::url('/'); ?>">WebMUM<span class="hide-on-mobiles"> - Web Mailserver User Manager</span></a>
 			</div>
 			<?php if(Auth::isLoggedIn()): ?>
