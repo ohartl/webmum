@@ -19,30 +19,54 @@
 			}
 			return retVal;
 		}
+		document.addEventListener('DOMContentLoaded', function(){
+			var slideout = new Slideout({
+				'panel': document.getElementById('content'),
+				'menu': document.getElementById('mobile'),
+				'padding': 256,
+				'tolerance': 70,
+			});
+
+			// Toggle button
+			document.querySelector('.menu-toggle').addEventListener('click', function() {
+				slideout.toggle();
+			});
+		}, false);
 	</script>
 </head>
 
 <body>
-	<div id="header">
-		<div class="title"><a href="<?php echo Router::url('/'); ?>">WebMUM - Web Mailserver User Manager</a></div>
-		<div class="header-menu">
-			<?php if(Auth::hasPermission(User::ROLE_ADMIN)): ?>
-				<div class="header-button">
-					<a href="<?php echo Router::url('admin'); ?>">[Admin Dashboard]</a>
-				</div>
-			<?php endif; ?>
-			<?php if(Auth::hasPermission(User::ROLE_USER)): ?>
-				<div class="header-button">
-					<a href="<?php echo Router::url('private'); ?>">[Personal Dashboard]</a>
-				</div>
-			<?php endif; ?>
-			<?php if(Auth::isLoggedIn()): ?>
-				<div class="header-button">
-					Logged in as <?php echo Auth::getUser()->getEmail(); ?>
+	<?php if(Auth::isLoggedIn()): ?>
+		<div id="mobile" class="grid">
+			<ul class="unit">
+				<li><a href="<?php echo Router::url('admin'); ?>">[Admin Dashboard]</a></li>
+				<li><a href="<?php echo Router::url('private'); ?>">[Personal Dashboard]</a></li>
+				<li><?php echo Auth::getUser()->getEmail(); ?>
 					<a href="<?php echo Router::url('logout'); ?>">[Logout]</a>
+				</li>
+			</ul>
+		</div>
+	<?php endif; ?>
+
+	<div id="header" class="grid">
+		<nav class="unit no-gutters">
+			<div class="title">
+				<a href="<?php echo Router::url('/'); ?>">WebMUM<span class="hide-on-mobiles"> - Web Mailserver User Manager</span></a>
+			</div>
+			<?php if(Auth::isLoggedIn()): ?>
+				<ul class="pull-left header-menu hide-on-mobiles">
+					<li><a href="<?php echo Router::url('admin'); ?>">[Admin Dashboard]</a></li>
+					<li><a href="<?php echo Router::url('private'); ?>">[Personal Dashboard]</a></li>
+				</ul>
+				<div class="pull-right header-button hide-on-mobiles">
+						<p class="header-text">Logged in as <?php echo Auth::getUser()->getEmail(); ?></p>
+						<a href="<?php echo Router::url('logout'); ?>" class="pull-right">[Logout]</a>
+				</div>
+				<div class="header-button pull-right only-mobiles">
+					<div class="menu-toggle">Menu<img class="menu-icon" src="<?php echo Router::url('include/img/menu-icon.svg?v=1.0'); ?>"></div>
 				</div>
 			<?php endif; ?>
-		</div>
+		</nav>
 	</div>
 
 	<div id="content">
