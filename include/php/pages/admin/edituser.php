@@ -2,6 +2,9 @@
 
 $mailboxLimitDefault = User::getMailboxLimitDefault();
 
+$canCreateUserRedirectsDefault = false;
+$maxUserRedirectsDefault = User::getMaxUserRedirectsDefault();
+
 $saveMode = (isset($_POST['savemode']) && in_array($_POST['savemode'], array('edit', 'create')))
 	? $_POST['savemode']
 	: null;
@@ -16,6 +19,18 @@ if(!is_null($saveMode)){
 		$inputMailboxLimit = isset($_POST['mailbox_limit']) ? intval($_POST['mailbox_limit']) : $mailboxLimitDefault;
 		if(!$inputMailboxLimit === 0 && empty($inputMailboxLimit)){
 			$inputMailboxLimit = $mailboxLimitDefault;
+		}
+	}
+
+	$inputMaxUserRedirects = null;
+	if(Config::get('options.enable_user_redirects', false)){
+		$inputMaxUserRedirects = isset($_POST['max_user_redirects']) ? intval($_POST['max_user_redirects']) : $maxUserRedirectsDefault;
+		if(!$inputMaxUserRedirects === 0 && empty($inputMaxUserRedirects)){
+			$inputMaxUserRedirects = $maxUserRedirectsDefault;
+		}
+
+		if(isset($_POST['user_redirects']) && $_POST['user_redirects'] === 'no'){
+			$inputMaxUserRedirects = -1;
 		}
 	}
 
@@ -41,8 +56,12 @@ if(!is_null($saveMode)){
 			Router::redirect("admin/listusers/?missing-permission=1");
 		}
 
-		if(Config::get('options.enable_mailbox_limits', false) && !is_null($inputMailboxLimit)){
+		if(!is_null($inputMailboxLimit)){
 			$userToEdit->setMailboxLimit($inputMailboxLimit);
+		}
+
+		if(!is_null($inputMaxUserRedirects)){
+			$userToEdit->setMaxUserRedirects($inputMaxUserRedirects);
 		}
 
 		$passwordError = false;
@@ -108,8 +127,12 @@ if(!is_null($saveMode)){
 							User::attr('password_hash') => Auth::generatePasswordHash($inputPassword)
 						);
 
-						if(Config::get('options.enable_mailbox_limits', false) && !is_null($inputMailboxLimit)){
+						if(!is_null($inputMailboxLimit)){
 							$data[User::attr('mailbox_limit')] = $inputMailboxLimit;
+						}
+
+						if(!is_null($inputMaxUserRedirects)){
+							$data[User::attr('max_user_redirects')] = $inputMaxUserRedirects;
 						}
 
 						/** @var User $user */
@@ -225,6 +248,43 @@ if(isset($_GET['id'])){
 			<div class="input input-labeled input-labeled-right">
 				<input name="mailbox_limit" type="number" value="<?php echo isset($_POST['mailbox_limit']) ? strip_tags($_POST['mailbox_limit']) : ((isset($user) && Config::get('options.enable_mailbox_limits', false)) ? $user->getMailboxLimit() : $mailboxLimitDefault); ?>" placeholder="Mailbox limit in MB" min="0" required/>
 				<span class="input-label">MB</span>
+			</div>
+		</div>
+	<?php endif; ?>
+
+	<?php if(Config::get('options.enable_user_redirects', false)):
+		$canCreateUserRedirects = isset($_POST['user_redirects'])
+			? $_POST['user_redirects'] === 'yes'
+			: (isset($user) ? $user->isAllowedToCreateUserRedirects() : $canCreateUserRedirectsDefault);
+		$maxUserRedirects = !$canCreateUserRedirects
+			? $maxUserRedirectsDefault
+			: (
+				isset($_POST['max_user_redirects'])
+					? strip_tags($_POST['max_user_redirects'])
+					: (
+						isset($user)
+							? $user->getMaxUserRedirects()
+							: $maxUserRedirectsDefault
+					)
+			)
+		?>
+		<div class="input-group">
+			<label>User can create redirects to himself?</label>
+			<div class="input-info">The maximum number of redirects can be limited by the limit redirects setting.</div>
+			<div class="input">
+				<select name="user_redirects" autofocus required>
+					<option value="no" <?php echo !$canCreateUserRedirects ? 'selected' : ''; ?>>Disabled</option>
+					<option value="yes" <?php echo $canCreateUserRedirects ? 'selected' : ''; ?>>Yes, creating redirects is allowed</option>
+				</select>
+			</div>
+
+			<div class="input-group">
+				<label>Limit redirects</label>
+				<div class="input-info">The default limit is "<?php echo $maxUserRedirectsDefault; ?>". Set to "0" means unlimited redirects.</div>
+				<div class="input input-labeled input-labeled-right">
+					<input name="max_user_redirects" type="number" value="<?php echo $maxUserRedirects; ?>" placeholder="Mailbox limit in MB" min="0" required/>
+					<span class="input-label">Redirects</span>
+				</div>
 			</div>
 		</div>
 	<?php endif; ?>

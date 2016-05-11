@@ -134,6 +134,7 @@ if(isset($_POST['savemode'])){
 							$thisRedirect->setSource($sourceAddress);
 							$thisRedirect->setDestination($inputDestinations);
 							$thisRedirect->setMultiHash($hash);
+							// Don't set 'isCreatedByUser' here, it will overwrite redirects created by user
 							$thisRedirect->save();
 
 							$existingRedirectsToEdit->delete($thisRedirect->getId()); // mark updated
@@ -142,10 +143,9 @@ if(isset($_POST['savemode'])){
 							$data = array(
 								AbstractRedirect::attr('source') => $sourceAddress,
 								AbstractRedirect::attr('destination') => emailsToString($inputDestinations),
+								AbstractRedirect::attr('multi_hash') => $hash,
+								AbstractRedirect::attr('is_created_by_user') => false,
 							);
-							if(Config::get('options.enable_multi_source_redirects', false)){
-								$data[AbstractRedirect::attr('multi_hash')] = $hash;
-							}
 
 							AbstractRedirect::createAndSave($data);
 						}
@@ -189,11 +189,9 @@ if(isset($_POST['savemode'])){
 						$data = array(
 							AbstractRedirect::attr('source') => $inputSource,
 							AbstractRedirect::attr('destination') => $inputDestination,
+							AbstractRedirect::attr('multi_hash') => $hash,
+							AbstractRedirect::attr('is_created_by_user') => false,
 						);
-
-						if(Config::get('options.enable_multi_source_redirects', false)){
-							$data[AbstractRedirect::attr('multi_hash')] = $hash;
-						}
 
 						$a = AbstractRedirect::createAndSave($data);
 					}
@@ -260,7 +258,7 @@ $domains = Domain::getByLimitedDomains();
 						<?php endforeach; ?>
 					</ul>
 				<?php else: ?>
-					There are no domains managed by in WebMUM yet.
+					There are no domains managed by WebMUM yet.
 				<?php endif; ?>
 			</div>
 			<div class="input">

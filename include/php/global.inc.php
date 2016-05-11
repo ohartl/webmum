@@ -5,18 +5,26 @@
  * Add message to logfile
  *
  * @param string $text
+ *
+ * @throws Exception
  */
 function writeLog($text)
 {
 	if(Config::get('options.enable_logging', false) && Config::has('log_path')){
-		$logdestination = realpath(Config::get('log_path')).DIRECTORY_SEPARATOR."webmum.log";
+
+		$logDestination = realpath(Config::get('log_path')).DIRECTORY_SEPARATOR."webmum.log";
+
 		if(is_writable(Config::get('log_path'))){
-			$logfile = fopen($logdestination, "a") or die("Unable to create or open logfile \"".$logdestination."\" in root directory!");
-			fwrite($logfile, date('M d H:i:s').": ".$text."\n");
-			fclose($logfile);
+			if($logfile = fopen($logDestination, "a")){
+				fwrite($logfile, date('M d H:i:s').": ".$text."\n");
+				fclose($logfile);
+			}
+			else{
+				throw new Exception('Unable to create or open logfile "'.$logDestination.'" in root directory!');
+			}
 		}
 		else{
-			die("Directory \"".Config::get('log_path')."\" isn't writable");
+			throw new Exception('Directory "'.Config::get('log_path').'" isn\'t writable');
 		}
 	}
 }
@@ -106,7 +114,12 @@ function formatEmails($input, $glue)
 	return emailsToString($input, $glue);
 }
 
-
+/**
+ * Format email addresses for text output (not in an input field)
+ *
+ * @param string|array $input
+ * @return string
+ */
 function formatEmailsText($input)
 {
 	return formatEmails(
@@ -116,6 +129,12 @@ function formatEmailsText($input)
 }
 
 
+/**
+ * Format email addresses for form output (in an input field)
+ *
+ * @param string|array $input
+ * @return string
+ */
 function formatEmailsForm($input)
 {
 	return strip_tags(
@@ -124,4 +143,24 @@ function formatEmailsForm($input)
 			Config::get('frontend_options.email_separator_form', ',')
 		)
 	);
+}
+
+/**
+ * @param string $textPattern
+ * @param int|mixed $value
+ * @return string
+ */
+function textValue($textPattern, $value)
+{
+	$text = str_replace(
+		array('_', ':val:', ':value:'),
+		$value,
+		$textPattern
+	);
+
+	if(is_numeric($value) && $value > 1){
+		$text .= 's';
+	}
+
+	return $text;
 }

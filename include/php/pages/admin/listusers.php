@@ -44,6 +44,9 @@ $users = User::getByLimitedDomains();
 				<th>Mailbox Limit</th>
 			<?php endif; ?>
 				<th>Redirect count</th>
+			<?php if(Config::get('options.enable_user_redirects', false)): ?>
+				<th>User Redirects</th>
+			<?php endif; ?>
 				<th>Role</th>
 				<th></th>
 				<th></th>
@@ -59,10 +62,23 @@ $users = User::getByLimitedDomains();
 					<?php echo $user->getUsername(); ?>
 				</td>
 				<td><?php echo $user->getDomain(); ?></td>
-				<?php if(Config::get('options.enable_mailbox_limits', false)): ?>
-					<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>
+			<?php if(Config::get('options.enable_mailbox_limits', false)): ?>
+				<td style="text-align: right"><?php echo ($user->getMailboxLimit() > 0) ? $user->getMailboxLimit().' MB' : 'No limit'; ?></td>
+			<?php endif; ?>
+				<td style="text-align: right">
+					<?php echo $user->getRedirects()->count(); ?>
+				</td>
+			<?php if(Config::get('options.enable_user_redirects', false)): ?>
+				<td>
+				<?php if($user->getMaxUserRedirects() < 0): ?>
+					Not Allowed
+				<?php elseif($user->getMaxUserRedirects() > 0): ?>
+					Limited (<?php echo $user->getMaxUserRedirects(); ?>)
+				<?php else: ?>
+					Unlimited
 				<?php endif; ?>
-				<td><?php echo $user->getRedirects()->count(); ?></td>
+				</td>
+			<?php endif; ?>
 				<td><?php echo ($user->getRole() === User::ROLE_ADMIN) ? 'Admin' : 'User'; ?></td>
 				<td>
 					<a href="<?php echo Router::url('admin/edituser/?id='.$user->getId()); ?>">[Edit]</a>
@@ -75,7 +91,7 @@ $users = User::getByLimitedDomains();
 		</tbody>
 		<tfoot>
 			<tr>
-				<th><?php echo ($users->count() > 1) ? $users->count().' Users' : '1 User'; ?></th>
+				<th><?php echo textValue('_ user', $users->count()); ?></th>
 			</tr>
 		</tfoot>
 	</table>

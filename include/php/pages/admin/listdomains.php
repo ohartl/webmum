@@ -55,7 +55,7 @@ $domains = Domain::findAll();
 		</tbody>
 		<tfoot>
 		<tr>
-			<th><?php echo ($domains->count() > 1) ? $domains->count().' Domains' : '1 Domain'; ?></th>
+			<th><?php echo textValue('_ domain', $domains->count()); ?></th>
 		</tr>
 		</tfoot>
 	</table>
