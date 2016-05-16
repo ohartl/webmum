@@ -95,15 +95,14 @@ class Database
 	{
 		if(!static::isInitialized()){
 			if(is_array($host)){
-				if(isset($host['host']) && isset($host['user']) && isset($host['password']) && isset($host['database'])){
-					$user = $host['user'];
-					$password = $host['password'];
-					$database = $host['database'];
-					$host = $host['host'];
-				}
-				else{
-					throw new InvalidArgumentException;
-				}
+				$database = isset($host['database']) ? $host['database'] : $database;
+				$password = isset($host['password']) ? $host['password'] : $password;
+				$user = isset($host['user']) ? $host['user'] : $user;
+				$host = isset($host['host']) ? $host['host'] : $host;
+			}
+
+			if(is_null($host) || is_null($user) || is_null($password) || is_null($database)){
+				throw new InvalidArgumentException('Missing parameters for database initialization.');
 			}
 
 			static::setInstance(
