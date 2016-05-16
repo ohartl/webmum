@@ -71,14 +71,23 @@ body {
     .buttons {
       padding-bottom: 10px;
     }
-    .input-group > label {
-      font-weight: bold;
-      line-height: 22px;
-      font-size: 13px;
-    }
-    .input-group > .input-info {
-      padding-bottom: 5px;
-      color: #999;
+    .input-group {
+      > label {
+        font-weight: bold;
+        line-height: 22px;
+        font-size: 13px;
+      }
+      > .input-info {
+        padding-bottom: 5px;
+        color: #999999;
+      }
+      > .input-group {
+        padding-top: 10px;
+        padding-left: 25px;
+        > label {
+          font-size: 12px;
+        }
+      }
     }
     .input {
       input,
@@ -98,8 +107,10 @@ body {
         min-width: 180px;
       }
       input[type="number"] {
+        padding-left: 15px;
         padding-right: 0;
-        min-width: 190px;
+        min-width: 70px;
+        width: 70px;
       }
       textarea {
         min-height: 150px;
@@ -174,7 +185,11 @@ body {
     text-align: center;
     color: rgba(57, 57, 57, 1);
     text-decoration: none;
-    &:hover {
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+    user-select: none;
+  &:hover {
       box-shadow: 1px 1px 4px #dbdbdb;
       text-decoration: none;
       cursor: pointer;
@@ -204,6 +219,13 @@ body {
       border-color: #333;
       color: #fff;
     }
+  }
+  #content .button.button-disabled {
+    background: #f1f1f1;
+    border-color: #f1f1f1;
+    box-shadow: none;
+    cursor: not-allowed;
+    color: #bbb;
   }
   /* Table Styles */
   .table {
