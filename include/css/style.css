@@ -5,6 +5,28 @@ body {
 	background-color: white;
 }
 
+hr {
+	border: none;
+	border-bottom: 1px solid #ccc;
+	margin: 20px 0;
+}
+
+hr.invisible {
+	border: none;
+}
+
+.text-fail {
+	color: #d90000;
+}
+
+.text-warning {
+	color: #cbc600;
+}
+
+.text-success {
+	color: #69d169;
+}
+
 
 #header {
 	position: relative;
@@ -79,6 +101,10 @@ body {
 	#content .form {
 		margin: 25px 0;
 	}
+
+		#content .form hr {
+			margin: 5px 0 15px;
+		}
 
 		#content .form .input-group, #content .form .buttons {
 			padding-bottom: 10px;
