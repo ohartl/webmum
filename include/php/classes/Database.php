@@ -46,7 +46,7 @@ class Database
 				$this->db = new mysqli($host, $user, $password, $database);
 			}
 			catch(mysqli_sql_exception $e){
-				throw new Exception('Unable to connect to database', 0, $e);
+				throw new Exception('Unable to connect to the database.', 0, $e);
 			}
 		}
 	}
@@ -88,6 +88,9 @@ class Database
 	 * @param string $user
 	 * @param string $password
 	 * @param string $database
+	 *
+	 * @throws InvalidArgumentException
+	 * @throws Exception
 	 *
 	 * @codeCoverageIgnore
 	 */
@@ -180,6 +183,8 @@ class Database
 	 * @param int $limit
 	 *
 	 * @return bool|mysqli_result
+	 *
+	 * @throws DatabaseException
 	 */
 	public function select($table, $conditions = array(), $conditionConnector = 'AND', $orderBy = null, $limit = 0)
 	{
@@ -202,6 +207,8 @@ class Database
 	 * @param array $values
 	 *
 	 * @return mixed
+	 *
+	 * @throws DatabaseException
 	 */
 	public function insert($table, $values)
 	{
@@ -228,6 +235,8 @@ class Database
 	 * @param array $values
 	 * @param array $conditions
 	 * @param string $conditionConnector
+	 *
+	 * @throws DatabaseException
 	 */
 	public function update($table, $values, $conditions = array(), $conditionConnector = 'AND')
 	{
@@ -260,6 +269,8 @@ class Database
 	 * @param string $conditionConnector
 	 *
 	 * @return int
+	 *
+	 * @throws DatabaseException
 	 */
 	public function count($table, $byAttribute, $conditions = array(), $conditionConnector = 'AND')
 	{
@@ -280,7 +291,8 @@ class Database
 	 * @param string $table
 	 * @param string $attribute
 	 * @param mixed $value
-	 * @return bool
+	 *
+	 * @throws DatabaseException
 	 */
 	public function delete($table, $attribute, $value)
 	{
