@@ -129,8 +129,11 @@ hr.invisible {
 		}
 
 		#content .form .input-group > .input-group {
-			padding-top: 10px;
 			padding-left: 25px;
+		}
+
+		#content .form .input-group > .input-group:first-of-type {
+			padding-top: 10px;
 		}
 
 		#content .form .input-group > .input-group > label {
