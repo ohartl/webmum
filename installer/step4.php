@@ -31,10 +31,10 @@ function getAttr($name, $default = null)
 	elseif(isset($_SESSION['installer']['config']['password'][$name])){
 		return $_SESSION['installer']['config']['password'][$name];
 	}
-	elseif($name === 'admin_user'){
+	elseif($name === 'admin_user' && isset($_SESSION['installer']['user']['user'])){
 		return $_SESSION['installer']['user']['user'];
 	}
-	elseif($name === 'admin_password'){
+	elseif($name === 'admin_password' && isset($_SESSION['installer']['user']['password'])){
 		return $_SESSION['installer']['user']['password'];
 	}
 
