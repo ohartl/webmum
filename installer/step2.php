@@ -123,7 +123,7 @@ if(isset($_GET['go'])){
 ?>
 <?php echo installer_message(); ?>
 
-	<h2>Step 2: Create database schema.</h2>
+	<h2>Step 2 of <?php echo INSTALLER_MAX_STEP; ?>: Create database schema.</h2>
 
 <?php if($allTablesFromSchemaExist): ?>
 	<div class="notification notification-fail">

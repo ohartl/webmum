@@ -63,7 +63,7 @@ function getAttr($name, $default = null)
 ?>
 <?php echo installer_message(); ?>
 
-<h2>Step 1: Database connection.</h2>
+<h2>Step 1 of <?php echo INSTALLER_MAX_STEP; ?>: Database connection.</h2>
 
 <?php if(!empty($error)): ?>
 	<div class="notification notification-fail"><?php echo $error; ?></div>

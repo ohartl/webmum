@@ -1,7 +1,30 @@
 <?php
 
+define('INSTALLER_MAX_STEP', 6);
+
 define('INSTALLER_TYPE_CREATE', 0);
 define('INSTALLER_TYPE_MAP', 1);
+
+$installerStepTitles = array(
+	'Requirements',
+	'Database connection',
+	'Database schema',
+	'Your first admin user',
+	'General settings',
+	'Optional features',
+	'Finish installation',
+);
+
+$installerStepMapping = array(
+	0 => 0,
+	1 => 1,
+	2 => 2,
+	3 => 2,
+	4 => 3,
+	5 => 4,
+	6 => 5,
+	7 => 6,
+);
 
 function installer_reset()
 {
@@ -55,13 +78,29 @@ if(!isset($_SESSION['installer'])){
 	installer_reset();
 }
 
+$step = (isset($_GET['step']) && is_numeric($_GET['step'])) ? intval($_GET['step']) : 0;
+
+echo '<h1>Installation of WebMUM</h1>';
+
+if($step > 0){
 ?>
-	<h1>Installation of WebMUM</h1>
+<ol style="font-size: 1.1em;">
+<?php for($s = 1; $s <= INSTALLER_MAX_STEP; $s++): ?>
+	<li>
+	<?php if(isset($installerStepMapping[$step]) && $s < $installerStepMapping[$step]): ?>
+		<span style="color: #999;"><?php echo $installerStepTitles[$s]; ?></span>
+	<?php elseif(isset($installerStepMapping[$step]) && $s === $installerStepMapping[$step]): ?>
+		<strong><?php echo $installerStepTitles[$s]; ?></strong>
+	<?php else: ?>
+		<?php echo $installerStepTitles[$s]; ?>
+	<?php endif; ?>
+	</li>
+<?php endfor; ?>
+</ol>
 <?php
+}
 
 try{
-	$step = (isset($_GET['step']) && is_numeric($_GET['step'])) ? intval($_GET['step']) : 0;
-
 	$stepFile = __DIR__.'/step'.$step.'.php';
 	if(file_exists($stepFile)){
 		include_once $stepFile;

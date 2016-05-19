@@ -33,9 +33,10 @@ function getAttr($name, $default = null)
 if(isset($_GET['go'])){
 	if($_GET['go'] == 'next' && $_SERVER['REQUEST_METHOD'] == 'POST'){
 		try{
-			if(!isset($_POST['base_url'])
-				|| empty($_POST['base_url'])
-				|| !isset($_POST['email_separator_text'])
+			if(!isset($_POST['base_url']) || empty($_POST['base_url'])){
+				throw new Exception('The field URL isn\'t filled out yet.');
+			}
+			if(!isset($_POST['email_separator_text'])
 				|| !is_numeric($_POST['email_separator_text'])
 				|| !isset($possibleEmailSeparatorsText[$_POST['email_separator_text']])
 				|| !isset($_POST['email_separator_form'])
@@ -51,6 +52,8 @@ if(isset($_GET['go'])){
 				'email_separator_text' => $possibleEmailSeparatorsText[$_POST['email_separator_text']],
 				'email_separator_form' => $possibleEmailSeparatorsForm[$_POST['email_separator_form']],
 			);
+
+			installer_message('General settings saved.');
 
 			installer_next($thisStep);
 		}
@@ -73,7 +76,7 @@ if(isset($_GET['go'])){
 
 <?php echo installer_message(); ?>
 
-<h2>Step 4: General settings</h2>
+<h2>Step 4 of <?php echo INSTALLER_MAX_STEP; ?>: General settings</h2>
 
 <?php if(!empty($error)): ?>
 	<div class="notification notification-fail"><?php echo $error; ?></div>

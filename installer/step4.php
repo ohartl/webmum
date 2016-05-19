@@ -114,6 +114,8 @@ if(isset($_GET['go'])){
 				'password' => $_POST['admin_password'],
 			);
 
+			installer_message('You have successfully added your first admin user.');
+
 			installer_next($thisStep);
 		}
 		catch(InvalidArgumentException $e){
@@ -137,7 +139,7 @@ if(isset($_GET['go'])){
 
 <?php echo installer_message(); ?>
 
-<h2>Step 3: Your first admin user.</h2>
+<h2>Step 3 of <?php echo INSTALLER_MAX_STEP; ?>: Your first admin user.</h2>
 
 <?php if(!empty($error)): ?>
 	<div class="notification notification-fail"><?php echo $error; ?></div>

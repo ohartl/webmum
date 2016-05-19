@@ -24,6 +24,8 @@ if(file_exists('config') && file_exists('config/config.php.example')){
 
 if(isset($_GET['go']) && $_GET['go'] == 'next'){
 	if(count($requirements) === $numberOfRequirements){
+		installer_message('All requirements fulfilled, let\'s get started with the installation!');
+
 		installer_next($thisStep);
 	}
 }

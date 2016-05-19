@@ -8,7 +8,8 @@ $error = null;
 
 $exampleConfigValues = require_once 'config/config.php.example';
 
-function getAttr($name, $default = null){
+function getAttr($name, $default = null)
+{
 	global $_SESSION, $_POST;
 
 	if(isset($_POST[$name])){
@@ -113,6 +114,8 @@ if(isset($_GET['go'])){
 			$_SESSION['installer']['config']['options'] = $options;
 			$_SESSION['installer']['config']['log_path'] = $logPath;
 
+			installer_message('Saved settings for optional features.');
+
 			installer_next($thisStep);
 		}
 		catch(Exception $e){
@@ -131,7 +134,7 @@ if(isset($_GET['go'])){
 
 <?php echo installer_message(); ?>
 
-<h2>Step 5: Optional features</h2>
+<h2>Step 5 of <?php echo INSTALLER_MAX_STEP; ?>: Optional features</h2>
 
 <?php if(!empty($error)): ?>
 	<div class="notification notification-fail"><?php echo $error; ?></div>
@@ -142,17 +145,17 @@ if(isset($_GET['go'])){
 	<div class="input-group">
 		<label for="enable_mailbox_limits">Mailbox limits</label>
 		<div class="input-info">Limit the maximum size of mailbox for users.</div>
-	<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['users']['mailbox_limit'])): ?>
-		<p class="text-warning">
-			<strong>This feature cannot be enabled because the attribute "mailbox_limit" in database table "users" is missing or not mapped yet.</strong>
-			<br><br>You could go back and create / map the missing attribute.
-		</p>
-	<?php else: ?>
-		<div class="input">
-			<input type="checkbox" name="enable_mailbox_limits" id="enable_mailbox_limits" value="1" <?php echo getAttr('enable_mailbox_limits', false) ? 'checked' : ''; ?>>
-			<label for="enable_mailbox_limits">Enable feature</label>
-		</div>
-	<?php endif; ?>
+		<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['users']['mailbox_limit'])): ?>
+			<p class="text-warning">
+				<strong>This feature cannot be enabled because the attribute "mailbox_limit" in database table "users" is missing or not mapped yet.</strong>
+				<br><br>You could go back and create / map the missing attribute.
+			</p>
+		<?php else: ?>
+			<div class="input">
+				<input type="checkbox" name="enable_mailbox_limits" id="enable_mailbox_limits" value="1" <?php echo getAttr('enable_mailbox_limits', false) ? 'checked' : ''; ?>>
+				<label for="enable_mailbox_limits">Enable feature</label>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<hr>
@@ -171,17 +174,17 @@ if(isset($_GET['go'])){
 	<div class="input-group">
 		<label for="enable_multi_source_redirects">Multiple source redirect support</label>
 		<div class="input-info">Redirects can have multiple source addresses. This enables you to enter multiple redirects to a destination at once.</div>
-	<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['aliases']['multi_source'])): ?>
-		<p class="text-warning">
-			<strong>This feature cannot be enabled because the attribute "multi_source" in database table "aliases" is missing or not mapped yet.</strong>
-			<br><br>You could go back and create / map the missing attribute.
-		</p>
-	<?php else: ?>
-		<div class="input">
-			<input type="checkbox" name="enable_multi_source_redirects" id="enable_multi_source_redirects" value="1" <?php echo getAttr('enable_multi_source_redirects', false) ? 'checked' : ''; ?>>
-			<label for="enable_multi_source_redirects">Enable feature</label>
-		</div>
-	<?php endif; ?>
+		<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['aliases']['multi_source'])): ?>
+			<p class="text-warning">
+				<strong>This feature cannot be enabled because the attribute "multi_source" in database table "aliases" is missing or not mapped yet.</strong>
+				<br><br>You could go back and create / map the missing attribute.
+			</p>
+		<?php else: ?>
+			<div class="input">
+				<input type="checkbox" name="enable_multi_source_redirects" id="enable_multi_source_redirects" value="1" <?php echo getAttr('enable_multi_source_redirects', false) ? 'checked' : ''; ?>>
+				<label for="enable_multi_source_redirects">Enable feature</label>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<hr>
@@ -206,28 +209,28 @@ if(isset($_GET['go'])){
 			Enable users to create their redirects on their own.
 			<br>Users can also be limited to a maximum number of redirects they can create.
 		</div>
-	<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['users']['max_user_redirects']) || empty($_SESSION['installer']['config']['schema']['attributes']['aliases']['is_created_by_user'])): ?>
-		<p class="text-warning">
+		<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['users']['max_user_redirects']) || empty($_SESSION['installer']['config']['schema']['attributes']['aliases']['is_created_by_user'])): ?>
+			<p class="text-warning">
 			<strong>This feature cannot be enabled because,
-		<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['users']['max_user_redirects']) && empty($_SESSION['installer']['config']['schema']['attributes']['aliases']['is_created_by_user'])): ?>
-			there are missing attributes in two database tables:</strong>
-			<ul>
-				<li>"max_user_redirects" in "users"</li>
-				<li>"is_created_by_user" in "aliases"</li>
-			</ul>
-			<br>You could go back and create / map the missing attributes.
-		<?php else: ?>
-			the attribute <?php echo empty($_SESSION['installer']['config']['schema']['attributes']['users']['max_user_redirects']) ? '"max_user_redirects" in database table "users"' : '"is_created_by_user" in database table "aliases"'; ?> is missing or not mapped yet.
-		<?php endif; ?>
+			<?php if(empty($_SESSION['installer']['config']['schema']['attributes']['users']['max_user_redirects']) && empty($_SESSION['installer']['config']['schema']['attributes']['aliases']['is_created_by_user'])): ?>
+				there are missing attributes in two database tables:</strong>
+				<ul>
+					<li>"max_user_redirects" in "users"</li>
+					<li>"is_created_by_user" in "aliases"</li>
+				</ul>
+				<br>You could go back and create / map the missing attributes.
+			<?php else: ?>
+				the attribute <?php echo empty($_SESSION['installer']['config']['schema']['attributes']['users']['max_user_redirects']) ? '"max_user_redirects" in database table "users"' : '"is_created_by_user" in database table "aliases"'; ?> is missing or not mapped yet.
+			<?php endif; ?>
 			</strong>
 			<br><br>You could go back and create / map the missing attributes.
-		</p>
-	<?php else: ?>
-		<div class="input">
-			<input type="checkbox" name="enable_user_redirects" id="enable_user_redirects" value="1" <?php echo getAttr('enable_user_redirects', false) ? 'checked' : ''; ?>>
-			<label for="enable_user_redirects">Enable feature</label>
-		</div>
-	<?php endif; ?>
+			</p>
+		<?php else: ?>
+			<div class="input">
+				<input type="checkbox" name="enable_user_redirects" id="enable_user_redirects" value="1" <?php echo getAttr('enable_user_redirects', false) ? 'checked' : ''; ?>>
+				<label for="enable_user_redirects">Enable feature</label>
+			</div>
+		<?php endif; ?>
 	</div>
 
 	<hr>

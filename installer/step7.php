@@ -119,7 +119,7 @@ if(isset($_GET['go'])){
 <?php else: ?>
 	<?php echo installer_message(); ?>
 
-	<h2>Step 6: Write the config &amp; finish the installation!</h2>
+	<h2>Step 6 of <?php echo INSTALLER_MAX_STEP; ?>: Write the config &amp; finish the installation!</h2>
 
 	<?php if(!empty($error)): ?>
 		<div class="notification notification-fail"><?php echo $error; ?></div>

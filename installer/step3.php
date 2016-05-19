@@ -216,7 +216,7 @@ if(isset($_GET['go'])){
 <?php echo installer_message(); ?>
 
 <h2>
-	Step 2:
+	Step 2 of <?php echo INSTALLER_MAX_STEP; ?>:
 	<?php if($_SESSION['installer']['subStep'] === 0): ?>
 		Database - table mapping.
 	<?php elseif($_SESSION['installer']['subStep'] === 1): ?>
