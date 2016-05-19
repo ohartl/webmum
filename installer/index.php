@@ -1,5 +1,11 @@
 <?php
 
+if(strpos($_SERVER['REQUEST_URI'], 'installer/') !== false){
+	die('You cannot directly access the installer files.');
+}
+
+/*-----------------------------------------------------------------------------*/
+
 define('INSTALLER_MAX_STEP', 6);
 
 define('INSTALLER_TYPE_CREATE', 0);
@@ -25,6 +31,8 @@ $installerStepMapping = array(
 	6 => 5,
 	7 => 6,
 );
+
+/*-----------------------------------------------------------------------------*/
 
 function installer_reset()
 {
@@ -77,6 +85,8 @@ function installer_next($thisStep, $stepSize = 1)
 if(!isset($_SESSION['installer'])){
 	installer_reset();
 }
+
+/*-----------------------------------------------------------------------------*/
 
 $step = (isset($_GET['step']) && is_numeric($_GET['step'])) ? intval($_GET['step']) : 0;
 

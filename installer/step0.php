@@ -1,7 +1,14 @@
 <?php
 
+if(strpos($_SERVER['REQUEST_URI'], 'installer/') !== false){
+	die('You cannot directly access the installer files.');
+}
+
+/*-----------------------------------------------------------------------------*/
+
 $thisStep = 0;
 
+/*-----------------------------------------------------------------------------*/
 
 $requirements = array();
 $numberOfRequirements = 5;
@@ -21,6 +28,7 @@ if(file_exists('config') && file_exists('config/config.php.example')){
 	$requirements[] = 'config_example';
 }
 
+/*-----------------------------------------------------------------------------*/
 
 if(isset($_GET['go']) && $_GET['go'] == 'next'){
 	if(count($requirements) === $numberOfRequirements){

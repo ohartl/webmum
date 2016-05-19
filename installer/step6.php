@@ -1,5 +1,11 @@
 <?php
 
+if(strpos($_SERVER['REQUEST_URI'], 'installer/') !== false){
+	die('You cannot directly access the installer files.');
+}
+
+/*-----------------------------------------------------------------------------*/
+
 $thisStep = 6;
 
 $error = null;
