@@ -86,7 +86,7 @@ if(isset($_GET['go']) && $_GET['go'] == 'next'){
 <hr>
 
 <?php if(count($requirements) === $numberOfRequirements):?>
-	<p>Click on Start button to continue.</p>
+	<p>Click on the Start button to continue.</p>
 	<a class="button button-primary" href="/?step=<?php echo $thisStep; ?>&go=next">Start</a>
 <?php else:?>
 	<p class="notification notification-fail">Some requirements aren't fulfilled.</p>

@@ -1,5 +1,8 @@
 <?php
 
+define('INSTALLER_TYPE_CREATE', 0);
+define('INSTALLER_TYPE_MAP', 1);
+
 function installer_reset()
 {
 	global $_SESSION;
@@ -28,9 +31,9 @@ function installer_message($setMessage = null)
 	return $setMessage;
 }
 
-function installer_prev($thisStep)
+function installer_prev($thisStep, $stepSize = 1)
 {
-	$s = ($thisStep < 0) ? 0 : ($thisStep - 1);
+	$s = ($thisStep < 0) ? 0 : ($thisStep - $stepSize);
 
 	$_SESSION['installer']['lastStep'] = $thisStep;
 	$_SESSION['installer']['step'] = $s;
@@ -38,9 +41,9 @@ function installer_prev($thisStep)
 	Router::redirect('/?step='.$s);
 }
 
-function installer_next($thisStep)
+function installer_next($thisStep, $stepSize = 1)
 {
-	$s = ($thisStep > 8) ? 8 : ($thisStep + 1);
+	$s = ($thisStep > 8) ? 8 : ($thisStep + $stepSize);
 
 	$_SESSION['installer']['lastStep'] = $thisStep;
 	$_SESSION['installer']['step'] = $s;
@@ -53,7 +56,7 @@ if(!isset($_SESSION['installer'])){
 }
 
 ?>
-<h1>Installation of WebMUM</h1>
+	<h1>Installation of WebMUM</h1>
 <?php
 
 try{
