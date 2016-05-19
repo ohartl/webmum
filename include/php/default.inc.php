@@ -29,7 +29,7 @@ require_once 'include/php/global.inc.php';
 /**
  * Setting up
  */
-if(file_exists('config/config.php')){
+if(file_exists('config/config.php') && !isset($_SESSION['installer'])){
 
 	/**
 	 * Loading config
