@@ -21,10 +21,10 @@ if(function_exists('mysqli_connect')){
 if(session_status() != PHP_SESSION_DISABLED){
 	$requirements[] = 'php_session_enabled';
 }
-if(file_exists('config') && is_writable('config') && !file_exists('config/config.php')){
-	$requirements[] = 'config_path_writable';
+if(file_exists('config') && is_dir('config')){
+	$requirements[] = 'config_directory';
 }
-if(file_exists('config') && file_exists('config/config.php.example')){
+if(file_exists('config/config.php.example')){
 	$requirements[] = 'config_example';
 }
 
@@ -81,10 +81,10 @@ if(isset($_GET['go']) && $_GET['go'] == 'next'){
 
 <strong>Directories and files</strong>
 <ul>
-<?php if(in_array('config_path_writable', $requirements)): ?>
-	<li class="text-success">"config/": <strong>writable &#x2713;</strong></li>
+<?php if(in_array('config_directory', $requirements)): ?>
+	<li class="text-success">"config/": <strong>exists &#x2713;</strong></li>
 <?php else: ?>
-	<li class="text-fail">"config/": <strong>not writable &#x274c;</strong></li>
+	<li class="text-fail">"config/": <strong>is missing &#x274c;</strong></li>
 <?php endif; ?>
 <?php if(in_array('config_example', $requirements)): ?>
 	<li class="text-success">"config/config.php.example": <strong>exists &#x2713;</strong></li>

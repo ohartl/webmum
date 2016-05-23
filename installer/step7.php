@@ -35,16 +35,14 @@ if(isset($_GET['go'])){
 					throw new Exception('The file "'.$configPath.'"" already exists, if you\'ve already written the config manually then complete manually.');
 				}
 
-				if(!file_exists(dirname($configPath))){
+				if(!file_exists(dirname($configPath)) || !is_dir(dirname($configPath))){
 					throw new Exception('The directory "'.dirname($configPath).'"" is missing.');
 				}
 
-				if(!is_writable(dirname($configPath))){
-					throw new Exception('The directory "'.dirname($configPath).'"" isn\'t writable.');
-				}
-
 				// Write config
-				file_put_contents($configPath, $configString);
+				if(file_put_contents($configPath, $configString) === false){
+					throw new Exception('Couldn\'t automatically write config to "'.$configPath.'", please write the config on your own.');
+				}
 
 				$_SESSION['installer']['finished'] = true;
 			}
