@@ -215,6 +215,34 @@ also you have to make an entry in the `admin_domain_limits` array, for example `
 
 Admins that have been listed in `admin_domain_limits` don't have access to the "Manage domains" pages, otherwise they could delete domains they are managing, but maybe someone else owns.
 
+
+
+### Users redirects (Optional)
+
+If you want to enable some users to create redirects on their own, either limited by a maximum number of redirects or unlimited, this is the right option for you.
+You have to enable this feature in the options:
+
+```php
+'options' => array(
+    ...
+    'enable_user_redirects' => true,
+    ...
+),
+```
+
+And add the following columns to your database tables for aliases / redirects and users:
+
+```sql
+ALTER TABLE `aliases` ADD COLUMN `is_created_by_user` INT(1) NOT NULL DEFAULT '0';
+```
+
+Note: By choosing a default value for the `max_user_redirects` column on the users table, you can set the default state of user redirects for new users. `0` = unlimited, `-1` = disabled and a number larger than 0 will limit user redirects.
+
+```sql
+ALTER TABLE `users` ADD COLUMN `max_user_redirects` INT(10) NOT NULL DEFAULT '-1';
+```
+
+
 ### Paths
 
 The `base_url` is the URL your WebMUM installation is accessible from outside, this also includes subdirectories if you installed it in a subdirectory for that specific domain.
@@ -223,7 +251,7 @@ The `base_url` is the URL your WebMUM installation is accessible from outside, t
 'base_url' => 'http://localhost/webmum',
 ```
 
-In the example above, WebMUM is located in a subdirectory named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `FRONTEND_BASE_PATH` to something like this:
+In the example above, WebMUM is located in a subdirectory named "webmum/". If your WebMUM installation is directly accessible from a domain (has its own domain), then set the `base_url` to something like this:
 
 ```php
 'base_url' => 'http://webmum.mydomain.tld',
