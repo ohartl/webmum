@@ -59,37 +59,37 @@ if(isset($_GET['go']) && $_GET['go'] == 'next'){
 <strong>Server requirements</strong>
 <ul>
 <?php if(in_array('php_version', $requirements)): ?>
-	<li class="text-success">PHP version: <strong><?php echo phpversion(); ?></strong> (>=5.4.0 or >=7.0.0)</li>
+	<li class="text-success">PHP version (>=5.4.0 or >=7.0.0): <strong><?php echo phpversion(); ?>  &#x2713;</strong></li>
 <?php else: ?>
-	<li class="text-fail">PHP version: <strong><?php echo phpversion(); ?></strong> (>=5.4.0 or >=7.0.0)</li>
+	<li class="text-fail">PHP version (>=5.4.0 or >=7.0.0): <strong><?php echo phpversion(); ?> &#x274c;</strong></li>
 <?php endif; ?>
 </ul>
 
 <strong>Required PHP settings</strong>
 <ul>
 <?php if(in_array('php_extension_mysqli', $requirements)): ?>
-	<li class="text-success">Database extension (mysqli): enabled</li>
+	<li class="text-success">Database extension (mysqli): <strong>enabled &#x2713;</strong></li>
 <?php else: ?>
-	<li class="text-fail">Database extension (mysqli): disabled</li>
+	<li class="text-fail">Database extension (mysqli): <strong>disabled &#x274c;</strong></li>
 <?php endif; ?>
 <?php if(in_array('php_session_enabled', $requirements)): ?>
-	<li class="text-success">Session support: enabled</li>
+	<li class="text-success">Session support: <strong>enabled &#x2713;</strong></li>
 <?php else: ?>
-	<li class="text-fail">Session support: disabled</li>
+	<li class="text-fail">Session support: <strong>disabled &#x274c;</strong></li>
 <?php endif; ?>
 </ul>
 
 <strong>Directories and files</strong>
 <ul>
 <?php if(in_array('config_path_writable', $requirements)): ?>
-	<li class="text-success">"config/": writable</li>
+	<li class="text-success">"config/": <strong>writable &#x2713;</strong></li>
 <?php else: ?>
-	<li class="text-fail">"config/": not writable</li>
+	<li class="text-fail">"config/": <strong>not writable &#x274c;</strong></li>
 <?php endif; ?>
 <?php if(in_array('config_example', $requirements)): ?>
-	<li class="text-success">"config/config.php.example": exists</li>
+	<li class="text-success">"config/config.php.example": <strong>exists &#x2713;</strong></li>
 <?php else: ?>
-	<li class="text-fail">"config/config.php.example": is missing</li>
+	<li class="text-fail">"config/config.php.example": <strong>is missing &#x274c;</strong></li>
 <?php endif; ?>
 </ul>
 
