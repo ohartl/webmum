@@ -410,7 +410,7 @@ class User extends AbstractModel
 	 * @param string $password
 	 * @param string $passwordRepeated
 	 *
-	 * @throws Exception
+	 * @throws AuthException
 	 */
 	public function changePassword($password, $passwordRepeated)
 	{

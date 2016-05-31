@@ -152,12 +152,12 @@ class Auth
 
 
 	/**
-	 * Checks the new password entered by user on certain criteria, and throws an Exception if its invalid.
+	 * Checks the new password entered by user on certain criteria, and throws an exception if its invalid.
 	 *
 	 * @param string $password
 	 * @param string $passwordRepeated
 	 *
-	 * @throws Exception Codes explained below
+	 * @throws AuthException Codes explained below
 	 *        2: One password field is empty
 	 *        3: Passwords aren't equal
 	 *        4: Passwort is too snort
@@ -166,22 +166,22 @@ class Auth
 	{
 		// Check if one passwort input is empty
 		if(empty($password)){
-			throw new Exception("First password field was'nt filled out.", 2);
+			throw new AuthException("First password field was'nt filled out.", 2);
 		}
 		if(empty($passwordRepeated)){
-			throw new Exception("Repeat password field was'nt filled out.", 2);
+			throw new AuthException("Repeat password field was'nt filled out.", 2);
 		}
 
 		// Check if password are equal
 		if($password !== $passwordRepeated){
-			throw new Exception("The repeated password must be equal to the first one.", 3);
+			throw new AuthException("The repeated password must be equal to the first one.", 3);
 		}
 
 		// Check if password length is okay
 		if(Config::has('password.min_length')
 			&& strlen($password) < Config::get('password.min_length')
 		){
-			throw new Exception("Passwords must be at least ".Config::get('password.min_length')." characters long.", 4);
+			throw new AuthException("Passwords must be at least ".Config::get('password.min_length')." characters long.", 4);
 		}
 	}
 
