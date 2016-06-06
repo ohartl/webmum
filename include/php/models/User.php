@@ -59,9 +59,15 @@ class User extends AbstractModel
 				'username' => Config::get('schema.attributes.users.username', 'username'),
 				'domain' => Config::get('schema.attributes.users.domain', 'domain'),
 				'password_hash' => Config::get('schema.attributes.users.password', 'password'),
-				'mailbox_limit' => Config::get('schema.attributes.users.mailbox_limit'),
-				'max_user_redirects' => Config::get('schema.attributes.users.max_user_redirects'),
 			);
+
+			if(Config::get('options.enable_mailbox_limits', false)){
+				static::$attributeDbAttributeMapping['mailbox_limit'] = Config::get('schema.attributes.users.mailbox_limit');
+			}
+
+			if(Config::get('options.enable_user_redirects', false)){
+				static::$attributeDbAttributeMapping['max_user_redirects'] = Config::get('schema.attributes.users.max_user_redirects');
+			}
 		}
 	}
 
@@ -76,14 +82,14 @@ class User extends AbstractModel
 		$this->setUsername($data[static::attr('username')]);
 		$this->setDomain($data[static::attr('domain')]);
 		$this->setPasswordHash($data[static::attr('password_hash')]);
-		$this->setMailboxLimit(Config::get('options.enable_mailbox_limits', false)
-			? intval($data[static::attr('mailbox_limit')])
-			: 0
-		);
-		$this->setMaxUserRedirects(Config::get('options.enable_user_redirects', false)
-			? intval($data[static::attr('max_user_redirects')])
-			: 0
-		);
+
+		if(Config::get('options.enable_mailbox_limits', false)){
+			$this->setMailboxLimit($data[static::attr('mailbox_limit')]);
+		}
+
+		if(Config::get('options.enable_user_redirects', false)){
+			$this->setMaxUserRedirects($data[static::attr('max_user_redirects')]);
+		}
 
 		$this->setAttribute('role', static::getRoleByEmail($this->getEmail()));
 	}
@@ -410,7 +416,7 @@ class User extends AbstractModel
 	 * @param string $password
 	 * @param string $passwordRepeated
 	 *
-	 * @throws Exception
+	 * @throws AuthException
 	 */
 	public function changePassword($password, $passwordRepeated)
 	{

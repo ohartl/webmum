@@ -49,8 +49,11 @@ abstract class AbstractRedirect extends AbstractModel
 				'source' => Config::get('schema.attributes.aliases.source', 'source'),
 				'destination' => Config::get('schema.attributes.aliases.destination', 'destination'),
 				'multi_hash' => Config::get('schema.attributes.aliases.multi_source', 'multi_source'),
-				'is_created_by_user' => Config::get('schema.attributes.aliases.is_created_by_user', 'is_created_by_user'),
 			);
+
+			if(Config::get('options.enable_user_redirects', false)){
+				static::$attributeDbAttributeMapping['is_created_by_user'] = Config::get('schema.attributes.aliases.is_created_by_user', 'is_created_by_user');
+			}
 		}
 	}
 

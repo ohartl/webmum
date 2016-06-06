@@ -6,7 +6,7 @@ if(isset($_POST['password']) && isset($_POST['password_repeat'])){
 
 		Message::getInstance()->success("Password changed successfully!");
 	}
-	catch(Exception $passwordInvalidException){
+	catch(AuthException $passwordInvalidException){
 		Message::getInstance()->fail($passwordInvalidException->getMessage());
 	}
 }

@@ -71,7 +71,7 @@ if(!is_null($saveMode)){
 			try{
 				$userToEdit->changePassword($inputPassword, $inputPasswordRepeated);
 			}
-			catch(Exception $passwordInvalidException){
+			catch(AuthException $passwordInvalidException){
 				Message::getInstance()->fail($passwordInvalidException->getMessage());
 				$passwordError = true;
 			}
@@ -141,7 +141,7 @@ if(!is_null($saveMode)){
 						// Redirect user to user list
 						Router::redirect("admin/listusers/?created=1");
 					}
-					catch(Exception $passwordInvalidException){
+					catch(AuthException $passwordInvalidException){
 						Message::getInstance()->fail($passwordInvalidException->getMessage());
 					}
 				}

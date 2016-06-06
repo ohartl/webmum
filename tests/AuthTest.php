@@ -127,7 +127,7 @@ class AuthTest extends TestCase
 
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException AuthException
 	 * @expectedExceptionCode 2
 	 */
 	public function testValidateNewPasswordFirstEmpty()
@@ -137,7 +137,7 @@ class AuthTest extends TestCase
 
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException AuthException
 	 * @expectedExceptionCode 2
 	 */
 	public function testValidateNewPasswordLastEmpty()
@@ -147,7 +147,7 @@ class AuthTest extends TestCase
 
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException AuthException
 	 * @expectedExceptionCode 3
 	 */
 	public function testValidateNewPasswordNotEqual()
@@ -158,7 +158,7 @@ class AuthTest extends TestCase
 
 
 	/**
-	 * @expectedException Exception
+	 * @expectedException AuthException
 	 * @expectedExceptionCode 4
 	 */
 	public function testValidateNewPasswordTooShort()

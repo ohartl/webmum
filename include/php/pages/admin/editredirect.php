@@ -144,8 +144,11 @@ if(isset($_POST['savemode'])){
 								AbstractRedirect::attr('source') => $sourceAddress,
 								AbstractRedirect::attr('destination') => emailsToString($inputDestinations),
 								AbstractRedirect::attr('multi_hash') => $hash,
-								AbstractRedirect::attr('is_created_by_user') => false,
 							);
+
+							if(Config::get('options.enable_user_redirects', false)){
+								$data[AbstractRedirect::attr('is_created_by_user')] = false;
+							}
 
 							AbstractRedirect::createAndSave($data);
 						}
@@ -190,8 +193,11 @@ if(isset($_POST['savemode'])){
 							AbstractRedirect::attr('source') => $inputSource,
 							AbstractRedirect::attr('destination') => $inputDestination,
 							AbstractRedirect::attr('multi_hash') => $hash,
-							AbstractRedirect::attr('is_created_by_user') => false,
 						);
+
+						if(Config::get('options.enable_user_redirects', false)){
+							$data[AbstractRedirect::attr('is_created_by_user')] = false;
+						}
 
 						$a = AbstractRedirect::createAndSave($data);
 					}
