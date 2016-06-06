@@ -6,11 +6,19 @@ try {
 	 */
 	require_once 'include/php/default.inc.php';
 
-	
-	/**
-	 * Handle request
-	 */
-	$content = Router::executeCurrentRequest();
+
+	if(defined('INSTALLER_ENABLED')){
+		/**
+		 * Load installer
+		 */
+		$content = Router::loadAndBufferOutput('installer/index.php');
+	}
+	else {
+		/**
+		 * Handle request
+		 */
+		$content = Router::executeCurrentRequest();
+	}
 }
 catch(DatabaseException $e){
 	$content = '<div class="notification notification-fail">Faulty database query: "'.$e->getQuery().'".</div>';
