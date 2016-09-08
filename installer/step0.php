@@ -49,8 +49,8 @@ if(isset($_GET['go']) && $_GET['go'] == 'next'){
 <strong>System Info:</strong>
 <ul>
 	<li>System: <strong><?php echo php_uname(); ?></strong></li>
-	<li>Hostname: <strong><?php echo $_SERVER['SERVER_NAME']; ?></strong></li>
-	<li>IP: <strong><?php echo $_SERVER['SERVER_ADDR']; ?></strong></li>
+	<li>Hostname: <strong><?php echo isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'n/a'; ?></strong></li>
+	<li>IP: <strong><?php echo isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : (isset($_SERVER['SERVER_NAME']) ? gethostbyname($_SERVER['SERVER_NAME']) : 'n/a'); ?></strong></li>
 	<li>PHP version: <strong><?php echo phpversion(); ?></strong></li>
 	<li>Server API: <strong><?php echo php_sapi_name(); ?></strong></li>
 	<li>WebMUM directory: <strong><?php echo dirname($_SERVER['SCRIPT_FILENAME']); ?></strong></li>
