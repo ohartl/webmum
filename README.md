@@ -1,3 +1,5 @@
+:exclamation: This project **isn't maintained** anymore. New maintainers welcome, just contact [@ohartl](https://github.com/ohartl) . Please consider using alternatives like https://github.com/Andreas-Bresch/vmailManage/ :exclamation:
+
 # WebMUM - Web Mailserver User Manager
 
 [![Build Status](https://travis-ci.org/ohartl/webmum.svg)](https://travis-ci.org/ohartl/webmum)
